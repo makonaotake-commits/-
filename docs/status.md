@@ -21,4 +21,4 @@
 - Web 検索は可。Instagram / X / TikTok / YouTube はログインが必要で投稿の実数はほぼ取れない（記事・検索結果で補う）
 
 ## ブロッカー / 人の判断が必要なこと
-- 「キックオフ確認シート」（docs/kickoff_questions.html、Artifact: https://claude.ai/artifact/RHvMRL4HqohCxq3zUpG9rS）を猫向けの10問に作り直した。回答が届いたら各猫に配る
+- キックオフ確認シートの回答を受領（`docs/kickoff_answers.md`）。追加の論点4つ（段階リリース・法人の相手・監修獣医師・Instagram自動更新の範囲）と、各猫への依頼送信の可否を「依頼プラン確認シート」で確認中
