@@ -137,9 +137,9 @@ var NEWS={updated:'2026-11-09',note:'猫の飼い主向けのセミナー情報�
 {t:'猫の慢性腎臓病の新薬を、AIM医学研究所が農林水産省に承認申請',k:'ニュース',u:'https://news.livedoor.com/article/detail/31108406/',s:'ライブドアニュース'},
 {t:'日東紡が猫の尿検査アプリ「ネコプロ」を開始(動物病院向け)',k:'ニュース',u:'https://news.livedoor.com/article/detail/31481348/',s:'ライブドアニュース'},
 {t:'猫の慢性腎臓病の栄養管理(獣医療従事者向けの資料)',k:'資料',u:'https://www.purinainstitute.com/sites/default/files/2026-06/PI_Monograph_CKDinCats.pdf',s:'ピュリナ インスティチュート'}]};
-try{fetch('news.json',{cache:'no-cache'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(j&&j.items){NEWS=j;if(S.tab==='news')render()}}).catch(function(){})}catch(e){}
+try{fetch('news.json',{cache:'no-cache'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(j&&j.items){NEWS=j;NEWS.auto=true;if(S.tab==='news')render()}}).catch(function(){})}catch(e){}
 function jd(s){var p=String(s||'').split('-');return p.length===3?(+p[0])+'年'+(+p[1])+'月'+(+p[2])+'日':esc(s)}
-function news(){return'<div class="card"><h2>腎臓病の情報</h2><p class="sub" style="margin:0 0 8px">ニュース、研究、セミナーの情報をここに載せます。毎週日曜日に更新しています(最終確認: '+jd(NEWS.updated)+')。</p>'+NEWS.items.map(function(f){return'<div class="chk" style="display:block"><div class="sub">'+esc(f.k)+' / '+esc(f.s)+'</div><a href="'+esc(f.u)+'" target="_blank" rel="noopener" style="color:var(--ac)">'+esc(f.t)+'</a></div>'}).join('')+(NEWS.note?'<p class="sub" style="margin:10px 0 0">'+esc(NEWS.note)+'</p>':'')+'</div>'}
+function news(){return'<div class="card"><h2>腎臓病の情報</h2><p class="sub" style="margin:0 0 8px">ニュース、研究、セミナーの情報をここに載せます。'+(NEWS.auto?'毎週日曜日に更新しています':'今は自動では更新されません')+'(最終確認: '+jd(NEWS.updated)+')。</p>'+NEWS.items.map(function(f){return'<div class="chk" style="display:block"><div class="sub">'+esc(f.k)+' / '+esc(f.s)+'</div><a href="'+esc(f.u)+'" target="_blank" rel="noopener" style="color:var(--ac)">'+esc(f.t)+'</a></div>'}).join('')+(NEWS.note?'<p class="sub" style="margin:10px 0 0">'+esc(NEWS.note)+'</p>':'')+'</div>'}
 function signs(){var r=recent(14),n=function(f){return r.filter(function(x){return x[1]&&f(x[1])}).length},o=[];
 if(n(function(e){return e.water==='high'})>=3)o.push('水をよく飲む');
 if(n(function(e){return +e.urine>=6})>=3)o.push('おしっこの回数が多い');
