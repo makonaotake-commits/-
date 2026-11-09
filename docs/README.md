@@ -4,7 +4,7 @@
 |---|---|---|
 | `status.md` | 進捗ボード | ボンベイ（統括） |
 | `kickoff_answers.md` | キックオフ確認シートの回答と論点 | ボンベイ（統括） |
-| `kickoff_questions.html` / `dispatch_plan.html` | ユーザー向け確認シート（Artifact の元ファイル） | ボンベイ（統括） |
+| `kickoff_questions.html` / `dispatch_plan.html` / `risk_decisions.html` | ユーザー向け確認シート（Artifact の元ファイル） | ボンベイ（統括） |
 | `requirements/` | 要件定義（概要・ペルソナ・ストーリー・機能/非機能・MVP） | ブリショー |
 | `marketing/` | 市場分析・ポジショニング・チャネル・KPI・ローンチ計画 | ベンガル |
 | `sns/trends/` | 週次トレンドレポート | アビシニアン |

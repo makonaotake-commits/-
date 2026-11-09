@@ -1,0 +1,181 @@
+<title>リスク判断シート</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap">
+<style>
+/* Layout: 1カラムの質問カード列＋下部固定の送信バー。カードはタップで選ぶ大きな選択肢 */
+:root{
+  --bg:#f5f6f2; --surface:#ffffff; --ink:#1f2420; --muted:#5d665f; --line:#d9ded6;
+  --accent:#2f6b57; --accent-soft:#e3efe9; --rec:#8a5a12; --rec-soft:#f6ecd9;
+  --display:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Noto Sans JP",sans-serif;
+  --body:"Noto Sans JP","Hiragino Sans","Yu Gothic",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141714; --surface:#1d211e; --ink:#e9ece7; --muted:#a3aca5; --line:#323833; --accent:#7cc4a6; --accent-soft:#1f3a30; --rec:#e3b66a; --rec-soft:#3a2f1c; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141714; --surface:#1d211e; --ink:#e9ece7; --muted:#a3aca5; --line:#323833;
+  --accent:#7cc4a6; --accent-soft:#1f3a30; --rec:#e3b66a; --rec-soft:#3a2f1c; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.7;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 120px}
+.wrap{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+header h1{font-family:var(--display);font-size:1.6rem;line-height:1.35;margin:0 0 6px;text-wrap:balance}
+header p{margin:0;color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;font-size:.8rem;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:4px}
+.q{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:12px}
+.q.done{border-color:var(--accent)}
+.qhead{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.qnum{font-size:.75rem;letter-spacing:.06em;color:var(--muted);font-variant-numeric:tabular-nums}
+.q h2{font-family:var(--display);font-size:1.12rem;margin:2px 0 0;line-height:1.45;text-wrap:balance}
+.why{margin:0;font-size:.86rem;color:var(--muted)}
+.cats{display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-end;flex-shrink:0;max-width:45%}
+.cat{font-size:.72rem;padding:2px 8px;border-radius:999px;background:var(--accent-soft);color:var(--accent);white-space:nowrap}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px}
+.opt{position:relative;display:flex;flex-direction:column;gap:2px;text-align:left;font:inherit;color:inherit;
+  background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px 10px 38px;cursor:pointer;min-width:0}
+.opt:hover{border-color:var(--accent)}
+.opt:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.opt::before{content:"";position:absolute;left:12px;top:14px;width:16px;height:16px;border:2px solid var(--muted);border-radius:50%}
+.opt.multi::before{border-radius:4px}
+.opt[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.opt[aria-pressed="true"]::before{border-color:var(--accent);background:var(--accent);box-shadow:inset 0 0 0 3px var(--accent-soft)}
+.opt b{font-weight:700;font-size:.95rem}
+.opt small{color:var(--muted);font-size:.8rem;line-height:1.5}
+.rec{display:inline-block;margin-left:6px;font-size:.68rem;font-weight:700;padding:1px 6px;border-radius:4px;background:var(--rec-soft);color:var(--rec);vertical-align:1px}
+textarea{width:100%;font:inherit;color:inherit;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-height:44px;resize:vertical}
+textarea:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);
+  padding:12px max(16px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.bar .in{max-width:720px;margin:0 auto;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.prog{flex:1;min-width:160px}
+.track{height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.fill{height:100%;background:var(--accent);width:0;transition:width .25s}
+@media (prefers-reduced-motion:reduce){.fill{transition:none}}
+.prog p{margin:4px 0 0;font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums}
+button.send{font:inherit;font-weight:700;background:var(--accent);color:var(--surface);border:0;border-radius:999px;padding:10px 20px;cursor:pointer}
+button.send:disabled{opacity:.5;cursor:default}
+button.send:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.status{font-size:.82rem;color:var(--muted);width:100%}
+@media (max-width:480px){.qhead{flex-direction:column}.cats{justify-content:flex-start;max-width:none}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>リスク判断シート 🐈‍⬛</h1>
+    <p>ロシアンが猫向けの初期リスクを整理しました（33項目、判定は「要専門家確認」）。その中で、あなた（獣医師・運営者）に決めていただきたい6点です。迷ったら<span class="rec">おすすめ</span>を選んでおけば大丈夫です。</p>
+    <div class="legend"><span>各質問の右上：その答えを使う猫</span></div>
+  </header>
+  <main id="qs" class="wrap" style="gap:16px"></main>
+</div>
+
+<div class="bar"><div class="in">
+  <div class="prog"><div class="track"><div class="fill" id="fill"></div></div><p id="count">0 / 6 回答済み</p></div>
+  <button class="send" id="send" type="button">ボンベイに送る</button>
+  <div class="status" id="status" role="status"></div>
+</div></div>
+
+<script>
+const Q = [
+ {id:"ad_targeting",title:"猫の体調・検査値のデータを、広告の出し分けに使いますか？",why:"使う場合は、飼い主さんの同意と、利用目的のはっきりした説明が必要です。信頼を損なうリスクもあります。（ロシアン B-4）",cats:["ロシアン","ベンガル"],opts:[
+  ["no_mvp","第1弾では使わない","広告はデータを使わない一律配信にする。あとで同意の仕組みとあわせて検討",1],
+  ["opt_in","同意した人だけ使う","第1弾から、明示的な同意（オプトイン）を取った人だけに使う"],
+  ["never","今後も使わない","「健康データは広告に使いません」と約束し、信頼の柱にする"]]},
+ {id:"supp_ads",title:"サプリメントや動物用医薬品の広告を受けますか？",why:"効能表示の規制が厳しく、審査の手間とリスクが大きい分野です。療法食・フードの広告とは扱いが別です。（ロシアン B-3）",cats:["ロシアン","ベンガル"],opts:[
+  ["no_mvp","第1弾では受けない","フード・療法食の広告に絞る",1],
+  ["supp_only","サプリだけ受ける","医薬品は受けず、サプリは表現審査を厳しくして受ける"],
+  ["both","どちらも受ける","審査体制を先に整える必要がある"]]},
+ {id:"disclosure",title:"監修者（あなた）が運営者でもあることを、どう示しますか？",why:"利益相反の見え方への配慮です。開示文の最終文面は、あとでロシアンが案を出します。（ロシアン C）",cats:["ロシアン","スコティ"],opts:[
+  ["disclose_external","開示する＋外部の獣医師にもチェックを依頼","客観性が高まる。外部の協力者を探す必要がある",1],
+  ["disclose_only","開示するだけ","プロフィールやアプリ内に「監修獣医師＝運営者」と明記する"],
+  ["later","あとで決める","第1弾の公開前までに決める"]]},
+ {id:"clinic",title:"現在、動物病院を開設したり、勤務したりしていますか？",why:"獣医療法の広告制限が関わるか、ロシアンが確認するためです。",cats:["ロシアン"],opts:[
+  ["open","開設している","自分の病院がある"],
+  ["work","勤務している","病院に勤めている"],
+  ["none","していない","臨床からは離れている、など"],
+  ["chat","チャットで説明する","状況が少し複雑な場合"]]},
+ {id:"notify",title:"「体調の変化をお知らせする」通知は、第1弾から外しますか？",why:"「いつもより飲水が多い」などの通知は、アプリが判定しているように見えるおそれがあります。記録のリマインダー（補液・投薬の時間）は別で、残します。",cats:["ブリショー","ロシアン"],opts:[
+  ["remove","第1弾から外す","リマインダーだけにする。変化はグラフで飼い主さん自身が見る",1],
+  ["neutral","中立的な表現で残す","「記録が前回と違います」程度にとどめ、良し悪しは言わない"],
+  ["keep","残す","表現はロシアンと詰める"]]},
+ {id:"experts",title:"「要確認」の法令・規約を、弁護士や薬事の専門家に聞きますか？",why:"動物用医療機器プログラムの該当性、療法食の表示規約、動物用医薬品の広告基準、外部送信の規律などです。ロシアンの判定は「要専門家確認」でした。",cats:["ロシアン"],opts:[
+  ["before_launch","第1弾の公開前に聞く","開発と並行して照会し、公開判断に間に合わせる",1],
+  ["now","今すぐ聞く","要件定義が固まる前に方向性を確かめる"],
+  ["later","あとで聞く","利用者が増えてから"]]}
+];
+const state = {answers:{}, notes:{}, free:""};
+const $ = s=>document.querySelector(s);
+function render(){
+  const root=$("#qs"); root.innerHTML="";
+  Q.forEach((q,i)=>{
+    const sec=document.createElement("section"); sec.className="q"; sec.id="q-"+q.id;
+    const head=document.createElement("div"); head.className="qhead";
+    const left=document.createElement("div");
+    left.innerHTML=`<div class="qnum">Q${i+1} / ${Q.length}${q.multi?"・複数選択":""}</div>`;
+    const h=document.createElement("h2"); h.textContent=q.title; left.appendChild(h);
+    const cats=document.createElement("div"); cats.className="cats";
+    q.cats.forEach(c=>{const s=document.createElement("span");s.className="cat";s.textContent=c;cats.appendChild(s)});
+    head.append(left,cats); sec.appendChild(head);
+    const why=document.createElement("p"); why.className="why"; why.textContent=q.why; sec.appendChild(why);
+    const opts=document.createElement("div"); opts.className="opts"; opts.setAttribute("role","group"); opts.setAttribute("aria-label",q.title);
+    q.opts.forEach(([v,label,desc,rec])=>{
+      const b=document.createElement("button"); b.type="button"; b.className="opt"+(q.multi?" multi":""); b.dataset.q=q.id; b.dataset.v=v;
+      const bl=document.createElement("b"); bl.textContent=label;
+      if(rec){const r=document.createElement("span");r.className="rec";r.textContent="おすすめ";bl.appendChild(r)}
+      const sm=document.createElement("small"); sm.textContent=desc;
+      b.append(bl,sm); b.addEventListener("click",()=>pick(q,v)); opts.appendChild(b);
+    });
+    sec.appendChild(opts);
+    const ta=document.createElement("textarea"); ta.id="note-"+q.id; ta.placeholder="補足があれば（任意）"; ta.rows=1;
+    ta.value=state.notes[q.id]||""; ta.addEventListener("input",()=>{state.notes[q.id]=ta.value;dirty()});
+    sec.appendChild(ta); root.appendChild(sec);
+  });
+  const sec=document.createElement("section"); sec.className="q";
+  sec.innerHTML=`<div class="qnum">自由記入（任意）</div><h2>ほかに猫たちへ伝えたいこと</h2><p class="why">例：特に急いでほしいこと、参考にしたいアプリやアカウント、避けたいこと など。</p>`;
+  const ta=document.createElement("textarea"); ta.id="free"; ta.rows=3; ta.value=state.free; ta.addEventListener("input",()=>{state.free=ta.value;dirty()});
+  sec.appendChild(ta); root.appendChild(sec);
+  paint();
+}
+function pick(q,v){
+  if(q.multi){const cur=new Set(state.answers[q.id]||[]); cur.has(v)?cur.delete(v):cur.add(v); state.answers[q.id]=[...cur];}
+  else state.answers[q.id]=v;
+  paint(); dirty();
+}
+function answered(q){const a=state.answers[q.id];return q.multi?(a&&a.length>0):!!a}
+function paint(){
+  document.querySelectorAll(".opt").forEach(b=>{
+    const a=state.answers[b.dataset.q]; const on=Array.isArray(a)?a.includes(b.dataset.v):a===b.dataset.v;
+    b.setAttribute("aria-pressed",on?"true":"false");
+  });
+  let n=0; Q.forEach(q=>{const ok=answered(q); if(ok)n++; const s=document.getElementById("q-"+q.id); if(s)s.classList.toggle("done",ok)});
+  $("#fill").style.width=(n/Q.length*100)+"%"; $("#count").textContent=`${n} / ${Q.length} 回答済み`;
+}
+function dirty(){$("#status").textContent="未送信の変更があります";}
+function labelOf(q,v){const o=q.opts.find(o=>o[0]===v);return o?o[1]:v}
+function summary(){
+  return Q.map((q,i)=>{const a=state.answers[q.id];const t=!a||(Array.isArray(a)&&!a.length)?"（未回答）":Array.isArray(a)?a.map(v=>labelOf(q,v)).join("、"):labelOf(q,a);
+    const n=state.notes[q.id]?`／補足：${state.notes[q.id]}`:""; return `Q${i+1} ${q.title}\n→ ${t}${n}`}).join("\n\n")+(state.free?`\n\n自由記入：${state.free}`:"");
+}
+let db=null, ref=null;
+render();
+(async()=>{
+  try{ db = await window.claude?.use?.("db"); }catch(e){ db=null; }
+  if(!db){ $("#send").textContent="回答をコピー"; $("#status").textContent="保存機能が使えない表示です。「回答をコピー」でチャットに貼り付けてください。"; return; }
+  ref = db.doc("answers/risk_decisions");
+  const t=setTimeout(()=>{$("#status").textContent="前回の回答を読み込めませんでした。新しく回答できます。"},10000);
+  try{const s=await ref.get(); clearTimeout(t);
+    if(s.exists){const d=s.data(); Object.assign(state.answers,d.answers||{}); Object.assign(state.notes,d.notes||{}); state.free=d.free||""; render();
+      $("#status").textContent="前回送った回答を読み込みました。変更して送り直せます。";}
+  }catch(e){clearTimeout(t);}
+})();
+$("#send").addEventListener("click",async()=>{
+  const btn=$("#send");
+  if(!ref){ try{await navigator.clipboard.writeText(summary()); $("#status").textContent="コピーしました。チャットに貼り付けてください。";}
+    catch(e){$("#status").textContent="コピーできませんでした。お手数ですが選んだ内容をチャットでお知らせください。";} return; }
+  btn.disabled=true; $("#status").textContent="送信中…";
+  try{ await ref.set({answers:state.answers,notes:state.notes,free:state.free,summary:summary(),submittedAt:new Date().toISOString()});
+    $("#status").textContent="ボンベイに届きました。チャットで「送ったよ」と伝えてください。";
+  }catch(e){ $("#status").textContent="保存できませんでした（"+(e&&e.code||"エラー")+"）。もう一度押すか、チャットで答えを教えてください。"; }
+  btn.disabled=false;
+});
+</script>
