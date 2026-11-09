@@ -1,0 +1,14 @@
+{
+  "name": "じんケア - CKD 自己管理",
+  "short_name": "じんケア",
+  "description": "慢性腎臓病（CKD）の検査値・食事・血圧を記録して管理するアプリ",
+  "lang": "ja",
+  "start_url": "./#home",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f6fb",
+  "theme_color": "#2563eb",
+  "icons": [
+    { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
