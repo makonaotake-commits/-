@@ -22,6 +22,6 @@
 - 「リスク判断シート」10問：https://claude.ai/artifact/93BFamEtC1fYFWx3VCrayW
 - 「Instagram デザイン選択」8問（スコティ）：https://claude.ai/artifact/EdA4KPr7eNzLihaD8g8ckS
 - ✅ 要件定義の確認シート：回答受領（13:36）。ブリショーに第3版を依頼
-- 開発はユーザー本人が「ここで作る」→ 開発の進め方（技術・担当）を相談する必要あり
+- 「開発の進め方シート」6問（技術・体制・最初の一歩・見送り最小機能・獣医師の値）：https://claude.ai/artifact/D6mGqVQAg5b8vNDqzMujqW
 - ✅ マーケ戦略の確認シート：回答受領（13:37）。コア・メッセージは案3
 - 未定：アプリ名（スコティのプロフィール案は【アプリ名】で仮置き）
