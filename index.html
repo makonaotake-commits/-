@@ -1,34 +1,160 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#2563eb">
-  <meta name="description" content="慢性腎臓病（CKD）の検査値・食事・血圧を記録して管理するアプリ">
-  <title>じんケア</title>
-  <link rel="manifest" href="manifest.webmanifest">
-  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
-  <link rel="apple-touch-icon" href="icons/icon.svg">
-  <link rel="stylesheet" href="styles.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ねこ手帳(プロトタイプ)</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap">
+<style>
+:root{--bg:#eef2f3;--card:#fff;--ink:#1f2a30;--sub:#5d6e75;--line:#d6dee1;--ac:#1f6f78;--acs:#dcedef;--warn:#fbeed2;--warni:#8a5a00;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12191c;--card:#1b2529;--ink:#e6eef0;--sub:#93a6ad;--line:#2f3d43;--ac:#5fc0ca;--acs:#1f3a3e;--warn:#3a2e12;--warni:#f0c36a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#12191c;--card:#1b2529;--ink:#e6eef0;--sub:#93a6ad;--line:#2f3d43;--ac:#5fc0ca;--acs:#1f3a3e;--warn:#3a2e12;--warni:#f0c36a;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:500 17px/1.8 "Zen Maru Gothic",system-ui,sans-serif}
+main{max-width:480px;margin:0 auto;padding:16px 16px 88px}
+h1{font-size:22px;margin:4px 0 2px}h2{font-size:16px;margin:0 0 10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px}
+.sub{color:var(--sub);font-size:14px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.seg{display:flex;gap:6px;margin:6px 0 14px}
+.seg button,.btn{flex:1;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:10px 6px;font:inherit;cursor:pointer}
+.seg button.on{background:var(--ac);border-color:var(--ac);color:#fff;font-weight:700}
+.btn.p{background:var(--ac);border-color:var(--ac);color:#fff;font-weight:700}
+.big{width:100%;padding:16px;font-size:17px;border-radius:14px}
+input,select,textarea{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:10px;margin:4px 0 12px}
+label{font-size:15px;color:var(--sub)}
+.alert{background:var(--warn);color:var(--warni);border-radius:12px;padding:12px;margin-bottom:12px;font-size:14px}
+.chk{display:flex;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
+.chk input{width:22px;height:22px;margin:0}
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);display:flex;padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px))}
+nav button{flex:1;border:0;background:none;color:var(--sub);font:inherit;font-size:13px;padding:10px 0;cursor:pointer}
+nav button.on{color:var(--ac);font-weight:700}
+.scroll{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:14px}td,th{border-bottom:1px solid var(--line);padding:6px 8px;text-align:right;white-space:nowrap}th{color:var(--sub);font-weight:500}td:first-child,th:first-child{text-align:left}
+.steps{margin:0;padding-left:18px;color:var(--sub);font-size:14px}
+.q{background:var(--acs);border-radius:12px;padding:10px 12px;margin:6px 0;font-size:14px}.chip{display:inline-block;border:1.5px solid var(--line);border-radius:999px;padding:4px 12px;margin:0 6px 6px 0;font:inherit;font-size:13px;background:var(--card);color:var(--ink);cursor:pointer}.chip.on{background:var(--ac);border-color:var(--ac);color:#fff}.th{display:flex;gap:6px;flex-wrap:wrap}.th img,.th video{width:96px;height:96px;object-fit:cover;border-radius:10px}
+</style>
 </head>
 <body>
-  <header class="topbar">
-    <h1>じんケア <small>CKD 自己管理</small></h1>
-  </header>
-
-  <main id="view" aria-live="polite"></main>
-
-  <p class="disclaimer">このアプリは記録と目安の確認のためのものです。診断や治療方針は必ず主治医の指示に従ってください。</p>
-
-  <nav class="tabbar">
-    <a href="#home"><span>🏠</span>ホーム</a>
-    <a href="#labs"><span>🧪</span>検査値</a>
-    <a href="#meals"><span>🍚</span>食事</a>
-    <a href="#vitals"><span>❤️</span>体調</a>
-    <a href="#settings"><span>⚙️</span>設定</a>
-  </nav>
-
-  <div id="toast" role="status"></div>
-  <script type="module" src="js/app.js"></script>
+<main id="app"></main>
+<script>
+var S,mem=false;
+function load(){try{var j=localStorage.getItem('nekotecho');if(j)return JSON.parse(j)}catch(e){}return{cats:[],cur:null,logs:{},labs:{},tab:'home',adding:false}}
+function save(){try{localStorage.setItem('nekotecho',JSON.stringify(S))}catch(e){}}
+S=load();S.cats.forEach(function(c){if(c.meds&&c.meds.length){c.drugs=(c.drugs||[]).concat(c.meds);c.meds=[]}});
+function dk(d){d=d||new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function cat(){return S.cats.find(function(c){return c.id===S.cur})}
+function logs(){return S.logs[S.cur]=S.logs[S.cur]||{}}
+function today(){var l=logs();return l[dk()]=l[dk()]||{meds:{}}}
+function setF(k,v){today()[k]=v;save();render()}
+function quick(){var t=today();t.app='ok';t.water='ok';save();render()}
+function medChk(i,v){today().meds[i]=v;save()}
+function tab(t){S.tab=t;save();render()}
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function seg(f,opts,cur){return'<div class="seg">'+opts.map(function(o){return'<button class="'+(cur===o[0]?'on':'')+'" onclick="setF(\''+f+'\',\''+o[0]+'\')">'+o[1]+'</button>'}).join('')+'</div>'}
+function switchCat(v){if(v==='__new'){S.adding=true}else{S.cur=v}save();render()}
+function recent(n){var l=logs(),o=[];for(var i=0;i<n;i++){var d=new Date();d.setDate(d.getDate()-i);var k=dk(d);o.push([k,l[k]])}return o}
+function streak(){var l=logs(),s=0;for(var i=0;i<365;i++){var d=new Date();d.setDate(d.getDate()-i);var e=l[dk(d)];if(e&&e.app){s++}else if(i>0){break}else{continue}}return s}
+function alerts(){var r=recent(3).map(function(x){return x[1]||{}}),a=[];
+if(r.filter(function(e){return e.app==='low'}).length>=2)a.push('ここ3日のうち2日以上、食欲が落ちています。早めの受診を検討してください。');
+if(r.slice(0,2).every(function(e){return e.water==='high'}))a.push('飲水量が2日続けて多めです。続くようなら受診の目安です。');
+var w=weights();if(w.length>=2){var mx=Math.max.apply(null,w.slice(0,-1).map(function(p){return p[1]}));var last=w[w.length-1][1];if(last<=mx*0.95)a.push('体重が最近の最大値から5%以上減っています。受診を検討してください。')}
+if(r.reduce(function(s,e){return s+(+e.vomit||0)},0)>=3)a.push('ここ3日で嘔吐が3回以上あります。早めの受診を検討してください。');
+if(r.slice(0,2).every(function(e){return e.act==='low'}))a.push('活動量の低下が2日続いています。受診の目安です。');
+return a}
+function weights(){var l=logs();return Object.keys(l).sort().filter(function(k){return l[k].weight}).slice(-30).map(function(k){return[k,+l[k].weight]})}
+function spark(p){if(p.length<2)return'<p class="sub">体重を2回以上記録すると、推移が表示されます。</p>';var W=300,H=70,v=p.map(function(x){return x[1]}),mn=Math.min.apply(null,v),mx=Math.max.apply(null,v),rg=(mx-mn)||1;
+var pts=p.map(function(x,i){return(i*W/(p.length-1)).toFixed(1)+','+(H-8-(x[1]-mn)/rg*(H-16)).toFixed(1)}).join(' ');
+return'<svg viewBox="0 0 '+W+' '+H+'" width="100%" role="img" aria-label="体重の推移"><polyline points="'+pts+'" fill="none" stroke="var(--ac)" stroke-width="2.5" stroke-linejoin="round"/></svg><div class="sub">'+mn.toFixed(2)+' kg 〜 '+mx.toFixed(2)+' kg</div>'}
+function addLab(){var g=function(i){return document.getElementById(i).value};var e={date:g('ld')||dk(),bun:g('lb'),cre:g('lc'),sdma:g('ls'),p:g('lp')};if(!(e.bun||e.cre||e.sdma||e.p)){alert('数値を1つ以上入力してください');return}
+var a=S.labs[S.cur]=S.labs[S.cur]||[];a.push(e);a.sort(function(x,y){return x.date<y.date?-1:1});save();render()}
+function stage(c){c=+c;if(!c)return'';return c<1.6?'1':c<=2.8?'2':c<=5?'3':'4'}
+function labTable(){var a=S.labs[S.cur]||[];if(!a.length)return'<p class="sub">まだ記録がありません。</p>';
+var rows=a.slice().reverse().map(function(e){return'<tr><td>'+esc(e.date.slice(5))+'</td><td>'+esc(e.bun||'-')+'</td><td>'+esc(e.cre||'-')+'</td><td>'+esc(e.sdma||'-')+'</td><td>'+esc(e.p||'-')+'</td></tr>'}).join('');
+return'<div class="scroll"><table><tr><th>日付</th><th>BUN</th><th>Cre</th><th>SDMA</th><th>P</th></tr>'+rows+'</table></div>'}
+function lastCre(){var a=(S.labs[S.cur]||[]).filter(function(e){return e.cre});return a.length?a[a.length-1].cre:null}
+var ap={low:'低下',ok:'普通',good:'良好'},wt={low:'少なめ',ok:'普通',high:'多め'};
+var stl={ok:'普通',soft:'軟便・下痢',hard:'硬い・出ない'},al_={low:'低下',ok:'普通',high:'元気'};
+function chips(sel,fn){return CONDS.concat(sel.filter(function(x){return CONDS.indexOf(x)<0})).map(function(n){return'<button type="button" class="chip'+(sel.indexOf(n)>=0?' on':'')+'" onclick="'+fn+'(this.textContent)">'+esc(n)+'</button>'}).join('')}
+function condChips(){return chips(selC,'togC')}
+function togC(n){var i=selC.indexOf(n);if(i<0)selC.push(n);else selC.splice(i,1);document.getElementById('cd').innerHTML=condChips()}
+function setP(k,v){var c=cat();c.plan=c.plan||{};c.plan[k]=v;save()}
+function notesCard(){var o=recent(14).filter(function(x){return x[1]&&x[1].note}).map(function(x){return'<p style="margin:0 0 6px"><span class="sub">'+x[0].slice(5)+'</span> '+esc(x[1].note)+'</p>'}).join('');return o?'<div class="card"><h2>メモ</h2>'+o+'</div>':''}
+var DB;function odb(cb){if(DB)return cb(DB);try{var r=indexedDB.open('nekomedia',1);r.onupgradeneeded=function(){r.result.createObjectStore('m',{keyPath:'id'})};r.onsuccess=function(){DB=r.result;cb(DB)};r.onerror=function(){cb(null)}}catch(e){cb(null)}}
+function shrink(f,cb){if(f.type.indexOf('image')!==0)return cb(f);var im=new Image(),u=URL.createObjectURL(f);im.onload=function(){var s=Math.min(1,1280/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=im.width*s;c.height=im.height*s;c.getContext('2d').drawImage(im,0,0,c.width,c.height);c.toBlob(function(b){cb(b||f)},'image/jpeg',.8);URL.revokeObjectURL(u)};im.onerror=function(){cb(f)};im.src=u}
+function addMedia(fs){var a=[].slice.call(fs||[]);if(!a.length)return;odb(function(d){if(!d){alert('この環境では写真・動画を保存できません');return}var i=0;(function next(){if(i>=a.length){loadMedia();return}var f=a[i++];shrink(f,function(b){try{var tx=d.transaction('m','readwrite');tx.objectStore('m').put({id:Date.now()+'-'+i,cat:S.cur,date:dk(),type:b.type||f.type,blob:b});tx.oncomplete=next;tx.onerror=next}catch(e){next()}})})()})}
+function loadMedia(){var el=document.getElementById('th');if(!el)return;odb(function(d){if(!d)return;var q=d.transaction('m').objectStore('m').getAll();q.onsuccess=function(){el.innerHTML='';q.result.filter(function(m){return m.cat===S.cur}).sort(function(a,b){return a.id<b.id?1:-1}).slice(0,12).forEach(function(m){var v=m.type.indexOf('video')===0,e=document.createElement(v?'video':'img');e.src=URL.createObjectURL(m.blob);if(v)e.controls=true;e.title=m.date;el.appendChild(e)})}})}
+function view(){
+if(!S.cats.length||S.adding)return onboard();
+var c=cat(),t=S.tab;
+var head='<div class="row" style="margin-bottom:10px"><div style="flex:1"><h1>'+esc(c.name)+'</h1><div class="sub">'+esc(c.age?c.age+'歳':'')+' '+esc(condsOf(c).join('、'))+'</div></div><div style="width:130px"><select aria-label="猫を切り替え" onchange="switchCat(this.value)">'+S.cats.map(function(x){return'<option value="'+x.id+'"'+(x.id===S.cur?' selected':'')+'>'+esc(x.name)+'</option>'}).join('')+'<option value="__new">＋ 猫を追加</option></select></div></div>';
+var body=t==='home'?home(c):t==='plan'?plan(c):t==='news'?news():t==='labs'?labs():t==='report'?report(c):ask();
+var nav='<nav>'+[['home','今日'],['plan','治療'],['labs','検査'],['report','病院用'],['news','情報'],['ask','相談']].map(function(x){return'<button class="'+(t===x[0]?'on':'')+'" onclick="tab(\''+x[0]+'\')">'+x[1]+'</button>'}).join('')+'</nav>';
+return head+body+nav}
+function home(c){var t=today(),al=alerts();
+return al.map(function(m){return'<div class="alert">'+esc(m)+'</div>'}).join('')+
+'<div class="card"><div class="row" style="justify-content:space-between"><h2 style="margin:0">今日の様子</h2><span class="sub">'+streak()+'日連続で記録中</span></div><button class="btn p big" style="margin:12px 0" onclick="quick()">いつも通り</button><p class="sub" style="margin:0 0 6px">変化があるときは、下で選んでください。</p><label>食欲</label>'+seg('app',[['low','低下'],['ok','普通'],['good','良好']],t.app)+'<label>飲水量</label>'+seg('water',[['low','少なめ'],['ok','普通'],['high','多め']],t.water)+'<label>尿の回数(回)</label>'+selF('urine',[0,1,2,3,4,5,6,7,8,9,10],t.urine)+'<label>体重(kg)</label><input type="number" inputmode="decimal" step="0.01" value="'+esc(t.weight)+'" onchange="setF(\'weight\',this.value)">'+more(t)+'</div>'+
+(allMeds(c).length?'<div class="card"><h2>投薬・サプリ</h2>'+allMeds(c).map(function(m,i){return'<label class="chk"><input type="checkbox" '+(t.meds[i]?'checked':'')+' onchange="medChk('+i+',this.checked)"><span style="color:var(--ink);font-size:15px">'+esc(m)+'</span></label>'}).join('')+'</div>':'')+
+'<div class="card"><h2>体重の推移</h2>'+spark(weights())+'</div>'+
+'<p class="sub">この画面は診断ではなく、受診の目安を示すものです。</p>'}
+function labs(){var cr=lastCre(),st=stage(cr);
+return'<div class="card"><h2>血液検査を記録</h2><p class="sub" style="margin:0 0 8px">病院でもらった検査結果の紙を見ながら、わかる項目だけ入力してください。空欄でも大丈夫です。</p><label>検査日</label><input id="ld" type="date" value="'+dk()+'"><div class="row"><div style="flex:1"><label>尿素窒素 BUN (mg/dL)</label><input id="lb" type="number" step="0.1" inputmode="decimal"></div><div style="flex:1"><label>クレアチニン Cre (mg/dL)</label><input id="lc" type="number" step="0.01" inputmode="decimal"></div></div><div class="row"><div style="flex:1"><label>SDMA (µg/dL)</label><input id="ls" type="number" step="0.1" inputmode="decimal"></div><div style="flex:1"><label>リン P (mg/dL)</label><input id="lp" type="number" step="0.1" inputmode="decimal"></div></div><button class="btn p big" onclick="addLab()">保存する</button></div>'+
+(st?'<div class="card"><h2>検査からの目安</h2><p style="margin:0">クレアチニンの値からは、腎臓病ステージ'+st+'くらいの可能性があります。<span class="sub">正しい判定は獣医師が行います。ステージが確定したら、治療タブで登録してください。</span></p></div>':'')+
+'<div class="card"><h2>検査値の記録</h2>'+labTable()+'</div>'}
+function report(c){var r=recent(14).reverse(),l=logs();
+var rows=r.map(function(x){var e=x[1];return'<tr><td>'+x[0].slice(5)+'</td><td>'+(e&&e.app?ap[e.app]:'-')+'</td><td>'+(e&&e.water?wt[e.water]:'-')+'</td><td>'+(e&&e.urine!==undefined&&e.urine!==''?e.urine:'-')+'</td><td>'+(e&&e.weight?e.weight:'-')+'</td><td>'+(e&&e.stool?stl[e.stool]:'-')+'</td><td>'+(e&&e.vomit?e.vomit:'-')+'</td><td>'+(e&&e.act?al_[e.act]:'-')+'</td><td>'+(e&&e.fluid?e.fluid:'-')+'</td></tr>'}).join('');
+return'<div class="card"><h2>診察用の記録(直近14日)</h2><p style="margin:0 0 8px"><b>'+esc(c.name)+'</b> '+esc(c.age?c.age+'歳':'')+' / '+esc(condsOf(c).join('、'))+'</p><p class="sub" style="margin:0 0 10px">投薬・輸液: '+(allMeds(c).length?esc(allMeds(c).join('、')):'なし')+esc(planTxt(c))+'</p><div class="scroll"><table><tr><th>日付</th><th>食欲</th><th>飲水</th><th>尿(回)</th><th>体重</th><th>便</th><th>嘔吐</th><th>活動</th><th>輸液</th></tr>'+rows+'</table></div></div><div class="card"><h2>体重の推移</h2>'+spark(weights())+'</div><div class="card"><h2>検査値</h2>'+labTable()+'</div>'+notesCard()+'<button class="btn p big" onclick="try{window.print()}catch(e){}">印刷・PDF保存</button><p class="sub">保存できない場合は、画面のスクリーンショットを病院でお見せください。</p>'}
+function ask(){return'<div class="card"><h2>AI相談(準備中)</h2><p class="sub" style="margin:0 0 8px">次の段階で、記録と検査値をもとにしたAI相談をつなぎます。イメージはこちらです。</p><div class="q">最近、水をよく飲みます。受診した方がいいですか?</div><div class="q" style="background:var(--bg)">飲水量が増えた状態が数日続いています。腎臓病の猫では大切な変化なので、早めに受診し、これまでの記録を獣医師に見せてください。(診断や薬の指示はしません)</div></div>'}
+var CONDS=['甲状腺機能亢進症','糖尿病','高血圧','心臓病','関節症','歯科疾患','膵炎・腸疾患','尿路結石・膀胱炎','その他'];
+var selC=[];
+var FREQ=['1日1回','1日2回','1日3回','隔日','週2〜3回','週1回','必要時のみ'];
+var STAGES=['ステージ1','ステージ2','ステージ3','ステージ4'];
+var DRUGS=[['腎臓病','ベラプロスト(ラプロス)','1','猫の慢性腎臓病用・ステージ2〜3'],['腎臓病','テルミサルタン(セミントラ)','1','猫の尿蛋白・高血圧用'],['腎臓病','経口吸着炭製剤','0','尿毒症物質の吸着'],['腎臓病','リン吸着剤','0',''],['腎臓病','造血ホルモン製剤','0','腎性貧血'],['甲状腺機能亢進症','チアマゾール(メルカゾール)','1','ヒト用・国内発売'],['糖尿病','インスリン製剤','0','種類は担当医に確認'],['高血圧','アムロジピン','0',''],['心臓病','クロピドグレル','0','血栓予防'],['消化器症状','制吐薬','0','マロピタントなど'],['消化器症状','食欲増進薬','0','ミルタザピンなど'],['関節・疼痛','鎮痛薬','0','担当医の指示で']];
+var SUPPS=[['腎臓','腎臓サポート系サプリメント'],['腎臓','オメガ3脂肪酸(魚油)'],['腎臓','カリウム補給'],['消化器','乳酸菌・プロバイオティクス'],['全身','ビタミンB群'],['全身','抗酸化サポート'],['関節','関節サポート(グルコサミンなど)'],['口腔','口腔ケア'],['食欲','嗜好性アップ・食欲サポート'],['その他','その他のサプリメント']];
+function condsOf(c){return['慢性腎臓病'].concat(c.comorb||(c.conds||[]).filter(function(x){return x!=='慢性腎臓病'}))}
+function togCC(n){var c=cat(),a=(c.comorb||condsOf(c).slice(1)).slice(),i=a.indexOf(n);if(i<0)a.push(n);else a.splice(i,1);c.comorb=a;save();render()}
+function allMeds(c){return(c.meds||[]).concat(c.drugs||[],c.supps||[])}
+function planTxt(c){var p=c.plan||{},o=[];if(p.stage&&p.stage!=='未確認')o.push('IRIS '+p.stage);if(p.fluid&&p.fluid!=='なし')o.push('皮下輸液: '+p.fluid+(p.ffreq?' '+p.ffreq:''));if(p.diet)o.push('食事: '+p.diet);if(p.next)o.push('次回検査: '+p.next);return o.length?' / '+o.join(' / '):''}
+function opt(list,cur,ph){return'<option value="">'+ph+'</option>'+list.map(function(x){return'<option'+(String(x)===String(cur)?' selected':'')+'>'+esc(x)+'</option>'}).join('')}
+function selF(f,list,cur){return'<select onchange="setF(\''+f+'\',this.value)">'+opt(list,cur,'選択')+'</select>'}
+function selP(k,list,cur,ph){return'<select onchange="setP(\''+k+'\',this.value)">'+opt(list,cur,ph||'選択')+'</select>'}
+function groupOpts(list,fn){var g='',o='<option value="">選んでください</option>';list.forEach(function(d){if(d[0]!==g){if(g)o+='</optgroup>';o+='<optgroup label="'+d[0]+'">';g=d[0]}o+=fn(d)});return o+'</optgroup>'}
+function addItem(k,sid,fid){var c=cat(),s=document.getElementById(sid).value,f=document.getElementById(fid).value;if(!s){alert('選んでください');return}c[k]=c[k]||[];c[k].push(s+(f?' / '+f:''));save();render()}
+function delItem(k,i){cat()[k].splice(i,1);save();render()}
+function itemCard(c,k,title,opts,sid,fid){var l=c[k]||[];return'<div class="card"><h2>'+title+'</h2>'+(l.length?l.map(function(m,i){return'<div class="chk"><span style="flex:1">'+esc(m)+'</span><button class="btn" style="flex:none;padding:4px 10px" onclick="delItem(\''+k+'\','+i+')">削除</button></div>'}).join(''):'<p class="sub">まだ登録がありません。複数登録できます。</p>')+'<label>追加する</label><select id="'+sid+'">'+opts+'</select><select id="'+fid+'">'+opt(FREQ,'','頻度を選ぶ')+'</select><button class="btn p big" onclick="addItem(\''+k+'\',\''+sid+'\',\''+fid+'\')">追加する</button></div>'}
+function plan(c){var p=c.plan||{},dopt=groupOpts(DRUGS,function(d){return'<option value="'+esc(d[1])+'">'+(d[2]==='1'?'[確認済] ':'[要確認] ')+esc(d[1])+(d[3]?'('+esc(d[3])+')':'')+'</option>'}),sopt=groupOpts(SUPPS,function(d){return'<option>'+esc(d[1])+'</option>'});
+return'<div class="card"><h2>腎臓の状態</h2>'+kidney(c)+'<label>病院でステージを言われた場合だけ選んでください</label>'+selP('stage',STAGES,p.stage,'言われていない・わからない')+'<h2 style="margin-top:6px">併発している病気</h2><p class="sub" style="margin:0 0 8px">あれば選んでください(複数可)。</p>'+chips(condsOf(c).slice(1),'togCC')+'</div>'+
+itemCard(c,'drugs','薬剤',dopt,'ds','df')+itemCard(c,'supps','サプリメント',sopt,'ss','sf')+
+'<p class="sub" style="margin:0 0 12px">[確認済]は国内での販売を確認できたもの、[要確認]は一般的に使われる成分で、国内の販売名や承認状況の確認が必要なものです。このアプリは投薬を指示しません。</p>'+
+'<div class="card"><h2>治療計画</h2><label>皮下輸液の量</label>'+selP('fluid',['なし','25mL','50mL','75mL','100mL','150mL','200mL'],p.fluid,'量を選ぶ')+'<label>皮下輸液の頻度</label>'+selP('ffreq',['毎日','隔日','週2〜3回','週1回'],p.ffreq,'頻度を選ぶ')+'<label>食事</label>'+selP('diet',['腎臓サポート(ドライ)','腎臓サポート(ウェット)','腎臓サポート(ドライ+ウェット)','その他の療法食','一般食'],p.diet,'食事を選ぶ')+'<label>次回の検査予定</label><input type="date" value="'+esc(p.next)+'" onchange="setP(\'next\',this.value)"></div>'}
+function more(t){var n=[0,1,2,3,4,5];return'<label>便</label>'+seg('stool',[['ok','普通'],['soft','軟便・下痢'],['hard','硬い・出ない']],t.stool)+'<label>嘔吐(回)</label>'+selF('vomit',n,t.vomit)+'<label>活動量</label>'+seg('act',[['low','低下'],['ok','普通'],['high','元気']],t.act)+'<label>皮下輸液(mL)</label>'+selF('fluid',[0,25,50,75,100,150,200],t.fluid)+'<label>メモ</label><textarea rows="3" onchange="setF(\'note\',this.value)">'+esc(t.note)+'</textarea><label>写真・動画(最近の12件を表示)</label><input type="file" accept="image/*,video/*" multiple onchange="addMedia(this.files)"><div class="th" id="th"></div>'}
+function onboard(){var first=!S.cats.length,ages=[];for(var i=3;i<=25;i++)ages.push(i);
+return'<h1>'+(first?'ねこ手帳へようこそ':'猫を追加')+'</h1>'+(first?'<div class="card"><p style="margin:0 0 8px">毎日の記録は、10秒で終わるようにしています。</p><ol class="steps"><li>普段どおりなら「いつも通り」を1回押すだけ</li><li>変化があった日だけ、食欲や飲水量を選ぶ</li><li>病院に行く前に、記録を1枚にまとめて見せる</li></ol></div>':'')+
+'<div class="card"><label>名前</label><input id="n" placeholder="例: モモ"><label>年齢</label><select id="a">'+opt(ages,'','年齢を選ぶ')+'</select><label>病院で腎臓病の「ステージ」を言われた方だけ選んでください</label><select id="st">'+opt(STAGES,'','言われていない・わからない')+'</select><label>併発している病気(あれば・複数可)</label><div id="cd">'+condChips()+'</div><p class="sub">薬とサプリメントは、登録後の「治療」タブで選べます。</p><button class="btn p big" onclick="addCat()">登録して始める</button>'+(first?'':'<button class="btn" style="width:100%;margin-top:8px" onclick="S.adding=false;render()">戻る</button>')+'</div>'}
+function addCat(){var n=document.getElementById('n').value.trim();if(!n){alert('猫の名前を入力してください');return}var id='c'+Date.now(),st=document.getElementById('st').value;S.cats.push({id:id,name:n,age:document.getElementById('a').value,comorb:selC.slice(),drugs:[],supps:[],meds:[],plan:st?{stage:st}:{}});S.cur=id;S.adding=false;S.tab='home';selC=[];save();render()}
+// 情報タブの中身は news.json で管理する(読めないときは下の内容を表示)
+var NEWS={updated:'2026-11-09',note:'猫の飼い主向けのセミナー情報は、今回は見つかりませんでした。',items:[
+{t:'猫の慢性腎臓病の新薬を、AIM医学研究所が農林水産省に承認申請',k:'ニュース',u:'https://news.livedoor.com/article/detail/31108406/',s:'ライブドアニュース'},
+{t:'日東紡が猫の尿検査アプリ「ネコプロ」を開始(動物病院向け)',k:'ニュース',u:'https://news.livedoor.com/article/detail/31481348/',s:'ライブドアニュース'},
+{t:'猫の慢性腎臓病の栄養管理(獣医療従事者向けの資料)',k:'資料',u:'https://www.purinainstitute.com/sites/default/files/2026-06/PI_Monograph_CKDinCats.pdf',s:'ピュリナ インスティチュート'}]};
+try{fetch('news.json',{cache:'no-cache'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(j&&j.items){NEWS=j;if(S.tab==='news')render()}}).catch(function(){})}catch(e){}
+function jd(s){var p=String(s||'').split('-');return p.length===3?(+p[0])+'年'+(+p[1])+'月'+(+p[2])+'日':esc(s)}
+function news(){return'<div class="card"><h2>腎臓病の情報</h2><p class="sub" style="margin:0 0 8px">ニュース、研究、セミナーの情報をここに載せます。今は自動では更新されません(最終確認: '+jd(NEWS.updated)+')。</p>'+NEWS.items.map(function(f){return'<div class="chk" style="display:block"><div class="sub">'+esc(f.k)+' / '+esc(f.s)+'</div><a href="'+esc(f.u)+'" target="_blank" rel="noopener" style="color:var(--ac)">'+esc(f.t)+'</a></div>'}).join('')+(NEWS.note?'<p class="sub" style="margin:10px 0 0">'+esc(NEWS.note)+'</p>':'')+'</div>'}
+function signs(){var r=recent(14),n=function(f){return r.filter(function(x){return x[1]&&f(x[1])}).length},o=[];
+if(n(function(e){return e.water==='high'})>=3)o.push('水をよく飲む');
+if(n(function(e){return +e.urine>=6})>=3)o.push('おしっこの回数が多い');
+if(n(function(e){return e.app==='low'})>=3)o.push('食欲が落ちている');
+if(r.reduce(function(s,x){return s+(x[1]?+x[1].vomit||0:0)},0)>=3)o.push('吐くことが多い');
+if(n(function(e){return e.act==='low'})>=3)o.push('元気がない');
+var w=weights();if(w.length>=2){var mx=Math.max.apply(null,w.slice(0,-1).map(function(p){return p[1]}));if(w[w.length-1][1]<=mx*0.95)o.push('体重が減っている')}
+return o}
+function kidney(c){var p=c.plan||{},h,cr=lastCre();
+if(p.stage)h='病院で言われたステージ: <b>'+esc(p.stage)+'</b>';
+else if(cr)h='検査の値から、<b>腎臓病ステージ'+stage(cr)+'くらい</b>の可能性があります。';
+else{var sg=signs();h=sg.length>=2?'最近の記録から、<b>腎臓が弱っている疑い</b>があります。('+esc(sg.join('、'))+')':sg.length?'気になる変化があります。('+esc(sg.join('、'))+')':'今のところ、大きな変化は見当たりません。'}
+return'<div class="q" style="margin:0 0 12px">'+h+'<div class="sub" style="margin-top:6px">診断ではなく目安です。病院で検査を受けて、ステージが確定したら下で教えてください。</div></div>'}
+function render(){document.getElementById('app').innerHTML=view();if(S.cats.length&&S.tab==='home'&&!S.adding)loadMedia()}
+render();
+</script>
 </body>
 </html>
