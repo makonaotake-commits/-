@@ -1,6 +1,6 @@
 # 03 ユーザーストーリー
 
-- 作成：ブリショー ／ 版：第2版（2026-11-09。ロシアンのレビュー `docs/compliance/review_2026-11-09_requirements.md` を反映） ／ レビュー状態：`draft`
+- 作成：ブリショー ／ 版：第2版（2026-11-09。ロシアンのレビュー `docs/compliance/review_2026-11-09_requirements.md` を反映） ／ レビュー状態：`compliance_reviewed`（第2版。ロシアン 2026-11-09）
 - 形式：「〜として、〜したい。なぜなら〜」＋ 受け入れ条件（Given / When / Then）
 - ペルソナ：A＝診断直後の飼い主さん、B＝補液中の多頭飼い家族、C＝高齢の飼い主さん（→ `02_personas.md`）
 - 関連する機能 ID は `04_functional_requirements.md` を参照。⚠️ はロシアンの確認が必要なもの。
