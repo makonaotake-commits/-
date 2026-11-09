@@ -7,19 +7,19 @@
 ## 体制（サブエージェント）
 メインの Claude は **PM 兼オーケストレーター**。タスクを各担当エージェントに振り分け、成果物を `docs/` に集約する。
 
-| エージェント | 役割 | 出力先 |
+| エージェント（猫種） | 役割 | 出力先 |
 |---|---|---|
-| `requirements-analyst` | 要件定義（ペルソナ・ユーザーストーリー・機能/非機能要件・MVP 範囲） | `docs/requirements/` |
-| `marketing-strategist` | 市場分析・ポジショニング・獲得施策・KPI | `docs/marketing/` |
-| `sns-trend-researcher` | X / Instagram / TikTok / Google トレンドの調査、投稿テーマ案 | `docs/sns/trends/` |
-| `instagram-manager` | Instagram の投稿企画・キャプション・カルーセル構成・リール台本・投稿カレンダー | `docs/sns/instagram/` |
-| `medical-compliance-reviewer` | 医療・法令チェック（薬機法・医療広告GL・景表法・個人情報保護法・SaMD 該当性） | `docs/compliance/` |
+| `british-shorthair`（ブリティッシュショートヘア） | 要件定義（ペルソナ・ユーザーストーリー・機能/非機能要件・MVP 範囲） | `docs/requirements/` |
+| `bengal`（ベンガル） | 市場分析・ポジショニング・獲得施策・KPI | `docs/marketing/` |
+| `abyssinian`（アビシニアン） | X / Instagram / TikTok / Google トレンドの調査、投稿テーマ案 | `docs/sns/trends/` |
+| `scottish-fold`（スコティッシュフォールド） | Instagram の投稿企画・キャプション・カルーセル構成・リール台本・投稿カレンダー | `docs/sns/instagram/` |
+| `russian-blue`（ロシアンブルー） | 医療・法令チェック（薬機法・医療広告GL・景表法・個人情報保護法・SaMD 該当性） | `docs/compliance/` |
 
 ## ワークフロー
-1. **要件定義** → `requirements-analyst`
-2. **戦略** → `marketing-strategist`（要件定義書を前提に）
-3. **発信** → `sns-trend-researcher` がネタを出し → `instagram-manager` が投稿化
-4. **公開前レビュー（必須）** → 患者向けの文言・医療情報・広告表現は **すべて** `medical-compliance-reviewer` を通す
+1. **要件定義** → `british-shorthair`
+2. **戦略** → `bengal`（要件定義書を前提に）
+3. **発信** → `abyssinian` がネタを出し → `scottish-fold` が投稿化
+4. **公開前レビュー（必須）** → 患者向けの文言・医療情報・広告表現は **すべて** `russian-blue` を通す
 5. 成果物は `docs/` 配下に Markdown で保存し、`docs/README.md` の索引を更新する
 
 ## 共通ルール（全エージェント）
