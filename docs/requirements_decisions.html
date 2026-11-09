@@ -1,0 +1,195 @@
+<title>要件定義の確認シート</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap">
+<style>
+/* Layout: 1カラムの質問カード列＋下部固定の送信バー。カードはタップで選ぶ大きな選択肢 */
+:root{
+  --bg:#f5f6f2; --surface:#ffffff; --ink:#1f2420; --muted:#5d665f; --line:#d9ded6;
+  --accent:#2f6b57; --accent-soft:#e3efe9; --rec:#8a5a12; --rec-soft:#f6ecd9;
+  --display:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Noto Sans JP",sans-serif;
+  --body:"Noto Sans JP","Hiragino Sans","Yu Gothic",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141714; --surface:#1d211e; --ink:#e9ece7; --muted:#a3aca5; --line:#323833; --accent:#7cc4a6; --accent-soft:#1f3a30; --rec:#e3b66a; --rec-soft:#3a2f1c; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141714; --surface:#1d211e; --ink:#e9ece7; --muted:#a3aca5; --line:#323833;
+  --accent:#7cc4a6; --accent-soft:#1f3a30; --rec:#e3b66a; --rec-soft:#3a2f1c; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.7;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 120px}
+.wrap{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+header h1{font-family:var(--display);font-size:1.6rem;line-height:1.35;margin:0 0 6px;text-wrap:balance}
+header p{margin:0;color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;font-size:.8rem;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:4px}
+.q{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:12px}
+.q.done{border-color:var(--accent)}
+.qhead{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.qnum{font-size:.75rem;letter-spacing:.06em;color:var(--muted);font-variant-numeric:tabular-nums}
+.q h2{font-family:var(--display);font-size:1.12rem;margin:2px 0 0;line-height:1.45;text-wrap:balance}
+.why{margin:0;font-size:.86rem;color:var(--muted)}
+.cats{display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-end;flex-shrink:0;max-width:45%}
+.cat{font-size:.72rem;padding:2px 8px;border-radius:999px;background:var(--accent-soft);color:var(--accent);white-space:nowrap}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px}
+.opt{position:relative;display:flex;flex-direction:column;gap:2px;text-align:left;font:inherit;color:inherit;
+  background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px 10px 38px;cursor:pointer;min-width:0}
+.opt:hover{border-color:var(--accent)}
+.opt:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.opt::before{content:"";position:absolute;left:12px;top:14px;width:16px;height:16px;border:2px solid var(--muted);border-radius:50%}
+.opt.multi::before{border-radius:4px}
+.opt[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.opt[aria-pressed="true"]::before{border-color:var(--accent);background:var(--accent);box-shadow:inset 0 0 0 3px var(--accent-soft)}
+.opt b{font-weight:700;font-size:.95rem}
+.opt small{color:var(--muted);font-size:.8rem;line-height:1.5}
+.rec{display:inline-block;margin-left:6px;font-size:.68rem;font-weight:700;padding:1px 6px;border-radius:4px;background:var(--rec-soft);color:var(--rec);vertical-align:1px}
+textarea{width:100%;font:inherit;color:inherit;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-height:44px;resize:vertical}
+textarea:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);
+  padding:12px max(16px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.bar .in{max-width:720px;margin:0 auto;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.prog{flex:1;min-width:160px}
+.track{height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.fill{height:100%;background:var(--accent);width:0;transition:width .25s}
+@media (prefers-reduced-motion:reduce){.fill{transition:none}}
+.prog p{margin:4px 0 0;font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums}
+button.send{font:inherit;font-weight:700;background:var(--accent);color:var(--surface);border:0;border-radius:999px;padding:10px 20px;cursor:pointer}
+button.send:disabled{opacity:.5;cursor:default}
+button.send:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.status{font-size:.82rem;color:var(--muted);width:100%}
+@media (max-width:480px){.qhead{flex-direction:column}.cats{justify-content:flex-start;max-width:none}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>要件定義の確認シート 🐈‍⬛</h1>
+    <p>ブリショーが要件定義書の初版（docs/requirements/01〜07）を作りました。その未決事項のうち、リスク判断シートと重ならない12問です。⚠️ は獣医師法・医療機器の観点で注意が必要な項目です。迷ったら<span class="rec">おすすめ</span>を選んでおけば大丈夫です。</p>
+    <div class="legend"><span>各質問の右上：その答えを使う猫</span></div>
+  </header>
+  <main id="qs" class="wrap" style="gap:16px"></main>
+</div>
+
+<div class="bar"><div class="in">
+  <div class="prog"><div class="track"><div class="fill" id="fill"></div></div><p id="count">0 / 12 回答済み</p></div>
+  <button class="send" id="send" type="button">ボンベイに送る</button>
+  <div class="status" id="status" role="status"></div>
+</div></div>
+
+<script>
+const Q = [
+ {id:"q01_scope",title:"第1弾（3か月以内）の範囲は、ブリショー案でよいですか？",why:"ボンベイ案（体調記録・皮下輸液・投薬・獣医師に見せるレポート・多頭飼い）に、見送りモード・記録の振り返り・データの書き出し・初回の同意・文字サイズ設定を Must で追加した案です。削る順番は「通院日メモ → 体重グラフ → CSV書き出し」。見送りモードと同意は削りません。",cats:["ブリショー"],opts:[
+  ["burisho","ブリショー案でOK","見送りモードなどを含めた、より安心して使える形",1],
+  ["bombay","ボンベイ案のまま","追加分は第2弾に回し、3か月を確実にする"],
+  ["smaller","さらに絞る","補足欄に、残したい機能を書いてください"]]},
+ {id:"q02_ads",title:"第1弾から広告を出しますか？",why:"収益の開始時期と、ロシアンの確認範囲が変わります。",cats:["ブリショー","ベンガル","ロシアン"],opts:[
+  ["none","第1弾は広告なし","利用者を増やし、表示ルールを固めてから第2弾で始める",1],
+  ["info_tab","第1弾から「おしらせ」タブだけに出す","記録画面とは完全に分ける"]]},
+ {id:"q04_storage",title:"記録データは、どこに保存しますか？",why:"機種変更のときの引き継ぎや、第3弾の家族共有への移りやすさ、開発量が変わります。端末内だけの場合、端末の故障で記録が消えるリスクがあります（書き出しとバックアップの案内で補う）。",cats:["ブリショー"],opts:[
+  ["local","端末内に保存＋書き出し（アカウント不要）","はじめやすく、個人情報も少なくてすむ",1],
+  ["cloud","最初からクラウドに保存（アカウントが必要）","機種変更や家族共有に強いが、開発量と管理が増える"]]},
+ {id:"q06_daily",title:"毎日の体調記録の項目と言葉は、この案でよいですか？",why:"食欲・飲水・元気さは「いつもより少ない／いつもくらい／いつもより多い」の3段階、尿・嘔吐・便は回数、体重はkg（小数第2位）。良い・悪いなどの評価語は使いません。獣医師として直したい点があれば補足欄へ。",cats:["ブリショー"],opts:[
+  ["ok","この案でOK","細かな言葉は補足欄に書いて直す",1],
+  ["chat","項目を増やす・減らす","補足欄に、足したい／外したい項目を書いてください"]]},
+ {id:"q07_stage",title:"猫の登録時に「病名・ステージ」を入れる欄を作りますか？",why:"ステージを前提にアプリが動くと誤解されないかが論点です（⚠️）。",cats:["ブリショー","ロシアン"],opts:[
+  ["no","作らない（メモ欄に自由に書ける）","誤解の余地をなくす",1],
+  ["optional","任意の入力欄を作る","表示するだけで、アプリの動作には使わない"]]},
+ {id:"q08_fluid",title:"補液量の入力ミスを防ぐ上限チェックをしますか？",why:"「100」のつもりで「1000」と入れるようなミスを防ぐためです。安全性と、医学的な評価に見えるリスクのバランスです（⚠️）。",cats:["ブリショー","ロシアン"],opts:[
+  ["vet_limit","する。上限値は獣医師（あなた）が決める","確認の文言はロシアンがチェックする",1],
+  ["none","しない","入力は飼い主さんに任せる"]]},
+ {id:"q09_list",title:"薬や療法食の製品名を、選択肢として用意しますか？",why:"選択肢があると入力は楽になりますが、「おすすめ」と誤解されたり、広告主の製品が目立ったりするリスクがあります（⚠️）。",cats:["ブリショー","ロシアン","ベンガル"],opts:[
+  ["free","第1弾・第2弾とも自由入力のみ","中立性を守り、保守の手間もない",1],
+  ["list","候補リストを作る","広告主の製品を優先しない並び方にする"]]},
+ {id:"q10_report",title:"獣医師に見せるレポートに、どんな集計を入れますか？",why:"平均や増減を入れると、アプリが解釈・判定しているように受け取られるおそれがあります（⚠️）。",cats:["ブリショー","ロシアン"],opts:[
+  ["facts","記録日数・回数の合計など、事実だけ","解釈は診察で獣医師が行う",1],
+  ["stats","平均や増減も入れる","表現はロシアンと詰める"]]},
+ {id:"q11_farewell",title:"見送りモードの言葉と「思い出」画面は、どう決めますか？",why:"ペットロスへの配慮として、とても大事にしたい部分です。",cats:["ブリショー","ロシアン","スコティ"],opts:[
+  ["vet_russian","あなた（獣医師）とロシアンで文言を決める","お悔やみの言葉は控えめに、静かな画面にする",1],
+  ["phase2","見送り機能は第2弾に回す","ブリショーは非推奨（第1弾の利用者にも必要になりうるため）"]]},
+ {id:"q12_kpi",title:"KPI（成功の目安）の目標値は、どう決めますか？",why:"継続して記録している人の割合、レポートを使った人の割合など。",cats:["ベンガル"],opts:[
+  ["bengal","ベンガルが市場データをもとに案を出す","案を見てから決める",1],
+  ["me","自分で決める","補足欄に目標を書いてください"]]},
+ {id:"q13_dev",title:"開発はどんな体制で進めますか？",why:"3か月で iPhone と Android の両方に出すには、体制の決定が急ぎです。今のリリース計画は仮のままです。",cats:["ブリショー"],opts:[
+  ["estimate","まず見積もりを取る","外注先などから見積もりを取り、体制を決める",1],
+  ["inhouse","自分たちで作る","開発できる人がいる"],
+  ["outsource","外注で作る","依頼先の心当たりがある"],
+  ["tbd","まだ未定","相談しながら決めたい"]]},
+ {id:"q14_couple",title:"家族共有がない第1弾で、夫婦などで記録する家庭はどうしますか？",why:"家族共有は第3弾の予定です。",cats:["ブリショー"],opts:[
+  ["one_device","1台のスマホを共有して使う形で案内する","第1弾はシンプルに保つ",1],
+  ["simple_share","簡易的な共有を入れる","書き出したデータを受け渡す形で、第1弾に追加"]]}
+];
+const state = {answers:{}, notes:{}, free:""};
+const $ = s=>document.querySelector(s);
+function render(){
+  const root=$("#qs"); root.innerHTML="";
+  Q.forEach((q,i)=>{
+    const sec=document.createElement("section"); sec.className="q"; sec.id="q-"+q.id;
+    const head=document.createElement("div"); head.className="qhead";
+    const left=document.createElement("div");
+    left.innerHTML=`<div class="qnum">Q${i+1} / ${Q.length}${q.multi?"・複数選択":""}</div>`;
+    const h=document.createElement("h2"); h.textContent=q.title; left.appendChild(h);
+    const cats=document.createElement("div"); cats.className="cats";
+    q.cats.forEach(c=>{const s=document.createElement("span");s.className="cat";s.textContent=c;cats.appendChild(s)});
+    head.append(left,cats); sec.appendChild(head);
+    const why=document.createElement("p"); why.className="why"; why.textContent=q.why; sec.appendChild(why);
+    const opts=document.createElement("div"); opts.className="opts"; opts.setAttribute("role","group"); opts.setAttribute("aria-label",q.title);
+    q.opts.forEach(([v,label,desc,rec])=>{
+      const b=document.createElement("button"); b.type="button"; b.className="opt"+(q.multi?" multi":""); b.dataset.q=q.id; b.dataset.v=v;
+      const bl=document.createElement("b"); bl.textContent=label;
+      if(rec){const r=document.createElement("span");r.className="rec";r.textContent="おすすめ";bl.appendChild(r)}
+      const sm=document.createElement("small"); sm.textContent=desc;
+      b.append(bl,sm); b.addEventListener("click",()=>pick(q,v)); opts.appendChild(b);
+    });
+    sec.appendChild(opts);
+    const ta=document.createElement("textarea"); ta.id="note-"+q.id; ta.placeholder="補足があれば（任意）"; ta.rows=1;
+    ta.value=state.notes[q.id]||""; ta.addEventListener("input",()=>{state.notes[q.id]=ta.value;dirty()});
+    sec.appendChild(ta); root.appendChild(sec);
+  });
+  const sec=document.createElement("section"); sec.className="q";
+  sec.innerHTML=`<div class="qnum">自由記入（任意）</div><h2>ほかにブリショーへ伝えたいこと</h2><p class="why">例：特に急いでほしいこと、参考にしたいアプリやアカウント、避けたいこと など。</p>`;
+  const ta=document.createElement("textarea"); ta.id="free"; ta.rows=3; ta.value=state.free; ta.addEventListener("input",()=>{state.free=ta.value;dirty()});
+  sec.appendChild(ta); root.appendChild(sec);
+  paint();
+}
+function pick(q,v){
+  if(q.multi){const cur=new Set(state.answers[q.id]||[]); cur.has(v)?cur.delete(v):cur.add(v); state.answers[q.id]=[...cur];}
+  else state.answers[q.id]=v;
+  paint(); dirty();
+}
+function answered(q){const a=state.answers[q.id];return q.multi?(a&&a.length>0):!!a}
+function paint(){
+  document.querySelectorAll(".opt").forEach(b=>{
+    const a=state.answers[b.dataset.q]; const on=Array.isArray(a)?a.includes(b.dataset.v):a===b.dataset.v;
+    b.setAttribute("aria-pressed",on?"true":"false");
+  });
+  let n=0; Q.forEach(q=>{const ok=answered(q); if(ok)n++; const s=document.getElementById("q-"+q.id); if(s)s.classList.toggle("done",ok)});
+  $("#fill").style.width=(n/Q.length*100)+"%"; $("#count").textContent=`${n} / ${Q.length} 回答済み`;
+}
+function dirty(){$("#status").textContent="未送信の変更があります";}
+function labelOf(q,v){const o=q.opts.find(o=>o[0]===v);return o?o[1]:v}
+function summary(){
+  return Q.map((q,i)=>{const a=state.answers[q.id];const t=!a||(Array.isArray(a)&&!a.length)?"（未回答）":Array.isArray(a)?a.map(v=>labelOf(q,v)).join("、"):labelOf(q,a);
+    const n=state.notes[q.id]?`／補足：${state.notes[q.id]}`:""; return `Q${i+1} ${q.title}\n→ ${t}${n}`}).join("\n\n")+(state.free?`\n\n自由記入：${state.free}`:"");
+}
+let db=null, ref=null;
+render();
+(async()=>{
+  try{ db = await window.claude?.use?.("db"); }catch(e){ db=null; }
+  if(!db){ $("#send").textContent="回答をコピー"; $("#status").textContent="保存機能が使えない表示です。「回答をコピー」でチャットに貼り付けてください。"; return; }
+  ref = db.doc("answers/requirements");
+  const t=setTimeout(()=>{$("#status").textContent="前回の回答を読み込めませんでした。新しく回答できます。"},10000);
+  try{const s=await ref.get(); clearTimeout(t);
+    if(s.exists){const d=s.data(); Object.assign(state.answers,d.answers||{}); Object.assign(state.notes,d.notes||{}); state.free=d.free||""; render();
+      $("#status").textContent="前回送った回答を読み込みました。変更して送り直せます。";}
+  }catch(e){clearTimeout(t);}
+})();
+$("#send").addEventListener("click",async()=>{
+  const btn=$("#send");
+  if(!ref){ try{await navigator.clipboard.writeText(summary()); $("#status").textContent="コピーしました。チャットに貼り付けてください。";}
+    catch(e){$("#status").textContent="コピーできませんでした。お手数ですが選んだ内容をチャットでお知らせください。";} return; }
+  btn.disabled=true; $("#status").textContent="送信中…";
+  try{ await ref.set({answers:state.answers,notes:state.notes,free:state.free,summary:summary(),submittedAt:new Date().toISOString()});
+    $("#status").textContent="ボンベイに届きました。チャットで「送ったよ」と伝えてください。";
+  }catch(e){ $("#status").textContent="保存できませんでした（"+(e&&e.code||"エラー")+"）。もう一度押すか、チャットで答えを教えてください。"; }
+  btn.disabled=false;
+});
+</script>
