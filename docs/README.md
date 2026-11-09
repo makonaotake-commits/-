@@ -16,7 +16,7 @@
 | `marketing/` | 市場分析・ポジショニング・チャネル・KPI・ローンチ計画 | ベンガル |
 | `sns/trends/` | 週次トレンドレポート | アビシニアン |
 | `sns/instagram/` | プロフィール・投稿カレンダー・投稿案 | スコティ |
-| `compliance/` | 獣医療・法令レビュー記録（`initial_risks_2026-11-09.md`＝アプリ全体の初期リスク整理、`review_2026-11-09_requirements.md`＝要件定義書 初版のレビュー、`review_2026-11-09_requirements_v2.md`＝第2版の再レビュー、`review_2026-11-09_marketing.md`＝マーケ戦略 初版のレビュー、`review_2026-11-09_marketing_v2.md`＝修正版の再レビュー） | ロシアン |
+| `compliance/` | 獣医療・法令レビュー記録（`initial_risks_2026-11-09.md`＝アプリ全体の初期リスク整理、`review_2026-11-09_requirements.md`＝要件定義書 初版のレビュー、`review_2026-11-09_requirements_v2.md`＝第2版の再レビュー、`review_2026-11-09_requirements_v3.md`＝第3版の差分レビュー、`review_2026-11-09_marketing.md`＝マーケ戦略 初版のレビュー、`review_2026-11-09_marketing_v2.md`＝修正版の再レビュー） | ロシアン |
 
 ## 使い方
 - `/kickoff` … 初期ドキュメント一式を作成
