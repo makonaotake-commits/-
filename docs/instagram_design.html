@@ -1,0 +1,189 @@
+<title>Instagram デザイン選択</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap">
+<style>
+/* Layout: 1カラムの質問カード列＋下部固定の送信バー。カードはタップで選ぶ大きな選択肢 */
+:root{
+  --bg:#f5f6f2; --surface:#ffffff; --ink:#1f2420; --muted:#5d665f; --line:#d9ded6;
+  --accent:#2f6b57; --accent-soft:#e3efe9; --rec:#8a5a12; --rec-soft:#f6ecd9;
+  --display:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Noto Sans JP",sans-serif;
+  --body:"Noto Sans JP","Hiragino Sans","Yu Gothic",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141714; --surface:#1d211e; --ink:#e9ece7; --muted:#a3aca5; --line:#323833; --accent:#7cc4a6; --accent-soft:#1f3a30; --rec:#e3b66a; --rec-soft:#3a2f1c; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141714; --surface:#1d211e; --ink:#e9ece7; --muted:#a3aca5; --line:#323833;
+  --accent:#7cc4a6; --accent-soft:#1f3a30; --rec:#e3b66a; --rec-soft:#3a2f1c; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.7;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 120px}
+.wrap{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+header h1{font-family:var(--display);font-size:1.6rem;line-height:1.35;margin:0 0 6px;text-wrap:balance}
+header p{margin:0;color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;font-size:.8rem;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:4px}
+.q{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:12px}
+.q.done{border-color:var(--accent)}
+.qhead{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.qnum{font-size:.75rem;letter-spacing:.06em;color:var(--muted);font-variant-numeric:tabular-nums}
+.q h2{font-family:var(--display);font-size:1.12rem;margin:2px 0 0;line-height:1.45;text-wrap:balance}
+.why{margin:0;font-size:.86rem;color:var(--muted)}
+.cats{display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-end;flex-shrink:0;max-width:45%}
+.cat{font-size:.72rem;padding:2px 8px;border-radius:999px;background:var(--accent-soft);color:var(--accent);white-space:nowrap}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px}
+.opt{position:relative;display:flex;flex-direction:column;gap:2px;text-align:left;font:inherit;color:inherit;
+  background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px 10px 38px;cursor:pointer;min-width:0}
+.opt:hover{border-color:var(--accent)}
+.opt:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.opt::before{content:"";position:absolute;left:12px;top:14px;width:16px;height:16px;border:2px solid var(--muted);border-radius:50%}
+.opt.multi::before{border-radius:4px}
+.opt[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.opt[aria-pressed="true"]::before{border-color:var(--accent);background:var(--accent);box-shadow:inset 0 0 0 3px var(--accent-soft)}
+.opt b{font-weight:700;font-size:.95rem}
+.opt small{color:var(--muted);font-size:.8rem;line-height:1.5}
+.sw{display:flex;gap:4px;margin-top:6px}.sw i{width:26px;height:26px;border-radius:50%;border:1px solid var(--line);display:block}
+.pre{display:block;white-space:pre-wrap;margin-top:8px;padding:8px 10px;border-radius:8px;background:var(--surface);border:1px dashed var(--line);font-size:.8rem;line-height:1.6}
+.rec{display:inline-block;margin-left:6px;font-size:.68rem;font-weight:700;padding:1px 6px;border-radius:4px;background:var(--rec-soft);color:var(--rec);vertical-align:1px}
+textarea{width:100%;font:inherit;color:inherit;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-height:44px;resize:vertical}
+textarea:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);
+  padding:12px max(16px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.bar .in{max-width:720px;margin:0 auto;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.prog{flex:1;min-width:160px}
+.track{height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.fill{height:100%;background:var(--accent);width:0;transition:width .25s}
+@media (prefers-reduced-motion:reduce){.fill{transition:none}}
+.prog p{margin:4px 0 0;font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums}
+button.send{font:inherit;font-weight:700;background:var(--accent);color:var(--surface);border:0;border-radius:999px;padding:10px 20px;cursor:pointer}
+button.send:disabled{opacity:.5;cursor:default}
+button.send:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.status{font-size:.82rem;color:var(--muted);width:100%}
+@media (max-width:480px){.qhead{flex-direction:column}.cats{justify-content:flex-start;max-width:none}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Instagram デザイン選択 🐈‍⬛</h1>
+    <p>スコティが Instagram のプロフィール案とデザインの方向性を作りました（どちらも下書き。公開前にロシアンのレビューとあなたの確認を通します）。実際の文面や色を見ながら選んでください。迷ったら<span class="rec">おすすめ</span>を選んでおけば大丈夫です。</p>
+    <div class="legend"><span>各質問の右上：その答えを使う猫</span></div>
+  </header>
+  <main id="qs" class="wrap" style="gap:16px"></main>
+</div>
+
+<div class="bar"><div class="in">
+  <div class="prog"><div class="track"><div class="fill" id="fill"></div></div><p id="count">0 / 8 回答済み</p></div>
+  <button class="send" id="send" type="button">ボンベイに送る</button>
+  <div class="status" id="status" role="status"></div>
+</div></div>
+
+<script>
+const Q = [
+ {id:"bio",title:"プロフィール文は、どのパターンにしますか？",why:"150字以内の自己紹介文です。【アプリ名】は仮置きです。",cats:["スコティ"],opts:[
+  ["A","A 寄り添い型","診断直後の不安な人にも届く。アプリだと伝わりにくい",1,{pre:"腎臓病（CKD）の猫と暮らす飼い主さんへ🐾\n毎日のケアを、うちの子といっしょに、ゆっくり。\n・補液や投薬のコツ、検査値のやさしい図解\n・獣医師監修（運営者本人が獣医師です）\n※個別の診療相談はかかりつけの先生へ\n▼記録アプリ（準備中）"}],
+  ["B","B 記録アプリ型","何のアカウントか一目でわかる。少し事務的",0,{pre:"CKDの猫の体調・補液・投薬を記録するアプリ公式\n飲水量やおしっこ、体重の変化を\nかかりつけの先生に見せやすい形に。\n獣医師監修｜運営者本人が獣医師です\n診察の代わりにはなりません\n▼アプリ（準備中）"}],
+  ["C","C 獣医師の顔が見える型","信頼感が前に出る。監修者をどこまで見せるかを先に決める必要あり",0,{pre:"獣医師がつくる、腎臓病の猫と飼い主さんの記録アプリ\n「これで合ってるかな？」に、やさしく正確に。\n・図解でわかる猫のCKD\n・お別れのことも、そっとお話しします\n個別の診療相談はお受けできません\n▼アプリ（準備中）"}]]},
+ {id:"name",title:"表示名（名前欄）はどれにしますか？",why:"名前欄の言葉は Instagram 内の検索に使われると言われています（推測。公開前に確認）。",cats:["スコティ"],opts:[
+  ["a","【アプリ名】｜腎臓病の猫と暮らす","「腎臓病」「猫」で見つけてもらいやすい",1],
+  ["b","【アプリ名】｜猫のCKDケア記録","アプリであることが伝わる"],
+  ["c","【アプリ名】獣医師監修・猫の腎臓病","信頼感を先に出す"]]},
+ {id:"vet_face",title:"監修獣医師（あなた）を、どう見せますか？",why:"負担と信頼感のバランスで決めます。開示の文面はロシアンが確認します。",cats:["スコティ","ロシアン"],opts:[
+  ["face","実名＋顔（イラストの似顔絵も可）","いちばん信頼感が出るが、負担も大きい"],
+  ["name","実名だけ","信頼感と負担のバランスがよい",1],
+  ["title","「獣医師」とだけ書く","負担が少ない。信頼感はやや弱め"]]},
+ {id:"kokoro",title:"ペットロスの「こころ」ハイライトは、いつ置きますか？",why:"いちばん右の目立たない位置に、「お別れのお話を含みます」と添えて置く予定です。",cats:["スコティ"],opts:[
+  ["start","最初から置く","大切にしている姿勢を最初から示せる"],
+  ["later","投稿がたまってから置く","空のハイライトを置かずにすむ",1]]},
+ {id:"palette",title:"配色はどれにしますか？",why:"どの案も、ラインアートの線は焦げ茶や紺の1色にして、ゆとりのある余白を取ります。",cats:["スコティ"],opts:[
+  ["milktea","案1 ミルクティー","生成り・焦げ茶・セージグリーン・淡いピーチ。あたたかく落ち着いた印象",1,{swatch:["#FAF6F0","#4A4038","#8FB5A8","#E8B4A0","#D9C9B6"]}],
+  ["sky","案2 やわらかな空","青みのある白・紺・くすんだ水色・アプリコット。すっきり清潔な印象",0,{swatch:["#F7F8FA","#3E4552","#9BB7D4","#F2C48D","#C9D6CF"]}],
+  ["sun","案3 ひだまり","クリーム・焦げ茶・はちみつ色・若草色。明るくやさしい印象",0,{swatch:["#FFF9EE","#5A4A3A","#E6B980","#A7C4A0","#EFE3D0"]}]]},
+ {id:"mascot",title:"投稿に描く猫は、どうしますか？",why:"「うちの子に似てる」と感じてもらえるかと、覚えてもらいやすさのバランスです。",cats:["スコティ"],opts:[
+  ["one","看板猫を1匹決める","毎回同じ猫が案内する。覚えてもらいやすい"],
+  ["various","毎回いろんな猫を描く","いろんな猫の飼い主さんが自分ごとにしやすい"],
+  ["various_nav","いろんな猫＋小さな案内役アイコン","基本はいろんな猫、案内役の小さな猫アイコンだけ固定",1]]},
+ {id:"font",title:"フォントはこの組み合わせでよいですか？",why:"見出しは丸みのあるやさしい書体、本文と数字は読み間違えにくい書体です（どちらも Google Fonts の無料フォント。ライセンスは使用前に再確認）。",cats:["スコティ"],opts:[
+  ["zen_biz","Zen Maru Gothic ＋ BIZ UDPGothic","やさしさと読みやすさの両立。年配の飼い主さんにも読みやすい",1],
+  ["other","別の候補も見たい","スコティに2〜3案を追加で出してもらう"]]},
+ {id:"stop",title:"災害やつらいニュースのとき、予約投稿を止めるのは誰ですか？",why:"予約投稿は自動で公開されるので、止める担当を決めておきます。",cats:["スコティ"],opts:[
+  ["me","自分（獣医師・運営者）","判断が早く、責任の所在がはっきりする",1],
+  ["chat","ほかの人がいる","チャットで担当者を教えてください"]]}
+];
+const state = {answers:{}, notes:{}, free:""};
+const $ = s=>document.querySelector(s);
+function render(){
+  const root=$("#qs"); root.innerHTML="";
+  Q.forEach((q,i)=>{
+    const sec=document.createElement("section"); sec.className="q"; sec.id="q-"+q.id;
+    const head=document.createElement("div"); head.className="qhead";
+    const left=document.createElement("div");
+    left.innerHTML=`<div class="qnum">Q${i+1} / ${Q.length}${q.multi?"・複数選択":""}</div>`;
+    const h=document.createElement("h2"); h.textContent=q.title; left.appendChild(h);
+    const cats=document.createElement("div"); cats.className="cats";
+    q.cats.forEach(c=>{const s=document.createElement("span");s.className="cat";s.textContent=c;cats.appendChild(s)});
+    head.append(left,cats); sec.appendChild(head);
+    const why=document.createElement("p"); why.className="why"; why.textContent=q.why; sec.appendChild(why);
+    const opts=document.createElement("div"); opts.className="opts"; opts.setAttribute("role","group"); opts.setAttribute("aria-label",q.title);
+    q.opts.forEach(([v,label,desc,rec,extra])=>{
+      const b=document.createElement("button"); b.type="button"; b.className="opt"+(q.multi?" multi":""); b.dataset.q=q.id; b.dataset.v=v;
+      const bl=document.createElement("b"); bl.textContent=label;
+      if(rec){const r=document.createElement("span");r.className="rec";r.textContent="おすすめ";bl.appendChild(r)}
+      const sm=document.createElement("small"); sm.textContent=desc;
+      b.append(bl,sm);
+      if(extra&&extra.swatch){const w=document.createElement("span");w.className="sw";extra.swatch.forEach(c=>{const i=document.createElement("i");i.style.background=c;i.title=c;w.appendChild(i)});b.appendChild(w)}
+      if(extra&&extra.pre){const pr=document.createElement("span");pr.className="pre";pr.textContent=extra.pre;b.appendChild(pr)} b.addEventListener("click",()=>pick(q,v)); opts.appendChild(b);
+    });
+    sec.appendChild(opts);
+    const ta=document.createElement("textarea"); ta.id="note-"+q.id; ta.placeholder="補足があれば（任意）"; ta.rows=1;
+    ta.value=state.notes[q.id]||""; ta.addEventListener("input",()=>{state.notes[q.id]=ta.value;dirty()});
+    sec.appendChild(ta); root.appendChild(sec);
+  });
+  const sec=document.createElement("section"); sec.className="q";
+  sec.innerHTML=`<div class="qnum">自由記入（任意）</div><h2>ほかにスコティへ伝えたいこと</h2><p class="why">例：アプリ名の候補、参考にしたいアカウント、避けたい色や表現 など。</p>`;
+  const ta=document.createElement("textarea"); ta.id="free"; ta.rows=3; ta.value=state.free; ta.addEventListener("input",()=>{state.free=ta.value;dirty()});
+  sec.appendChild(ta); root.appendChild(sec);
+  paint();
+}
+function pick(q,v){
+  if(q.multi){const cur=new Set(state.answers[q.id]||[]); cur.has(v)?cur.delete(v):cur.add(v); state.answers[q.id]=[...cur];}
+  else state.answers[q.id]=v;
+  paint(); dirty();
+}
+function answered(q){const a=state.answers[q.id];return q.multi?(a&&a.length>0):!!a}
+function paint(){
+  document.querySelectorAll(".opt").forEach(b=>{
+    const a=state.answers[b.dataset.q]; const on=Array.isArray(a)?a.includes(b.dataset.v):a===b.dataset.v;
+    b.setAttribute("aria-pressed",on?"true":"false");
+  });
+  let n=0; Q.forEach(q=>{const ok=answered(q); if(ok)n++; const s=document.getElementById("q-"+q.id); if(s)s.classList.toggle("done",ok)});
+  $("#fill").style.width=(n/Q.length*100)+"%"; $("#count").textContent=`${n} / ${Q.length} 回答済み`;
+}
+function dirty(){$("#status").textContent="未送信の変更があります";}
+function labelOf(q,v){const o=q.opts.find(o=>o[0]===v);return o?o[1]:v}
+function summary(){
+  return Q.map((q,i)=>{const a=state.answers[q.id];const t=!a||(Array.isArray(a)&&!a.length)?"（未回答）":Array.isArray(a)?a.map(v=>labelOf(q,v)).join("、"):labelOf(q,a);
+    const n=state.notes[q.id]?`／補足：${state.notes[q.id]}`:""; return `Q${i+1} ${q.title}\n→ ${t}${n}`}).join("\n\n")+(state.free?`\n\n自由記入：${state.free}`:"");
+}
+let db=null, ref=null;
+render();
+(async()=>{
+  try{ db = await window.claude?.use?.("db"); }catch(e){ db=null; }
+  if(!db){ $("#send").textContent="回答をコピー"; $("#status").textContent="保存機能が使えない表示です。「回答をコピー」でチャットに貼り付けてください。"; return; }
+  ref = db.doc("answers/instagram_design");
+  const t=setTimeout(()=>{$("#status").textContent="前回の回答を読み込めませんでした。新しく回答できます。"},10000);
+  try{const s=await ref.get(); clearTimeout(t);
+    if(s.exists){const d=s.data(); Object.assign(state.answers,d.answers||{}); Object.assign(state.notes,d.notes||{}); state.free=d.free||""; render();
+      $("#status").textContent="前回送った回答を読み込みました。変更して送り直せます。";}
+  }catch(e){clearTimeout(t);}
+})();
+$("#send").addEventListener("click",async()=>{
+  const btn=$("#send");
+  if(!ref){ try{await navigator.clipboard.writeText(summary()); $("#status").textContent="コピーしました。チャットに貼り付けてください。";}
+    catch(e){$("#status").textContent="コピーできませんでした。お手数ですが選んだ内容をチャットでお知らせください。";} return; }
+  btn.disabled=true; $("#status").textContent="送信中…";
+  try{ await ref.set({answers:state.answers,notes:state.notes,free:state.free,summary:summary(),submittedAt:new Date().toISOString()});
+    $("#status").textContent="ボンベイに届きました。チャットで「送ったよ」と伝えてください。";
+  }catch(e){ $("#status").textContent="保存できませんでした（"+(e&&e.code||"エラー")+"）。もう一度押すか、チャットで答えを教えてください。"; }
+  btn.disabled=false;
+});
+</script>

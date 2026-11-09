@@ -63,14 +63,14 @@ button.send:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
 <div class="wrap">
   <header>
     <h1>リスク判断シート 🐈‍⬛</h1>
-    <p>ロシアンが猫向けの初期リスクを整理しました（33項目、判定は「要専門家確認」）。その中で、あなた（獣医師・運営者）に決めていただきたい6点です。迷ったら<span class="rec">おすすめ</span>を選んでおけば大丈夫です。</p>
+    <p>ロシアンが猫向けの初期リスクを整理しました（33項目、判定は「要専門家確認」）。その中で、あなた（獣医師・運営者）に決めていただきたい点です。後半の3問は、ベンガルの市場分析（法人パートナーの組み方）から追加しました。迷ったら<span class="rec">おすすめ</span>を選んでおけば大丈夫です。</p>
     <div class="legend"><span>各質問の右上：その答えを使う猫</span></div>
   </header>
   <main id="qs" class="wrap" style="gap:16px"></main>
 </div>
 
 <div class="bar"><div class="in">
-  <div class="prog"><div class="track"><div class="fill" id="fill"></div></div><p id="count">0 / 6 回答済み</p></div>
+  <div class="prog"><div class="track"><div class="fill" id="fill"></div></div><p id="count">0 / 9 回答済み</p></div>
   <button class="send" id="send" type="button">ボンベイに送る</button>
   <div class="status" id="status" role="status"></div>
 </div></div>
@@ -101,7 +101,19 @@ const Q = [
  {id:"experts",title:"「要確認」の法令・規約を、弁護士や薬事の専門家に聞きますか？",why:"動物用医療機器プログラムの該当性、療法食の表示規約、動物用医薬品の広告基準、外部送信の規律などです。ロシアンの判定は「要専門家確認」でした。",cats:["ロシアン"],opts:[
   ["before_launch","第1弾の公開前に聞く","開発と並行して照会し、公開判断に間に合わせる",1],
   ["now","今すぐ聞く","要件定義が固まる前に方向性を確かめる"],
-  ["later","あとで聞く","利用者が増えてから"]]}
+  ["later","あとで聞く","利用者が増えてから"]]},
+ {id:"ad_style",title:"フードメーカーとは、どの形で組みますか？",why:"ベンガルの提案は「商品広告より、啓発コンテンツへの協賛から。1社独占にしない」です。協賛のほうが中立性を保ちやすくなります。",cats:["ベンガル","ロシアン"],opts:[
+  ["sponsor","啓発コンテンツの協賛から","「補液のコツ」などの記事に協賛名を出す形。1社独占にしない",1],
+  ["product","商品広告から","療法食やフードの商品広告を出す。表示ルールの確認が多くなる"],
+  ["both","両方","協賛と商品広告を並行する"]]},
+ {id:"rx_food_ads",title:"療法食の商品広告を扱いますか？",why:"療法食は獣医師の指導のもとで与えるものなので、広告には注意書きが必須になり、効能や体験談は使えません。",cats:["ベンガル","ロシアン"],opts:[
+  ["no_mvp","第1弾では扱わない","一般食や協賛から始め、療法食はルールを固めてから",1],
+  ["with_rules","ルールを守って扱う","「獣医師の指導のもとで」を必ず添え、効能・体験談は出さない"],
+  ["never","今後も扱わない","療法食の中立性を最優先する"]]},
+ {id:"insurance",title:"ペット保険会社との連携の検討を始めますか？",why:"ベンガルは第2弾以降の追加候補としています。",cats:["ベンガル"],opts:[
+  ["later","第2弾以降で検討","まずはフードメーカーとの形を固める",1],
+  ["now","今から検討を始める","候補の洗い出しと条件の比較をベンガルに頼む"],
+  ["no","検討しない","当面は対象外にする"]]}
 ];
 const state = {answers:{}, notes:{}, free:""};
 const $ = s=>document.querySelector(s);
