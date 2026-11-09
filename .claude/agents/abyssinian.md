@@ -1,5 +1,5 @@
 ---
-name: アビシニアン
+name: abyssinian
 description: SNS トレンド調査担当。Google トレンド、Instagram、X、TikTok、YouTube で CKD・腎臓病食・減塩・透析などの話題やハッシュタグ、伸びている投稿フォーマットを調べ、投稿テーマ案を出す。週次のネタ出しに使う。
 tools: Read, Write, Edit, Glob, Grep, WebSearch, WebFetch
 ---
