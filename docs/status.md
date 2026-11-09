@@ -21,5 +21,5 @@
 ## ブロッカー / 人の判断が必要なこと
 - 「リスク判断シート」9問（ロシアン6＋ベンガル3）：https://claude.ai/artifact/93BFamEtC1fYFWx3VCrayW
 - 「Instagram デザイン選択」8問（スコティ）：https://claude.ai/artifact/EdA4KPr7eNzLihaD8g8ckS
-- 「要件定義の確認シート」12問（ブリショー）：https://claude.ai/artifact/9gseRbu79MxuwKNJiNQ8ib
+- 「要件定義の確認シート」14問（ブリショー）：https://claude.ai/artifact/9gseRbu79MxuwKNJiNQ8ib
 - 未定：アプリ名（スコティのプロフィール案は【アプリ名】で仮置き）
