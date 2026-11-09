@@ -70,7 +70,7 @@ button.send:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
 </div>
 
 <div class="bar"><div class="in">
-  <div class="prog"><div class="track"><div class="fill" id="fill"></div></div><p id="count">0 / 9 回答済み</p></div>
+  <div class="prog"><div class="track"><div class="fill" id="fill"></div></div><p id="count">0 / 10 回答済み</p></div>
   <button class="send" id="send" type="button">ボンベイに送る</button>
   <div class="status" id="status" role="status"></div>
 </div></div>
@@ -108,6 +108,9 @@ const Q = [
   ["me","自分で作る","Instagram のデザインとそろえやすい",1],
   ["with_claude","開発担当（Claude）に試作してもらい、自分で直す","最初の案を早く形にできる"],
   ["designer","デザイナーに頼む","予算が必要"]]},
+ {id:"mkt_min",title:"リリース前のマーケは、ベンガルの「最小構成」でよいですか？",why:"開発・監修・承認・投稿制作をあなた1人で担う前提だと、当初の計画は現実的でない、とベンガルが見積もりました（推測）。最小構成は、Instagram 週2本（Canva のテンプレート3種を使い回す）、X は開設しない、SEO 記事とチラシはリリース後、LP は間に合わなければ省略、ベータテスターは5〜10人。リリース前の作業はおよそ週3時間です。",cats:["ベンガル","スコティ"],opts:[
+  ["min","最小構成でよい","開発に時間を回せる",1],
+  ["more","もう少し増やしたい","補足欄に増やしたいもの（X、LP など）を書いてください"]]},
  {id:"vet_values",title:"獣医師として決めていただく3つの値は、いつ決めますか？",why:"①補液量の入力ミスを防ぐための上限（例：1回◯mL を超えたら「入力を確認してください」と聞き返す）、②体重グラフの縦軸の最小幅（仮置きは ±0.5kg）、③補液の「部位」の選択肢（例：肩甲骨の間・わき腹など。前回の部位を表示するだけで、提案はしません）の3つです。",cats:["ブリショー"],opts:[
   ["now","いま決める","補足欄に3つの値を書いてください"],
   ["prototype","試作を触りながら決める","画面で見て決める（それまでは仮の値）",1]]}
