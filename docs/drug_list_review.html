@@ -1,0 +1,197 @@
+<title>薬の候補リスト確認</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap">
+<style>
+/* Layout: 1カラムの質問カード列＋下部固定の送信バー。カードはタップで選ぶ大きな選択肢 */
+:root{
+  --bg:#f5f6f2; --surface:#ffffff; --ink:#1f2420; --muted:#5d665f; --line:#d9ded6;
+  --accent:#2f6b57; --accent-soft:#e3efe9; --rec:#8a5a12; --rec-soft:#f6ecd9;
+  --display:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Noto Sans JP",sans-serif;
+  --body:"Noto Sans JP","Hiragino Sans","Yu Gothic",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141714; --surface:#1d211e; --ink:#e9ece7; --muted:#a3aca5; --line:#323833; --accent:#7cc4a6; --accent-soft:#1f3a30; --rec:#e3b66a; --rec-soft:#3a2f1c; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141714; --surface:#1d211e; --ink:#e9ece7; --muted:#a3aca5; --line:#323833;
+  --accent:#7cc4a6; --accent-soft:#1f3a30; --rec:#e3b66a; --rec-soft:#3a2f1c; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.7;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 120px}
+.wrap{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+header h1{font-family:var(--display);font-size:1.6rem;line-height:1.35;margin:0 0 6px;text-wrap:balance}
+header p{margin:0;color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;font-size:.8rem;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:4px}
+.q{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:12px}
+.q.done{border-color:var(--accent)}
+.qhead{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.qnum{font-size:.75rem;letter-spacing:.06em;color:var(--muted);font-variant-numeric:tabular-nums}
+.q h2{font-family:var(--display);font-size:1.12rem;margin:2px 0 0;line-height:1.45;text-wrap:balance}
+.why{margin:0;font-size:.86rem;color:var(--muted)}
+.cats{display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-end;flex-shrink:0;max-width:45%}
+.cat{font-size:.72rem;padding:2px 8px;border-radius:999px;background:var(--accent-soft);color:var(--accent);white-space:nowrap}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px}
+.opt{position:relative;display:flex;flex-direction:column;gap:2px;text-align:left;font:inherit;color:inherit;
+  background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px 10px 38px;cursor:pointer;min-width:0}
+.opt:hover{border-color:var(--accent)}
+.opt:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.opt::before{content:"";position:absolute;left:12px;top:14px;width:16px;height:16px;border:2px solid var(--muted);border-radius:50%}
+.opt.multi::before{border-radius:4px}
+.opt[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.opt[aria-pressed="true"]::before{border-color:var(--accent);background:var(--accent);box-shadow:inset 0 0 0 3px var(--accent-soft)}
+.opt b{font-weight:700;font-size:.95rem}
+.opt small{color:var(--muted);font-size:.8rem;line-height:1.5}
+.rec{display:inline-block;margin-left:6px;font-size:.68rem;font-weight:700;padding:1px 6px;border-radius:4px;background:var(--rec-soft);color:var(--rec);vertical-align:1px}
+textarea{width:100%;font:inherit;color:inherit;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-height:44px;resize:vertical}
+textarea:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);
+  padding:12px max(16px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.bar .in{max-width:720px;margin:0 auto;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.prog{flex:1;min-width:160px}
+.track{height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.fill{height:100%;background:var(--accent);width:0;transition:width .25s}
+@media (prefers-reduced-motion:reduce){.fill{transition:none}}
+.prog p{margin:4px 0 0;font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums}
+button.send{font:inherit;font-weight:700;background:var(--accent);color:var(--surface);border:0;border-radius:999px;padding:10px 20px;cursor:pointer}
+button.send:disabled{opacity:.5;cursor:default}
+button.send:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.status{font-size:.82rem;color:var(--muted);width:100%}
+@media (max-width:480px){.qhead{flex-direction:column}.cats{justify-content:flex-start;max-width:none}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>薬の候補リスト確認 🐈‍⬛</h1>
+    <p>ブリショーが薬の候補リストの初版の案を作りました（docs/requirements/drug_list_draft.md）。獣医師として、方針と収録する薬を選んでください。リストには製品名だけを載せ、効能や用量は表示しません。収録が決まったものは、表記を一次情報で確かめてからロシアンに回します。</p>
+    <div class="legend"><span>各質問の右上：その答えを使う猫</span></div>
+  </header>
+  <main id="qs" class="wrap" style="gap:16px"></main>
+</div>
+
+<div class="bar"><div class="in">
+  <div class="prog"><div class="track"><div class="fill" id="fill"></div></div><p id="count">0 / 7 回答済み</p></div>
+  <button class="send" id="send" type="button">ボンベイに送る</button>
+  <div class="status" id="status" role="status"></div>
+</div></div>
+
+<script>
+const Q = [
+ {id:"source_check",title:"出典（農林水産省・動物医薬品検査所）の利用条件は、どう確かめますか？",why:"ブリショーの作業環境ではネットワークの制限で、www.maff.go.jp と www.vm.nval.go.jp のページを開けませんでした。利用条件が確認できるまでは、リストをアプリに収録しません。",cats:["ブリショー","ロシアン"],opts:[
+  ["allow_hosts","作業環境から見られるようにする","この2つのサイトをネットワークの許可に加えるよう、ボンベイが設定変更を申請します（承認画面が出ます）",1],
+  ["browser","自分でブラウザで確認して、要点を伝える","利用規約のページを見て、チャットで教えてください"],
+  ["inquiry","動物医薬品検査所に問い合わせる","回答まで時間がかかる"]]},
+ {id:"a_name",title:"人の薬は、一般名と製品名のどちらで載せますか？",why:"どちらで入力しても候補に出るようにします。後発品の個別の名前は、保守できないため載せない案です。",cats:["ブリショー"],opts:[
+  ["generic_brand","一般名＋代表的な製品名","例：アムロジピン（ノルバスク、アムロジン）",1],
+  ["generic","一般名だけ","リストは短くなるが、手元の薬の名前と結び付けにくい"],
+  ["brand","製品名だけ","後発品が多い薬は探しにくい"]]},
+ {id:"b_injection",title:"病院で使う注射（マロピタット注など）を、リストに載せますか？",why:"投薬の記録は、自宅で与える薬が目的です。病院での処置はメモに書けます。",cats:["ブリショー"],opts:[
+  ["no","載せない","自宅で与える薬に絞る",1],
+  ["yes","載せる","病院での処置も選んで記録できる"]]},
+ {id:"c_fluid_name",title:"補液の記録に、輸液の名前（乳酸リンゲル液など）を書く欄を足しますか？",why:"今はメモ欄に書けます。",cats:["ブリショー"],opts:[
+  ["no","第1弾は足さない","必要とされれば第2弾で検討",1],
+  ["yes","第1弾から足す","輸液の名前も選んで記録できる"]]},
+ {id:"d_supp",title:"サプリメント（イパキチンなど）を、薬の候補リストに入れますか？",why:"医薬品と並べると「薬と同じ効果がある」と誤解されるおそれがあります。お薬リストへの自由入力はできます。",cats:["ブリショー","ロシアン"],opts:[
+  ["no","入れない","サプリのリストは、第2弾のフードのリストと一緒に検討",1],
+  ["yes","入れる","区分を分けて表示する"]]},
+ {id:"e_vet",multi:true,title:"【動物用医薬品】リストに収録するものを選んでください（いくつでも）",why:"獣医師として、猫の CKD で処方されることがあるものを選んでください。名前や区分の確認がまだのものには「要確認」と書いています。",cats:["ブリショー"],opts:[
+  ["covalzin","コバルジン","カプセル／尿毒素の吸着"],
+  ["semintra","セミントラ 経口液 猫","経口液／降圧・尿蛋白"],
+  ["fortekor","フォルテコール（猫に使う規格）","錠剤／降圧・尿蛋白（要確認：規格・販売状況）"],
+  ["maropitat_tab","マロピタット錠16","錠剤／制吐"],
+  ["cerenia","セレニア","錠剤／制吐（要確認：猫での承認状況）"],
+  ["rapros","ラプロス","錠剤"],
+  ["renalzin","レンジアレン","リンの管理（要確認：医薬品かサプリか）"]]},
+ {id:"e_human",multi:true,title:"【人の薬】リストに収録するものを選んでください（いくつでも）",why:"製品名の多くはまだ確認できていません。収録すると決めたものだけ、ブリショーが一次情報で表記を確かめます。",cats:["ブリショー"],opts:[
+  ["kremezin","球形吸着炭（クレメジン）","尿毒素の吸着"],
+  ["amlodipine","アムロジピン（ノルバスク、アムロジン）","降圧"],
+  ["telmisartan","テルミサルタン（ミカルディス）","降圧・尿蛋白（動物用のセミントラとの取り違えに注意）"],
+  ["benazepril","ベナゼプリル（チバセン）","降圧・尿蛋白"],
+  ["lanthanum","炭酸ランタン（ホスレノール）","リンの管理"],
+  ["ferric_citrate","クエン酸第二鉄（リオナ）","リンの管理"],
+  ["caco3","沈降炭酸カルシウム（カルタン）","リンの管理"],
+  ["sevelamer","セベラマー（レナジェル、フォスブロック）","リンの管理"],
+  ["mirtazapine","ミルタザピン（リフレックス、レメロン）","食欲"],
+  ["famotidine","ファモチジン（ガスター）","胃酸"],
+  ["metoclopramide","メトクロプラミド（プリンペラン）","制吐"],
+  ["ondansetron","オンダンセトロン（ゾフラン）","制吐"],
+  ["k_gluconate","グルコン酸カリウム（グルコンサンK）","カリウムの補給"],
+  ["k_citrate","クエン酸カリウム・クエン酸ナトリウム（ウラリット）","カリウムの補給"],
+  ["lactulose","ラクツロース（モニラック）","便通"]]}
+];
+const state = {answers:{}, notes:{}, free:""};
+const $ = s=>document.querySelector(s);
+function render(){
+  const root=$("#qs"); root.innerHTML="";
+  Q.forEach((q,i)=>{
+    const sec=document.createElement("section"); sec.className="q"; sec.id="q-"+q.id;
+    const head=document.createElement("div"); head.className="qhead";
+    const left=document.createElement("div");
+    left.innerHTML=`<div class="qnum">Q${i+1} / ${Q.length}${q.multi?"・複数選択":""}</div>`;
+    const h=document.createElement("h2"); h.textContent=q.title; left.appendChild(h);
+    const cats=document.createElement("div"); cats.className="cats";
+    q.cats.forEach(c=>{const s=document.createElement("span");s.className="cat";s.textContent=c;cats.appendChild(s)});
+    head.append(left,cats); sec.appendChild(head);
+    const why=document.createElement("p"); why.className="why"; why.textContent=q.why; sec.appendChild(why);
+    const opts=document.createElement("div"); opts.className="opts"; opts.setAttribute("role","group"); opts.setAttribute("aria-label",q.title);
+    q.opts.forEach(([v,label,desc,rec])=>{
+      const b=document.createElement("button"); b.type="button"; b.className="opt"+(q.multi?" multi":""); b.dataset.q=q.id; b.dataset.v=v;
+      const bl=document.createElement("b"); bl.textContent=label;
+      if(rec){const r=document.createElement("span");r.className="rec";r.textContent="おすすめ";bl.appendChild(r)}
+      const sm=document.createElement("small"); sm.textContent=desc;
+      b.append(bl,sm); b.addEventListener("click",()=>pick(q,v)); opts.appendChild(b);
+    });
+    sec.appendChild(opts);
+    const ta=document.createElement("textarea"); ta.id="note-"+q.id; ta.placeholder="補足があれば（任意）"; ta.rows=1;
+    ta.value=state.notes[q.id]||""; ta.addEventListener("input",()=>{state.notes[q.id]=ta.value;dirty()});
+    sec.appendChild(ta); root.appendChild(sec);
+  });
+  const sec=document.createElement("section"); sec.className="q";
+  sec.innerHTML=`<div class="qnum">自由記入（任意）</div><h2>リストについて、ほかに伝えたいこと</h2><p class="why">例：追加したい薬、表記を直したいもの、収録の条件 など。</p>`;
+  const ta=document.createElement("textarea"); ta.id="free"; ta.rows=3; ta.value=state.free; ta.addEventListener("input",()=>{state.free=ta.value;dirty()});
+  sec.appendChild(ta); root.appendChild(sec);
+  paint();
+}
+function pick(q,v){
+  if(q.multi){const cur=new Set(state.answers[q.id]||[]); cur.has(v)?cur.delete(v):cur.add(v); state.answers[q.id]=[...cur];}
+  else state.answers[q.id]=v;
+  paint(); dirty();
+}
+function answered(q){const a=state.answers[q.id];return q.multi?(a&&a.length>0):!!a}
+function paint(){
+  document.querySelectorAll(".opt").forEach(b=>{
+    const a=state.answers[b.dataset.q]; const on=Array.isArray(a)?a.includes(b.dataset.v):a===b.dataset.v;
+    b.setAttribute("aria-pressed",on?"true":"false");
+  });
+  let n=0; Q.forEach(q=>{const ok=answered(q); if(ok)n++; const s=document.getElementById("q-"+q.id); if(s)s.classList.toggle("done",ok)});
+  $("#fill").style.width=(n/Q.length*100)+"%"; $("#count").textContent=`${n} / ${Q.length} 回答済み`;
+}
+function dirty(){$("#status").textContent="未送信の変更があります";}
+function labelOf(q,v){const o=q.opts.find(o=>o[0]===v);return o?o[1]:v}
+function summary(){
+  return Q.map((q,i)=>{const a=state.answers[q.id];const t=!a||(Array.isArray(a)&&!a.length)?"（未回答）":Array.isArray(a)?a.map(v=>labelOf(q,v)).join("、"):labelOf(q,a);
+    const n=state.notes[q.id]?`／補足：${state.notes[q.id]}`:""; return `Q${i+1} ${q.title}\n→ ${t}${n}`}).join("\n\n")+(state.free?`\n\n自由記入：${state.free}`:"");
+}
+let db=null, ref=null;
+render();
+(async()=>{
+  try{ db = await window.claude?.use?.("db"); }catch(e){ db=null; }
+  if(!db){ $("#send").textContent="回答をコピー"; $("#status").textContent="保存機能が使えない表示です。「回答をコピー」でチャットに貼り付けてください。"; return; }
+  ref = db.doc("answers/drug_list");
+  const t=setTimeout(()=>{$("#status").textContent="前回の回答を読み込めませんでした。新しく回答できます。"},10000);
+  try{const s=await ref.get(); clearTimeout(t);
+    if(s.exists){const d=s.data(); Object.assign(state.answers,d.answers||{}); Object.assign(state.notes,d.notes||{}); state.free=d.free||""; render();
+      $("#status").textContent="前回送った回答を読み込みました。変更して送り直せます。";}
+  }catch(e){clearTimeout(t);}
+})();
+$("#send").addEventListener("click",async()=>{
+  const btn=$("#send");
+  if(!ref){ try{await navigator.clipboard.writeText(summary()); $("#status").textContent="コピーしました。チャットに貼り付けてください。";}
+    catch(e){$("#status").textContent="コピーできませんでした。お手数ですが選んだ内容をチャットでお知らせください。";} return; }
+  btn.disabled=true; $("#status").textContent="送信中…";
+  try{ await ref.set({answers:state.answers,notes:state.notes,free:state.free,summary:summary(),submittedAt:new Date().toISOString()});
+    $("#status").textContent="ボンベイに届きました。チャットで「送ったよ」と伝えてください。";
+  }catch(e){ $("#status").textContent="保存できませんでした（"+(e&&e.code||"エラー")+"）。もう一度押すか、チャットで答えを教えてください。"; }
+  btn.disabled=false;
+});
+</script>
