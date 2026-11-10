@@ -70,7 +70,7 @@ button.send:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
 </div>
 
 <div class="bar"><div class="in">
-  <div class="prog"><div class="track"><div class="fill" id="fill"></div></div><p id="count">0 / 4 回答済み</p></div>
+  <div class="prog"><div class="track"><div class="fill" id="fill"></div></div><p id="count">0 / 5 回答済み</p></div>
   <button class="send" id="send" type="button">ボンベイに送る</button>
   <div class="status" id="status" role="status"></div>
 </div></div>
@@ -94,7 +94,11 @@ const Q = [
   ["fluid","補液の記録","量・部位・様子。前回の値を日付つきで参考表示",1],
   ["meds","投薬の記録とリマインダー","薬の候補リストからの選択を含む",1],
   ["report","獣医師に見せるレポート","記録の一覧と体重グラフ（基準線なし）"],
-  ["rest","お休み・一覧から外す","通知を止める操作の流れ"]],multi:true}
+  ["rest","お休み・一覧から外す","通知を止める操作の流れ"]],multi:true},
+ {id:"usage_summary",title:"「利用のまとめ」画面（記録した日数や件数を表示する画面）は、どうしますか？",why:"分析の仕組みを入れなくても、ベータ版の協力者に数値を見てもらえば、継続率などの目安がわかります。一方で、製品版で全員に見せると、記録日数が成績のように感じられ、「せかさない・責めない」方針とぶつかるおそれがあります。表示は件数を並べるだけにして、目標・達成率・連続記録日数・色での評価は出しません。",cats:["ブリショー","ベンガル"],opts:[
+  ["beta_only","ベータ版だけに入れる","聞き取りに使い、製品版の第1弾には出さない",1],
+  ["all","製品版にも入れる","飼い主さん自身の振り返りにも使える"],
+  ["none","作らない","第1弾の作業を減らす"]]}
 ];
 const state = {answers:{}, notes:{}, free:""};
 const $ = s=>document.querySelector(s);
