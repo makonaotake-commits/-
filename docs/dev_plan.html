@@ -70,7 +70,7 @@ button.send:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
 </div>
 
 <div class="bar"><div class="in">
-  <div class="prog"><div class="track"><div class="fill" id="fill"></div></div><p id="count">0 / 12 回答済み</p></div>
+  <div class="prog"><div class="track"><div class="fill" id="fill"></div></div><p id="count">0 / 13 回答済み</p></div>
   <button class="send" id="send" type="button">ボンベイに送る</button>
   <div class="status" id="status" role="status"></div>
 </div></div>
@@ -116,6 +116,10 @@ const Q = [
   ["both_count","分析（件数だけ）＋クラッシュ報告","起動や PDF 作成の回数などだけ。設定でオフにできる"],
   ["both_type","分析（記録の種類も）＋クラッシュ報告","「体調・補液・投薬」の3種類を1日単位の件数で送る。ロシアンの6条件つき（ランダムな ID だけ、お休み中の猫は送らない など）"],
   ["none","どちらも入れない","送信ゼロ。不具合や利用状況が分かりにくい"]]},
+ {id:"analytics_default",title:"分析を入れる場合、最初の設定は「オン」と「オフ」のどちらにしますか？",why:"上の問いで「分析を入れる」を選んだ場合だけ答えてください。オンにする場合は、初回の設定画面で「何を送るか」と「いつでもオフにできること」を案内し、プライバシーポリシーにも書きます。",cats:["ベンガル","ロシアン","ブリショー"],opts:[
+  ["off","最初はオフ（飼い主さんが選んだらオン）","信頼を優先。データは集まりにくい",1],
+  ["on","最初はオン（いつでもオフにできる）","データは集まりやすい。初回の案内が必須"],
+  ["na","分析は入れない","上の問いで「入れない」「クラッシュ報告だけ」を選んだ場合"]]},
  {id:"operator",title:"プライバシーポリシーとストアに載せる、運営者名と連絡先はどうしますか？",why:"アプリを公開するときに必要です。個人で出す場合は、本名や住所がストアに表示されることがあります（ストアの仕様は要確認）。",cats:["ロシアン","ブリショー"],opts:[
   ["personal","個人名で出す","補足欄に、表示してよい名前と連絡先（メールなど）を書いてください"],
   ["business","屋号・法人名で出す","補足欄に名称を書いてください"],
