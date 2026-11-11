@@ -1,6 +1,6 @@
 # Instagram 投稿カレンダー 2026年12月（案）
 
-- ステータス：`draft`（ロシアンのレビュー前）
+- ステータス：`compliance_reviewed`（ロシアン 2026-11-11。未着手の投稿は作成後に個別レビュー）
 - 作成：スコティ／2026-11-09
 - 前提：ユーザーの決定（`docs/marketing_decisions.html` の回答）、`docs/compliance/review_2026-11-09_marketing.md`（#1・#18・#19・#23）、`docs/marketing/02_positioning.md`（§2 ターゲティング、§5 メッセージハウス）、`docs/sns/trends/2026-11-09.md`、`docs/compliance/review_2026-11-09_requirements.md`（#13・#20）、`profile.md`、`design_direction.md`
 - 公開までの流れ：スコティ作成 → ロシアンのレビュー → 監修獣医師（ユーザー）の確認 → 予約公開
