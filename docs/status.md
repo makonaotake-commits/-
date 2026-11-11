@@ -22,7 +22,7 @@
 - 「リスク判断シート」10問：https://claude.ai/artifact/93BFamEtC1fYFWx3VCrayW
 - 「Instagram デザイン選択」8問（スコティ）：https://claude.ai/artifact/EdA4KPr7eNzLihaD8g8ckS
 - ✅ 要件定義の確認シート：回答受領（13:36）。ブリショーに第3版を依頼
-- ✅ 開発の進め方シート：回答受領（Expo・開発担当の猫を新設・試作から）。追加2問（分析SDK・運営者名）は未回答
+- ✅ 開発の進め方シート：回答受領（Expo・開発担当の猫を新設・試作から）。分析SDKは「入れる・初期値オン」で決定（11/11）。未回答：運営者名、記録の種類まで送るか
 - 「開発猫の立ち上げ」シート5問（立ち上げ可否・名前・試作の触り方・試作の画面）：https://claude.ai/artifact/JGKtDNnJf9Ph3ZQKdHgN5k
 - ✅ マーケ戦略の確認シート：回答受領（13:37）。コア・メッセージは案3
 - 「薬の候補リスト確認」シート7問：https://claude.ai/artifact/FiPT7yHMFMST71JNiPqDpW
