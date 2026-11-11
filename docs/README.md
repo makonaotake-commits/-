@@ -20,7 +20,7 @@
 | `brand/` | ブランドガイド・UIスタイルガイド・資材 | ペルシャ |
 | └ `brand_base_proposal.md` / `brand_base_sheet.html` | ブランドの土台の案（アプリ名・配色・フォント・線画・ロゴ）と選択シート（draft） | ペルシャ |
 | `../app/` | アプリのコード（Expo） | マンチカン |
-| `compliance/` | 獣医療・法令レビュー記録（`initial_risks_2026-11-09.md`＝アプリ全体の初期リスク整理、`review_2026-11-09_requirements.md`＝要件定義書 初版のレビュー、`review_2026-11-09_requirements_v2.md`＝第2版の再レビュー、`review_2026-11-09_requirements_v3.md`＝第3版の差分レビュー、`review_2026-11-09_instagram_dec.md`＝Instagram 12月分のレビュー、`review_2026-11-11_instagram_v2.md`＝12月分の再レビューと返信テンプレート、`review_2026-11-09_marketing.md`＝マーケ戦略 初版のレビュー、`review_2026-11-09_marketing_v2.md`＝修正版の再レビュー、`review_2026-11-10_marketing_v3.md`＝確認シート反映版の差分レビュー、`review_2026-11-10_kpi_analytics.md`＝KPI 計測（分析イベント）のレビュー、`review_2026-11-11_marketing_v4.md`＝リスク判断シート反映版のレビュー） | ロシアン |
+| `compliance/` | 獣医療・法令レビュー記録（`initial_risks_2026-11-09.md`＝アプリ全体の初期リスク整理、`review_2026-11-09_requirements.md`＝要件定義書 初版のレビュー、`review_2026-11-09_requirements_v2.md`＝第2版の再レビュー、`review_2026-11-09_requirements_v3.md`＝第3版の差分レビュー、`review_2026-11-09_instagram_dec.md`＝Instagram 12月分のレビュー、`review_2026-11-11_instagram_v2.md`＝12月分の再レビューと返信テンプレート、`review_2026-11-09_marketing.md`＝マーケ戦略 初版のレビュー、`review_2026-11-09_marketing_v2.md`＝修正版の再レビュー、`review_2026-11-10_marketing_v3.md`＝確認シート反映版の差分レビュー、`review_2026-11-10_kpi_analytics.md`＝KPI 計測（分析イベント）のレビュー、`review_2026-11-11_marketing_v4.md`＝リスク判断シート反映版のレビュー、`review_2026-11-11_vet_reviewer_request.md`＝外部獣医師への依頼書のレビュー） | ロシアン |
 
 ## 使い方
 - `/kickoff` … 初期ドキュメント一式を作成
