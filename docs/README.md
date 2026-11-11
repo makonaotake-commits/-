@@ -4,7 +4,7 @@
 |---|---|---|
 | `status.md` | 進捗ボード | ボンベイ（統括） |
 | `kickoff_answers.md` | キックオフ確認シートの回答と論点 | ボンベイ（統括） |
-| `kickoff_questions.html` / `dispatch_plan.html` / `risk_decisions.html` / `instagram_design.html` / `requirements_decisions.html` / `marketing_decisions.html` / `dev_plan.html` / `dev_cat.html` / `drug_list_review.html` / `brand_cat.html` / `analytics_confirm.html` | ユーザー向け確認シート（Artifact の元ファイル） | ボンベイ（統括） |
+| `kickoff_questions.html` / `dispatch_plan.html` / `risk_decisions.html` / `instagram_design.html` / `requirements_decisions.html` / `marketing_decisions.html` / `dev_plan.html` / `dev_cat.html` / `drug_list_review.html` / `brand_cat.html` / `analytics_confirm.html` / `vet_check_dec.html` | ユーザー向け確認シート（Artifact の元ファイル） | ボンベイ（統括） |
 | `requirements/` | 要件定義（概要・ペルソナ・ストーリー・機能/非機能・MVP） | ブリショー |
 | └ `01_overview.md` | 背景・目的・課題・やらないこと・KGI/KPI | ブリショー |
 | └ `02_personas.md` | 飼い主ペルソナ3名とカスタマージャーニー | ブリショー |

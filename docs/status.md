@@ -29,4 +29,6 @@
 - 「薬の候補リスト確認」シート7問：https://claude.ai/artifact/FiPT7yHMFMST71JNiPqDpW
 - ✅ ネットワーク：農水省・動物医薬品検査所・厚労省を許可（11/11 ユーザー承認）
 - ⚠️ 分析SDKの食い違い：ベンガルのセッションでは「入れる・初期値オン」、開発の進め方シートでは「クラッシュ報告だけ・初期値オフ」。ユーザーに再確認中
+- 「獣医師チェック 12月分」（投稿3本・カレンダー・返信テンプレートの最終承認）：https://claude.ai/artifact/BTJ1ssfYVV3FMcCA9H2Yvc
+- 「分析ツールの再確認」2問：https://claude.ai/artifact/39DGeuVhpGVEt6bHdqUUA3
 - 未定：アプリ名（スコティのプロフィール案は【アプリ名】で仮置き）
