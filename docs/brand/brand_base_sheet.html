@@ -1,0 +1,344 @@
+<title>ブランドの土台シート</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&family=BIZ+UDPGothic:wght@400;700&family=M+PLUS+Rounded+1c:wght@500;700&family=Noto+Sans+JP:wght@400;700&display=swap">
+<style>
+/* Layout: 1カラムの問いカード列。各選択肢に見本（色・文字・線画）を載せ、下部に固定の送信バー。ページ自体はミルクティー（画面用に調整）案で組む */
+:root{
+  --bg:#FAF6F0; --surface:#FFFDF9; --ink:#3F362F; --muted:#6B5F55; --line:#E6DCCF;
+  --accent:#4E7A6C; --accent-soft:#DCE9E3; --on-accent:#FFFFFF;
+  --rec:#8A4E38; --rec-soft:#F6E3DA; --patch:#D9C9B6; --peach:#E8B4A0; --art-bg:#FFFDF9;
+  --display:"Zen Maru Gothic","Hiragino Maru Gothic ProN","BIZ UDPGothic",sans-serif;
+  --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#1C1916; --surface:#26221E; --ink:#F0E8DE; --muted:#B5A99C; --line:#3A332D;
+  --accent:#95C2B2; --accent-soft:#2C3D37; --on-accent:#1C1916;
+  --rec:#E8B4A0; --rec-soft:#3A2A23; --patch:#5A4E43; --peach:#C98F7B; --art-bg:#26221E; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1C1916; --surface:#26221E; --ink:#F0E8DE; --muted:#B5A99C; --line:#3A332D;
+  --accent:#95C2B2; --accent-soft:#2C3D37; --on-accent:#1C1916;
+  --rec:#E8B4A0; --rec-soft:#3A2A23; --patch:#5A4E43; --peach:#C98F7B; --art-bg:#26221E; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 132px}
+.wrap{max-width:860px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+header{display:flex;flex-direction:column;gap:8px}
+header .eyebrow{font-size:.78rem;letter-spacing:.08em;color:var(--muted)}
+header h1{font-family:var(--display);font-weight:700;font-size:1.7rem;line-height:1.35;margin:0;text-wrap:balance}
+header p{margin:0;color:var(--muted);max-width:62ch}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.8rem;color:var(--muted)}
+.q{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:20px;display:flex;flex-direction:column;gap:14px}
+.q.done{border-color:var(--accent)}
+.qnum{font-size:.75rem;letter-spacing:.08em;color:var(--muted)}
+.q h2{font-family:var(--display);font-weight:700;font-size:1.2rem;margin:2px 0 0;line-height:1.45;text-wrap:balance}
+.why{margin:0;font-size:.86rem;color:var(--muted);max-width:66ch}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
+.opts.wide{grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr))}
+.opt{position:relative;display:flex;flex-direction:column;gap:6px;text-align:left;font:inherit;color:inherit;
+  background:var(--bg);border:1.5px solid var(--line);border-radius:14px;padding:14px 14px 14px 42px;cursor:pointer;min-width:0}
+.opt:hover{border-color:var(--accent)}
+.opt:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.opt::before{content:"";position:absolute;left:14px;top:18px;width:16px;height:16px;border:2px solid var(--muted);border-radius:50%}
+.opt[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.opt[aria-pressed="true"]::before{border-color:var(--accent);background:var(--accent);box-shadow:inset 0 0 0 3px var(--accent-soft)}
+.opt .t{font-weight:700;font-size:1rem;line-height:1.5}
+.opt small{color:var(--muted);font-size:.82rem;line-height:1.6;display:block}
+.rec{display:inline-block;margin-left:6px;font-size:.7rem;font-weight:700;padding:1px 7px;border-radius:999px;background:var(--rec-soft);color:var(--rec);vertical-align:2px;font-family:var(--body)}
+/* アプリ名 */
+.nm{font-family:var(--display);font-weight:700;font-size:1.35rem;line-height:1.35}
+.yomi{font-size:.78rem;color:var(--muted)}
+.store{font-size:.8rem;padding:6px 8px;border-radius:8px;background:var(--surface);border:1px dashed var(--line)}
+dl.facts{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;margin:4px 0 0;font-size:.8rem}
+dl.facts dt{color:var(--muted);white-space:nowrap}
+dl.facts dd{margin:0;min-width:0}
+/* 配色の見本 */
+.pal{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.scr{border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:6px;font-size:.74rem;line-height:1.5;border:1px solid rgba(128,128,128,.25);min-width:0}
+.scr .h{font-family:var(--display);font-weight:700;font-size:.86rem}
+.scr .card{border-radius:8px;padding:6px 8px;display:flex;justify-content:space-between;gap:6px;font-variant-numeric:tabular-nums}
+.scr .btn{border-radius:999px;padding:5px 0;text-align:center;font-weight:700}
+.scr .chip{align-self:flex-start;border-radius:999px;padding:0 8px;font-size:.68rem}
+.scr .lbl{font-size:.64rem;letter-spacing:.06em;opacity:.8}
+.sw{display:flex;gap:4px;flex-wrap:wrap}.sw i{width:22px;height:22px;border-radius:50%;border:1px solid var(--line);display:block}
+.cr{width:100%;border-collapse:collapse;font-size:.76rem;font-variant-numeric:tabular-nums}
+.cr th,.cr td{text-align:left;padding:3px 4px;border-bottom:1px solid var(--line);vertical-align:top}
+.cr th{font-weight:400;color:var(--muted)}
+.cr td.n{text-align:right;white-space:nowrap}
+.tblwrap{overflow-x:auto}
+/* フォント */
+.fs{display:flex;flex-direction:column;gap:4px;padding:10px 12px;border-radius:10px;background:var(--surface);border:1px solid var(--line)}
+.fs .fh{font-size:1.25rem;font-weight:700;line-height:1.4}
+.fs .fb{font-size:.92rem;line-height:1.8}
+.fs .fn{font-size:.92rem;font-variant-numeric:tabular-nums}
+/* 線画・ロゴ */
+.art{background:var(--art-bg);border:1px solid var(--line);border-radius:12px;padding:10px;color:var(--ink);display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap;min-height:120px}
+.art svg{display:block;max-width:100%;height:auto}
+.logo-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:center}
+.wm{font-family:var(--display);font-weight:700;font-size:1.3rem;line-height:1.3}
+.wm3{position:relative;display:inline-block;padding-top:12px}
+.wm3 svg{position:absolute;left:-2px;top:0}
+.appicon{width:64px;height:64px;border-radius:15px;background:var(--accent-soft);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.appicon.alt{background:var(--peach)}
+.note{font-size:.76rem;color:var(--muted);text-align:center;width:100%}
+textarea{width:100%;font:inherit;color:inherit;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 10px;min-height:44px;resize:vertical}
+textarea:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+label.nl{font-size:.8rem;color:var(--muted)}
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);
+  padding:12px max(16px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.bar .in{max-width:860px;margin:0 auto;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.prog{flex:1;min-width:160px}
+.track{height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.fill{height:100%;background:var(--accent);width:0;transition:width .3s}
+@media (prefers-reduced-motion:reduce){.fill{transition:none}}
+.prog p{margin:4px 0 0;font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums}
+button.send{font:inherit;font-weight:700;background:var(--accent);color:var(--on-accent);border:0;border-radius:999px;padding:10px 22px;cursor:pointer}
+button.send:disabled{opacity:.5;cursor:default}
+button.send:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+footer{font-size:.78rem;color:var(--muted);display:flex;flex-direction:column;gap:4px}
+footer p{margin:0}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">ペルシャより ／ ブランドの土台の案 ／ 2026-11-11</div>
+    <h1>名前・色・文字・絵・ロゴを、見本を見ながら選んでください</h1>
+    <p>5つの問いに、それぞれ1つずつ選んでください。<span class="rec">おすすめ</span>はペルシャの推しです。迷ったら補足欄に「AとBの間くらい」のように書いてもらえれば、次の案に反映します。決まったら、マンチカン用の画面スタイルガイドを作ります。</p>
+    <div class="legend"><span>コントラスト比は WCAG 2.x の計算式で算出（本文は 4.5 以上、ボタンの縁や図形は 3 以上が目安）</span><span>色で「良い・悪い」を表す使い方はしません</span></div>
+  </header>
+  <div id="qs" style="display:flex;flex-direction:column;gap:22px"></div>
+  <section class="q" id="q-free">
+    <div class="qnum">自由記入（任意）</div>
+    <h2>ほかにペルシャへ伝えたいこと</h2>
+    <p class="why">例：自分で考えた名前の候補、好きなアプリやお店の雰囲気、避けたい色・猫の柄 など。</p>
+    <textarea id="free" rows="3"></textarea>
+  </section>
+  <footer>
+    <p>フォント：Zen Maru Gothic（Yoshimichi Ohira）・BIZ UDPGothic（Morisawa）・M PLUS Rounded 1c・Noto Sans JP。いずれも Google Fonts で公開。ライセンスの確認状況は説明書（docs/brand/brand_base_proposal.md）に記録しています。</p>
+    <p>線画とロゴはラフです。選ばれた方向で清書します。</p>
+  </footer>
+</div>
+<div class="bar"><div class="in">
+  <div class="prog"><div class="track"><div class="fill" id="fill"></div></div><p id="count">0 / 5 回答済み</p></div>
+  <span id="status" style="font-size:.8rem;color:var(--muted);flex-basis:100%;order:3"></span>
+  <button class="send" id="send">ボンベイに送る</button>
+</div></div>
+
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+/* ---------- 線画 ---------- */
+const SW='stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"';
+function cat({pattern="plain",thin=false,collar=false,cheek=false}={}){
+  const fillBody = pattern==="solid"?"var(--patch)":"var(--art-bg)";
+  const t = thin?'transform="translate(50 0) scale(.84 1) translate(-50 0)"':'';
+  return `<g ${t}>
+  <path d="M68 92 C84 94 92 82 85 71" fill="none" ${SW}/>
+  <path d="M38 48 C30 60 28 80 32 96 L68 96 C72 80 70 60 62 48 Z" fill="${fillBody}" ${SW}/>
+  ${pattern==="patch"?'<ellipse cx="59" cy="74" rx="8" ry="11" fill="var(--patch)"/><path d="M38 48 C30 60 28 80 32 96 L68 96 C72 80 70 60 62 48" fill="none" '+SW+'/>':''}
+  <path d="M44 96 V80 M56 96 V80" fill="none" ${SW}/>
+  <path d="M33 28 L32 10 L45 18 Z" fill="${fillBody}" ${SW}/><path d="M55 18 L68 10 L67 28 Z" fill="${fillBody}" ${SW}/>
+  <path d="M30 34 C30 22 38 16 50 16 C62 16 70 22 70 34 C70 44 61 50 50 50 C39 50 30 44 30 34 Z" fill="${fillBody}" ${SW}/>
+  ${pattern==="tabby"?'<path d="M45 20 l1 5 M50 18 v6 M55 20 l-1 5" fill="none" '+SW+' stroke-width="2"/>':''}
+  <circle cx="43" cy="34" r="2.3" fill="currentColor"/><circle cx="57" cy="34" r="2.3" fill="currentColor"/>
+  <path d="M47 40 q3 3 6 0" fill="none" ${SW} stroke-width="2"/>
+  ${cheek?'<circle cx="38" cy="40" r="3" fill="var(--peach)"/><circle cx="62" cy="40" r="3" fill="var(--peach)"/>':''}
+  ${collar?'<path d="M38 50 Q50 56 62 50" fill="none" stroke="var(--accent)" stroke-width="3" stroke-linecap="round"/><path d="M50 55 c-4 3 -4 8 0 10 c4 -2 4 -7 0 -10 Z" fill="var(--accent)"/>':''}
+  </g>`;
+}
+const svg=(w,h,vb,inner,label)=>`<svg width="${w}" height="${h}" viewBox="${vb}" role="img" aria-label="${label}">${inner}</svg>`;
+function navIcon(size=40){
+  return svg(size,size,"20 6 60 50",`<path d="M33 28 L32 10 L45 18 Z" fill="var(--accent-soft)" ${SW}/><path d="M55 18 L68 10 L67 28 Z" fill="var(--accent-soft)" ${SW}/>
+  <path d="M30 34 C30 22 38 16 50 16 C62 16 70 22 70 34 C70 44 61 50 50 50 C39 50 30 44 30 34 Z" fill="var(--accent-soft)" ${SW}/>
+  <circle cx="43" cy="34" r="2.3" fill="currentColor"/><circle cx="57" cy="34" r="2.3" fill="currentColor"/><path d="M47 40 q3 3 6 0" fill="none" ${SW} stroke-width="2"/>`,"案内役の小さな猫アイコン");
+}
+function curl(size=80,{sun=true}={}){
+  return svg(size,size,"10 14 84 76",`${sun?'<circle cx="80" cy="26" r="6" fill="var(--peach)"/>':''}
+  <path d="M18 62 C16 42 34 30 54 32 C76 34 88 50 84 66 C80 80 62 86 44 84 C28 82 20 74 18 62 Z" fill="var(--art-bg)" ${SW}/>
+  <path d="M84 66 C80 78 64 82 50 77" fill="none" ${SW}/>
+  <path d="M23 52 L22 41 L31 47 Z" fill="var(--art-bg)" ${SW}/><path d="M41 47 L50 41 L49 52 Z" fill="var(--art-bg)" ${SW}/>
+  <path d="M20 60 C20 50 28 46 36 46 C44 46 50 52 50 60 C50 68 44 72 36 72 C28 72 20 68 20 60 Z" fill="var(--art-bg)" ${SW}/>
+  <circle cx="31" cy="60" r="2" fill="currentColor"/><circle cx="41" cy="60" r="2" fill="currentColor"/><path d="M34 65 q2 2 4 0" fill="none" ${SW} stroke-width="1.8"/>`,"丸まってくつろぐ猫のマーク");
+}
+function noteMark(size=80){
+  return svg(size,size,"14 6 72 94",`<path d="M38 22 L41 11 L48 20 Z" fill="var(--art-bg)" ${SW}/><path d="M54 20 L60 11 L63 22 Z" fill="var(--art-bg)" ${SW}/>
+  <rect x="24" y="20" width="52" height="66" rx="8" fill="var(--art-bg)" ${SW}/>
+  <path d="M34 42 H66 M34 52 H66 M34 62 H54" fill="none" ${SW} stroke-width="2" stroke-opacity=".55"/>
+  <path d="M64 84 C64 95 76 97 80 89" fill="none" stroke="var(--accent)" stroke-width="3.2" stroke-linecap="round"/>`,"猫耳のついたノートと、しっぽのしおり");
+}
+function earsSvg(){return `<svg width="34" height="14" viewBox="0 0 34 14" aria-hidden="true"><path d="M3 13 L5 2 L13 10 M21 10 L29 2 L31 13" fill="none" stroke="var(--accent)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`}
+function symbols(){
+  const paw=(x,y,s=1)=>`<g transform="translate(${x} ${y}) scale(${s})" fill="var(--patch)"><ellipse cx="0" cy="6" rx="7" ry="6"/><circle cx="-8" cy="-3" r="3"/><circle cx="-3" cy="-8" r="3"/><circle cx="3" cy="-8" r="3"/><circle cx="8" cy="-3" r="3"/></g>`;
+  return svg(260,110,"0 0 260 110",`
+  <circle cx="40" cy="30" r="12" fill="var(--peach)"/>
+  <ellipse cx="62" cy="82" rx="44" ry="16" fill="var(--art-bg)" ${SW}/><path d="M40 80 q22 10 44 0" fill="none" ${SW} stroke-width="2"/>
+  ${paw(140,74,1)}${paw(168,56,.9)}${paw(196,72,.8)}
+  <path d="M222 92 C240 92 246 72 236 58 C230 50 236 40 244 42" fill="none" ${SW}/>
+  <path d="M122 28 C130 14 148 12 156 20 C146 22 134 30 122 28 Z M122 28 C134 26 144 22 156 20" fill="var(--accent-soft)" ${SW} stroke-width="2"/>`,"日だまり・クッション・足あと・しっぽ・葉っぱの記号");
+}
+function loaf(size=90){
+  return svg(size,size*0.8,"8 18 92 74",`<path d="M20 86 C14 64 26 50 50 50 C76 50 90 62 88 86 Z" fill="var(--art-bg)" ${SW}/>
+  <path d="M88 84 C96 80 96 70 90 66" fill="none" ${SW}/>
+  <path d="M33 34 L32 18 L44 25 Z" fill="var(--art-bg)" ${SW}/><path d="M56 25 L68 18 L67 34 Z" fill="var(--art-bg)" ${SW}/>
+  <path d="M30 40 C30 28 38 22 50 22 C62 22 70 28 70 40 C70 50 61 56 50 56 C39 56 30 50 30 40 Z" fill="var(--art-bg)" ${SW}/>
+  <circle cx="43" cy="40" r="2.3" fill="currentColor"/><circle cx="57" cy="40" r="2.3" fill="currentColor"/><path d="M47 46 q3 3 6 0" fill="none" ${SW} stroke-width="2"/>
+  <circle cx="38" cy="46" r="3" fill="var(--peach)"/><circle cx="62" cy="46" r="3" fill="var(--peach)"/>
+  <path d="M38 56 Q50 61 62 56" fill="none" stroke="var(--accent)" stroke-width="3" stroke-linecap="round"/>`,"看板猫の香箱すわり");
+}
+
+/* ---------- 配色の見本 ---------- */
+function screen(p,mode){
+  return `<div class="scr" style="background:${p.bg};color:${p.ink}">
+    <span class="lbl">${mode}</span>
+    <span class="h">きょうの記録</span>
+    <div class="card" style="background:${p.surf};border:1px solid ${p.line}"><span>補液</span><span>100 mL ・ 19:30</span></div>
+    <div class="card" style="background:${p.surf};border:1px solid ${p.line}"><span style="color:${p.muted}">体重</span><span>4.12 kg</span></div>
+    <span class="chip" style="background:${p.soft};color:${p.ink}">投薬 済</span>
+    <div class="btn" style="background:${p.pri};color:${p.on}${p.outline?';box-shadow:inset 0 0 0 1.5px '+p.ink:''}">記録する</div>
+    <div style="height:4px;border-radius:2px;background:${p.acc};width:40%" title="アクセント（飾り）"></div>
+  </div>`;
+}
+function palPreview(P){
+  const rows=P.cr.map(r=>`<tr><th>${r[0]}</th><td class="n">${r[1]}</td><td class="n">${r[2]}</td></tr>`).join("");
+  return `<div class="pal">${screen(P.light,"明るい表示")}${screen(P.dark,"暗い表示")}</div>
+  <div class="sw">${[P.light.bg,P.light.ink,P.light.pri,P.light.acc,P.light.line].map(c=>`<i style="background:${c}" title="${c}"></i>`).join("")}<span style="font-size:.72rem;color:var(--muted);align-self:center">${[P.light.bg,P.light.ink,P.light.pri,P.light.acc].join(" ")}</span></div>
+  <div class="tblwrap"><table class="cr"><tr><th>コントラスト比</th><th class="n">明るい</th><th class="n">暗い</th></tr>${rows}</table></div>`;
+}
+const PAL={
+ c1:{light:{bg:"#FAF6F0",surf:"#FFFFFF",ink:"#4A4038",muted:"#7A6E63",pri:"#8FB5A8",on:"#4A4038",soft:"#E4EEE9",acc:"#E8B4A0",line:"#D9C9B6",outline:true},
+     dark:{bg:"#1E1A17",surf:"#29241F",ink:"#F1E9DF",muted:"#B8AC9F",pri:"#8FB5A8",on:"#1E1A17",soft:"#2E3A35",acc:"#E8B4A0",line:"#4A4038"},
+     cr:[["本文／背景","9.4","14.4"],["補助文字／背景","4.6","7.8"],["ボタン文字／ボタン","4.5（ぎりぎり）","7.7"],["ボタン／背景（3以上）","2.1 → 枠線が必要","7.7"]]},
+ c2:{light:{bg:"#FAF6F0",surf:"#FFFDF9",ink:"#3F362F",muted:"#6B5F55",pri:"#4E7A6C",on:"#FFFFFF",soft:"#DCE9E3",acc:"#E8B4A0",line:"#E6DCCF"},
+     dark:{bg:"#1C1916",surf:"#26221E",ink:"#F0E8DE",muted:"#B5A99C",pri:"#95C2B2",on:"#1C1916",soft:"#2C3D37",acc:"#E3AE99",line:"#3A332D"},
+     cr:[["本文／背景","11.0","14.4"],["補助文字／背景","5.7","7.6"],["ボタン文字／ボタン","4.9","8.9"],["ボタン／背景（3以上）","4.5","8.9"]]},
+ c3:{light:{bg:"#FBF5EA",surf:"#FFFDF8",ink:"#4D3F33",muted:"#75644F",pri:"#87602F",on:"#FFFFFF",soft:"#F3E3C8",acc:"#8FB5A8",line:"#EADCC6"},
+     dark:{bg:"#1F1A14",surf:"#2A231B",ink:"#F3E8D8",muted:"#BFAE97",pri:"#E2B87F",on:"#1F1A14",soft:"#3E3222",acc:"#9CC3B5",line:"#4B3F31"},
+     cr:[["本文／背景","9.3","14.3"],["補助文字／背景","5.2","8.0"],["ボタン文字／ボタン","5.6","9.4"],["ボタン／背景（3以上）","5.2","9.4"]]},
+};
+
+/* ---------- フォントの見本 ---------- */
+function fontPreview(h,b){
+  return `<div class="fs"><span class="fh" style="font-family:${h}">腎臓病の猫との毎日を、ゆっくり記録する。</span>
+  <span class="fb" style="font-family:${b}">きょうの補液は、ソファの上でゆっくりできました。ごはんは半分くらい。</span>
+  <span class="fn" style="font-family:${b}">体重 4.12 kg ／ 補液 100 mL ／ 0.5 mg 1日2回 ／ 11/11 19:30</span></div>`;
+}
+
+/* ---------- 問い ---------- */
+const NAMES=[
+ ["n1","ねこと、ゆっくり","ねこと ゆっくり","ねこと、ゆっくり｜腎臓病の猫のケア記録",
+  {"読みやすさ":"◎ ひらがなだけ。高齢の方にも読める","検索":"△ 名前に病名がない。サブタイトルとキーワード欄で補う（推測）","重複":"同名は見つからず。似た名前に「ねこと暮らす」「ねことあそぶ」「ねこと呼吸法」（いずれもゲーム・癒し系）","ペットロス":"◎ 病名も「治る」も含まない。お別れのあともホームに残しやすい"},true,
+  "コア・メッセージ「ゆっくり記録する」とそのままつながります。"],
+ ["n2","ひだまり猫手帳","ひだまり ねこてちょう","ひだまり猫手帳｜腎臓病の猫のケア記録",
+  {"読みやすさ":"◎","検索":"△ 「猫 手帳」には近い。病名はサブタイトルで","重複":"同名は見つからず。「健康手帳 for ねこ」（猫の健康記録）が近い分野にある。「ひだまり」を含む別分野のサービスあり","ペットロス":"◎ 日だまりは見送りの投稿でも使う象徴と重なる"},false,
+  "あたたかい印象。Instagram のトーンとも合います。"],
+ ["n3","そっと","そっと","そっと｜猫の腎臓病ケアノート",
+  {"読みやすさ":"◎ 3文字","検索":"✕ 一般的な言葉すぎて名前だけでは見つけにくい","重複":"「そっとノート」の同名は見つからず。一般語のため似た名前は多い見込み（推測）","ペットロス":"◎ いちばん静か"},false,
+  "覚えやすいが、検索ではサブタイトル頼みになります。"],
+ ["n4","ねこ腎ノート","ねこじん のーと","ねこ腎ノート｜猫の腎臓病（CKD）の記録",
+  {"読みやすさ":"○ 「腎」が読めない方もいる","検索":"◎ 「猫 腎臓」で見つかりやすい（推測）","重複":"同名は見つからず。人向けの「Kidney Note」が App Store にあるため、英語名は避けたい","ペットロス":"△ お別れのあとも病名がホームに残る"},false,
+  "役に立つことは一番伝わる。そのぶん医療っぽさが少し出ます。"],
+ ["n5","にゃんキドニー","にゃん きどにー","にゃんキドニー｜猫の腎臓病ケア記録",
+  {"読みやすさ":"○","検索":"△ 「キドニー」は日本語ではあまり検索されない（推測）","重複":"同名は見つからず","ペットロス":"△ 明るすぎて、つらい時期に合わないことがある"},false,
+  "プロジェクト名（Nyan Kidney）から。親しみはいちばん強い。"],
+ ["n6","こもれび猫日記","こもれび ねこにっき","こもれび猫日記｜腎臓病の猫と暮らす記録",
+  {"読みやすさ":"○ やや長い（6文字）","検索":"△ 「猫 日記」には近い","重複":"同名は見つからず。「こもれび庵」など別分野の名前あり","ペットロス":"◎"},false,
+  "「日記」なので、体調以外のことも書いてよい雰囲気になります。"],
+ ["n7","まるねこノート","まるねこ のーと","まるねこノート｜腎臓病の猫のケア記録",
+  {"読みやすさ":"◎","検索":"△ 病名はサブタイトルで","重複":"同名は見つからず","ペットロス":"○ かわいさ寄り"},false,
+  "丸まった猫のロゴと組み合わせやすい名前です。"],
+];
+function namePreview(n){
+  const f=Object.entries(n[4]).map(([k,v])=>`<dt>${k}</dt><dd>${v}</dd>`).join("");
+  return `<span class="nm">${n[1]}</span><span class="yomi">読み：${n[2]}</span>
+  <span class="store">ストア表示の例：${n[3]}</span><dl class="facts">${f}</dl><small>${n[6]}</small>`;
+}
+let state={answers:{},notes:{},free:""};
+function curName(){const v=state.answers.name;const n=NAMES.find(x=>x[0]===v);return n?n[1]:"ねこと、ゆっくり"}
+const Q=[
+ {id:"name",title:"アプリ名",why:"ストアでは「名前｜サブタイトル」の形にして、病名や「記録」はサブタイトル側で伝える前提です。重複は Web 検索で見た範囲だけの確認で、日本の App Store・Google Play の直接検索と商標の調査はまだです。",
+  wide:true,opts:NAMES.map(n=>({v:n[0],label:n[1],rec:n[5],html:namePreview(n)})).concat([{v:"other",label:"ほかの名前がいい（補足欄に書く）",html:'<span class="t">ほかの名前がいい</span><small>補足欄に候補や、入れたい言葉を書いてください。</small>'}])},
+ {id:"palette",title:"配色",why:"どれもミルクティー案（生成り・焦げ茶・セージ・ピーチ・ベージュ）が出発点です。アプリの画面ではボタンの文字が読めることを優先して、色の濃さを調整しています。検査値を信号の色で塗り分けることはしません。",
+  wide:true,opts:[
+   {v:"c1",label:"ミルクティー（原案のまま）",html:`<span class="t">ミルクティー（原案のまま）</span>${palPreview(PAL.c1)}<small>Instagram と同じ色。画面ではセージのボタンが背景にとけやすく、縁取りが必要です。</small>`},
+   {v:"c2",label:"ミルクティー（画面用に調整）",rec:true,html:`<span class="t">ミルクティー（画面用に調整）<span class="rec">おすすめ</span></span>${palPreview(PAL.c2)}<small>セージを深くして、白い文字のボタンが読めるようにしました。Instagram の色はそのまま使えます。このページもこの配色です。</small>`},
+   {v:"c3",label:"ミルクティー・ひだまり寄り",html:`<span class="t">ミルクティー・ひだまり寄り</span>${palPreview(PAL.c3)}<small>主役をはちみつ色にして、いちばんあたたかい印象に。セージは飾りに回します。</small>`},
+  ]},
+ {id:"font",title:"フォントの組み合わせ",why:"見出しは丸みのある書体、本文と数字は読み間違えにくい書体にします。どちらの組み合わせも Google Fonts で公開されていて、アプリに組み込める見込みです（ライセンスの最終確認は説明書を参照）。",
+  wide:true,opts:[
+   {v:"fA",label:"Zen Maru Gothic ＋ BIZ UDPGothic",rec:true,html:`<span class="t">A：Zen Maru Gothic ＋ BIZ UDPGothic<span class="rec">おすすめ</span></span>${fontPreview('"Zen Maru Gothic",sans-serif','"BIZ UDPGothic",sans-serif')}<small>Instagram で選ばれた組み合わせ。本文はユニバーサルデザインの書体で、数字と単位が読みやすい。</small>`},
+   {v:"fB",label:"M PLUS Rounded 1c ＋ Noto Sans JP",html:`<span class="t">B：M PLUS Rounded 1c ＋ Noto Sans JP</span>${fontPreview('"M PLUS Rounded 1c",sans-serif','"Noto Sans JP",sans-serif')}<small>スマホ標準の文字に近い、すっきりした組み合わせ。太さの種類が多い。やさしさは A より控えめ。</small>`},
+  ]},
+ {id:"art",title:"ラインアートとマスコットの方向",why:"線は焦げ茶で太さ一定、端は丸く。苦しむ・泣く・ぐったりした猫、目を閉じて横たわる猫は描きません。ユリやネギ類なども描きません。",
+  wide:true,opts:[
+   {v:"a1",label:"いろんな猫＋小さな案内役",rec:true,html:`<span class="t">いろんな猫＋小さな案内役<span class="rec">おすすめ</span></span><div class="art">${svg(84,92,"20 4 76 96",cat({pattern:"tabby"}),"キジトラの猫")}${svg(84,92,"20 4 76 96",cat({pattern:"patch"}),"ぶちの猫")}${svg(84,92,"20 4 76 96",cat({pattern:"solid"}),"茶色の猫")}${svg(84,92,"20 4 76 96",cat({thin:true}),"ほっそりしたシニア猫")}<span style="display:flex;align-items:center;gap:6px;font-size:.75rem;color:var(--muted)">${navIcon(38)}案内役</span></div><small>毛色・柄・体つきを変えて「うちの子に似てる」と思ってもらう。案内役の小さな顔アイコンだけ固定。Instagram の決定と同じ。</small>`},
+   {v:"a2",label:"看板猫を1匹",html:`<span class="t">看板猫を1匹</span><div class="art">${svg(96,104,"20 4 76 96",cat({collar:true,cheek:true}),"首輪をつけた看板猫")}${loaf(100)}</div><small>同じ猫がいつも案内する。覚えてもらいやすい反面、毛色の違う子の飼い主さんには距離が出ることも。名前はあとで決めます。</small>`},
+   {v:"a3",label:"猫の姿は描かず、記号で",html:`<span class="t">猫の姿は描かず、記号で</span><div class="art">${symbols()}</div><small>日だまり・クッション・足あと・しっぽ・葉っぱだけで表す。お別れのあとにも見てつらくなりにくい。親しみはやや控えめ。</small>`},
+  ]},
+ {id:"logo",title:"ロゴの方向",why:"十字・カルテ・聴診器など医療を思わせる記号は使いません。ワードマークには、いま選んでいるアプリ名を表示しています（未選択のときは「ねこと、ゆっくり」で仮表示）。",
+  wide:true,opts:[
+   {v:"l1",label:"丸まってくつろぐ猫",rec:true,html:`<span class="t">丸まってくつろぐ猫<span class="rec">おすすめ</span></span><div class="art"><div class="logo-row">${curl(78)}<span class="wm" data-wm></span></div><div class="appicon">${curl(52,{sun:false})}</div><span class="note">右はアプリアイコンの見本</span></div><small>日だまりで丸くなる猫。目は開けて、寝ている・横たわる姿に見えないようにしています。丸い形で「ゆっくり」を表します。</small>`},
+   {v:"l2",label:"猫耳のノート＋しっぽのしおり",html:`<span class="t">猫耳のノート＋しっぽのしおり</span><div class="art"><div class="logo-row">${noteMark(70)}<span class="wm" data-wm></span></div><div class="appicon alt">${noteMark(48)}</div><span class="note">右はアプリアイコンの見本</span></div><small>「記録のアプリ」であることがひと目で伝わる。猫らしさは耳としっぽだけ。</small>`},
+   {v:"l3",label:"文字だけ（猫耳つき）",html:`<span class="t">文字だけ（猫耳つき）</span><div class="art"><div class="logo-row"><span class="wm wm3">${earsSvg()}<span data-wm></span></span></div><span class="note">アイコンは頭文字1字＋猫耳にする想定</span></div><small>いちばん控えめで、病院向けの資料にも置きやすい。小さく表示すると猫らしさが消えやすい。</small>`},
+  ]},
+];
+
+function render(){
+  const root=$("#qs"); root.innerHTML="";
+  Q.forEach((q,i)=>{
+    const sec=document.createElement("section"); sec.className="q"; sec.id="q-"+q.id;
+    sec.innerHTML=`<div class="qnum">問い ${i+1} / ${Q.length}</div><h2>${q.title}</h2><p class="why">${q.why}</p>`;
+    const g=document.createElement("div"); g.className="opts"+(q.wide?" wide":"");
+    q.opts.forEach(o=>{
+      const b=document.createElement("button"); b.type="button"; b.className="opt"; b.dataset.q=q.id; b.dataset.v=o.v;
+      b.setAttribute("aria-label",o.label+(o.rec?"（おすすめ）":""));
+      b.innerHTML=o.html.startsWith('<span class="t"')||o.html.startsWith('<span class="nm"')?(o.rec&&o.html.startsWith('<span class="nm"')?o.html.replace('</span>','<span class="rec">おすすめ</span></span>'):o.html):o.html;
+      b.addEventListener("click",()=>pick(q,o.v)); g.appendChild(b);
+    });
+    sec.appendChild(g);
+    const lb=document.createElement("label"); lb.className="nl"; lb.htmlFor="note-"+q.id; lb.textContent="補足（任意）";
+    const ta=document.createElement("textarea"); ta.id="note-"+q.id; ta.rows=1; ta.value=state.notes[q.id]||"";
+    ta.addEventListener("input",()=>{state.notes[q.id]=ta.value;dirty()});
+    sec.appendChild(lb); sec.appendChild(ta); root.appendChild(sec);
+  });
+  $("#free").value=state.free;
+  paint();
+}
+$("#free").addEventListener("input",e=>{state.free=e.target.value;dirty()});
+function pick(q,v){state.answers[q.id]=v;paint();dirty();}
+function paint(){
+  document.querySelectorAll(".opt").forEach(b=>b.setAttribute("aria-pressed",state.answers[b.dataset.q]===b.dataset.v?"true":"false"));
+  let n=0; Q.forEach(q=>{const ok=!!state.answers[q.id]; if(ok)n++; const s=document.getElementById("q-"+q.id); if(s)s.classList.toggle("done",ok)});
+  $("#fill").style.width=(n/Q.length*100)+"%"; $("#count").textContent=`${n} / ${Q.length} 回答済み`;
+  const nm=curName(); document.querySelectorAll("[data-wm]").forEach(e=>e.textContent=nm);
+}
+function dirty(){$("#status").textContent="未送信の変更があります";}
+function labelOf(q,v){const o=q.opts.find(o=>o.v===v);return o?o.label:v}
+function summary(){
+  return Q.map((q,i)=>{const a=state.answers[q.id];const t=a?labelOf(q,a):"（未回答）";
+    const n=state.notes[q.id]?`／補足：${state.notes[q.id]}`:""; return `Q${i+1} ${q.title}\n→ ${t}${n}`}).join("\n\n")+(state.free?`\n\n自由記入：${state.free}`:"");
+}
+let ref=null;
+render();
+(async()=>{
+  let db=null;
+  try{ db = await window.claude?.use?.("db"); }catch(e){ db=null; }
+  if(!db){ $("#send").textContent="回答をコピー"; $("#status").textContent="この表示では保存できません。「回答をコピー」を押して、チャットに貼り付けてください。"; return; }
+  ref = db.doc("answers/brand_base");
+  const t=setTimeout(()=>{$("#status").textContent="前回の回答を読み込めませんでした。新しく回答できます。"},10000);
+  try{const s=await ref.get(); clearTimeout(t);
+    if(s.exists){const d=s.data(); Object.assign(state.answers,d.answers||{}); Object.assign(state.notes,d.notes||{}); state.free=d.free||""; render();
+      $("#status").textContent="前回送った回答を読み込みました。変更して送り直せます。";}
+  }catch(e){clearTimeout(t);}
+})();
+$("#send").addEventListener("click",async()=>{
+  const btn=$("#send");
+  if(!ref){ try{await navigator.clipboard.writeText(summary()); $("#status").textContent="コピーしました。チャットに貼り付けてください。";}
+    catch(e){$("#status").textContent="コピーできませんでした。選んだ内容をチャットでお知らせください。";} return; }
+  btn.disabled=true; $("#status").textContent="送信中…";
+  try{ await ref.set({answers:state.answers,notes:state.notes,free:state.free,summary:summary(),submittedAt:new Date().toISOString()});
+    $("#status").textContent="ボンベイに届きました。チャットで「送ったよ」と伝えてください。";
+  }catch(e){ $("#status").textContent="保存できませんでした（"+(e&&e.code||"エラー")+"）。もう一度押すか、チャットで答えを教えてください。"; }
+  btn.disabled=false;
+});
+</script>
