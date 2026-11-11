@@ -1,6 +1,6 @@
 # コメント・DM・質問箱の返信テンプレート（案）
 
-- ステータス：`draft`（ロシアンのレビュー：修正後OK〔`docs/compliance/review_2026-11-11_instagram_v2.md`〕→ R-1〜R-7 を反映済み。次は監修獣医師〔ユーザー〕の確認）
+- ステータス：`compliance_reviewed`（ロシアン 2026-11-11。【要確認】の窓口は確認できるまで送らない。次は監修獣医師〔ユーザー〕の確認）
 - 作成：スコティ／2026-11-11
 - きっかけ：ロシアン「Instagram 12月分レビュー」C-2・C-3（`docs/compliance/review_2026-11-09_instagram_dec.md`）。**アカウント開設の条件**になっています。
 - 前提：`CLAUDE.md`、`design_direction.md` §6（ペットロスのトーン）、`calendar_2026-12.md`
