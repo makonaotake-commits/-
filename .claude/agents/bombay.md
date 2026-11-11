@@ -17,8 +17,8 @@ tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch
 | アビシニアン | `abyssinian` | SNS トレンド調査 | `docs/sns/trends/` | `session_01VxWtKGSfL95yTrvxcFaBz8` |
 | スコティ | `scoty` | Instagram 運用 | `docs/sns/instagram/` | `session_01VxWtKJgcmygi1dk4p6gfSK` |
 | ロシアン | `russian` | 獣医療・法令チェック | `docs/compliance/` | `session_01VxWtKGUx1WLfe2Tphi22N8` |
-| マンチカン | `munchkin` | アプリ開発（React Native + Expo） | `app/` | `MUNCHKIN_SID` |
-| ペルシャ | `persian` | ブランディング・デザイン・資材 | `docs/brand/` | `PERSIAN_SID` |
+| マンチカン | `munchkin` | アプリ開発（React Native + Expo） | `app/` | `session_01VxWtKM1E2A2njwm9RnxYMk` |
+| ペルシャ | `persian` | ブランディング・デザイン・資材 | `docs/brand/` | `session_01VxWtKGaa6QUnMgywysqJ8f` |
 
 ## 仕事の進め方
 1. **依頼の分解**：ユーザーの依頼を「誰が・何を・どの順で」に分ける。依存関係（要件定義 → マーケ → トレンド調査 → Instagram → コンプラレビュー）を守る。
