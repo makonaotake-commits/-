@@ -26,4 +26,5 @@
 - 「開発猫の立ち上げ」シート5問（立ち上げ可否・名前・試作の触り方・試作の画面）：https://claude.ai/artifact/JGKtDNnJf9Ph3ZQKdHgN5k
 - ✅ マーケ戦略の確認シート：回答受領（13:37）。コア・メッセージは案3
 - 「薬の候補リスト確認」シート7問：https://claude.ai/artifact/FiPT7yHMFMST71JNiPqDpW
+- 「デザイン猫の立ち上げ」シート6問（ユーザーの依頼でブランディング・資材担当を追加）：https://claude.ai/artifact/3GuMiP5R7DCdLuKfAgivcF
 - 未定：アプリ名（スコティのプロフィール案は【アプリ名】で仮置き）
