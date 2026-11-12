@@ -1,6 +1,6 @@
 # 03 ユーザーストーリー
 
-- 作成：ブリショー ／ 版：第5版（2026-11-12。「要件 第4版の確認」「分析の再確認」シートの回答を反映） ／ レビュー状態：`compliance_reviewed`（第5版。ロシアン 2026-11-12 → `docs/compliance/review_2026-11-12_requirements_v5.md`）
+- 作成：ブリショー ／ 版：第5版（2026-11-12。「要件 第4版の確認」「分析の再確認」シートの回答と、ロシアン R-12 の申し送りを反映） ／ レビュー状態：`compliance_reviewed`（第5版。ロシアン 2026-11-12 → `docs/compliance/review_2026-11-12_requirements_v5.md`）
 - 形式：「〜として、〜したい。なぜなら〜」＋ 受け入れ条件（Given / When / Then）
 - ペルソナ：A＝診断直後の飼い主さん、B＝補液中の多頭飼い家族、C＝高齢の飼い主さん（→ `02_personas.md`）
 - 関連する機能 ID は `04_functional_requirements.md` を参照。⚠️ はロシアンの確認が必要なもの。
