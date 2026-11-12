@@ -1,0 +1,11 @@
+{
+  "expo": {
+    "name": "Nyan Kidney 試作",
+    "slug": "nyan-kidney-prototype",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "web": { "bundler": "metro", "output": "single" },
+    "plugins": ["expo-status-bar"]
+  }
+}
