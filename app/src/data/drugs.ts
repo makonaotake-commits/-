@@ -45,6 +45,7 @@ export const DRUG_CANDIDATES: DrugCandidate[] = [
   { id: 'cerenia_tab', name: 'セレニア錠', aliases: ['セレニア'], form: '錠剤', maker: UNKNOWN, kind: 'home', verified: false },
   { id: 'cerenia_inj', name: 'セレニア注射液', aliases: ['セレニア'], form: '注射', maker: UNKNOWN, kind: 'hospital', verified: false },
   { id: 'rapros', name: 'ラプロス', aliases: [], form: '錠剤', maker: '東レ（試作用の仮データ）', kind: 'home', verified: false },
+  { id: 'elura', name: 'エルーラ', aliases: [], form: UNKNOWN, maker: 'エランコジャパン（試作用の仮データ）', kind: 'home', verified: false },
   { id: 'renalzin', name: 'レンジアレン', aliases: [], form: UNKNOWN, maker: UNKNOWN, kind: 'home', verified: false },
   // 人体用医薬品（一般名＋代表的な製品名。v0.2 では全件「要確認」）
   h('kremezin', '球形吸着炭', ['クレメジン'], 'カプセル・細粒'),
