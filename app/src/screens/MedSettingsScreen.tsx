@@ -52,7 +52,7 @@ export function MedSettingsScreen({ back }: { back: (msg?: string) => void }) {
               value={draft.name}
               onChangeText={(t) => setDraft({ ...draft, name: t, candidateId: undefined, maker: undefined })}
               suggestions={suggestions}
-              render={(x) => (x.kind === 'drug' ? { title: x.d.name, sub: `${x.d.form}／${x.d.maker}${x.d.verified ? '' : '（試作用の仮データ）'}` } : { title: x.name, sub: '前に入力した名前' })}
+              render={(x) => (x.kind === 'drug' ? { title: x.d.name, sub: `${x.d.form}／${x.d.maker}${x.d.verified || x.d.maker.includes('試作用') ? '' : '（試作用の仮データ）'}` } : { title: x.name, sub: '前に入力した名前' })}
               onPick={(x) =>
                 x.kind === 'drug'
                   ? setDraft({ ...draft, name: x.d.name, candidateId: x.d.id, form: x.d.form, maker: x.d.maker, kind: x.d.kind })
@@ -85,6 +85,7 @@ export function MedSettingsScreen({ back }: { back: (msg?: string) => void }) {
               value={draft.kind}
               onChange={(v) => v && setDraft({ ...draft, kind: v })}
             />
+            {draft.kind === 'hospital' ? <T small style={{ marginTop: 8 }}>病院で受けた処置を記録する欄です。</T> : null}
           </Field>
           {draft.kind === 'home' ? (
             <Field label="1回の量（任意）" hint="獣医師に指示された量を入力してください。">

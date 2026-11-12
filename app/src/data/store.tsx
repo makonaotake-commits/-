@@ -205,7 +205,7 @@ export function sampleData(): Data {
       name: 'ラプロス',
       candidateId: 'rapros',
       form: '錠剤',
-      maker: '東レ（確認中）',
+      maker: '東レ（試作用の仮データ）',
       dose: '1錠',
       kind: 'home',
       reminder: { enabled: true, times: ['08:00', '20:00'], freq: { kind: 'daily' } },

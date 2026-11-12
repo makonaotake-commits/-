@@ -11,14 +11,14 @@ export type DrugCandidate = {
   /** 検索で引っかける別名（一般名・製品名） */
   aliases: string[];
   form: string;
-  maker: string; // 未確認のものは「確認中」
+  maker: string; // 未確認のものは「試作用の仮データ」
   /** 選んだときの記録の種類の初期値（注射は「病院での処置」） */
   kind: 'home' | 'hospital';
   /** 一次情報で確認済みか（v0.2 の「一次確認：済」）。false は試作用の仮データ */
   verified: boolean;
 };
 
-const UNKNOWN = '確認中';
+const UNKNOWN = '試作用の仮データ';
 const BI = 'ベーリンガーインゲルハイムアニマルヘルスジャパン株式会社';
 const RV = 'リケンベッツファーマ株式会社';
 
@@ -36,7 +36,7 @@ const h = (id: string, generic: string, brands: string[], form: string): DrugCan
 
 export const DRUG_CANDIDATES: DrugCandidate[] = [
   // 動物用医薬品
-  { id: 'covalzin', name: 'コバルジン', aliases: [], form: 'カプセル', maker: 'エランコジャパン（確認中）', kind: 'home', verified: false },
+  { id: 'covalzin', name: 'コバルジン', aliases: [], form: 'カプセル', maker: 'エランコジャパン（試作用の仮データ）', kind: 'home', verified: false },
   { id: 'semintra4', name: 'セミントラ 4mg/mL 経口液猫', aliases: ['セミントラ'], form: '経口液', maker: BI, kind: 'home', verified: true },
   { id: 'semintra10', name: 'セミントラ 10mg/mL 経口液猫', aliases: ['セミントラ'], form: '経口液', maker: BI, kind: 'home', verified: true },
   { id: 'fortekor', name: 'フォルテコール', aliases: [], form: '錠剤', maker: UNKNOWN, kind: 'home', verified: false },
@@ -44,7 +44,7 @@ export const DRUG_CANDIDATES: DrugCandidate[] = [
   { id: 'maropitat_inj', name: 'マロピタット注', aliases: ['マロピタット'], form: '注射', maker: RV, kind: 'hospital', verified: true },
   { id: 'cerenia_tab', name: 'セレニア錠', aliases: ['セレニア'], form: '錠剤', maker: UNKNOWN, kind: 'home', verified: false },
   { id: 'cerenia_inj', name: 'セレニア注射液', aliases: ['セレニア'], form: '注射', maker: UNKNOWN, kind: 'hospital', verified: false },
-  { id: 'rapros', name: 'ラプロス', aliases: [], form: '錠剤', maker: '東レ（確認中）', kind: 'home', verified: false },
+  { id: 'rapros', name: 'ラプロス', aliases: [], form: '錠剤', maker: '東レ（試作用の仮データ）', kind: 'home', verified: false },
   { id: 'renalzin', name: 'レンジアレン', aliases: [], form: UNKNOWN, maker: UNKNOWN, kind: 'home', verified: false },
   // 人体用医薬品（一般名＋代表的な製品名。v0.2 では全件「要確認」）
   h('kremezin', '球形吸着炭', ['クレメジン'], 'カプセル・細粒'),
