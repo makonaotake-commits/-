@@ -2,7 +2,7 @@
 
 - 作成：ブリショー（要件定義）
 - 版：第3版（2026-11-10 更新。「要件定義の確認シート」「開発の進め方シート」の回答と、ロシアンの第3版レビューを反映）
-- レビュー状態：`compliance_reviewed`（第2版。ロシアン 2026-11-09 → `docs/compliance/review_2026-11-09_requirements_v2.md`）
+- レビュー状態：`compliance_reviewed`（第4版。ロシアン 2026-11-12 → `docs/compliance/review_2026-11-11_requirements_v4.md`）
 - 前提資料：`CLAUDE.md`、`docs/kickoff_answers.md`（ユーザー回答・決定事項。最優先）
 
 > 本書の記載はすべてアプリの仕様の検討であり、獣医療上の助言ではありません。治療・食事・補液・投薬は **かかりつけの獣医師の指示を優先** します。
