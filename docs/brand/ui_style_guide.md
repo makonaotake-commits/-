@@ -1,7 +1,7 @@
 # UI スタイルガイド — ねこと、ゆっくり（マンチカン向け）
 
 - バージョン：v1.0（2026-11-15）／作成：ペルシャ
-- ステータス：`draft`（ロシアンのレビュー待ち。目印・グラフ・演出の部分は確認が必要）
+- ステータス：`compliance_reviewed`（ロシアン 2026-11-15 → `docs/compliance/review_2026-11-15_brand_guide.md`。実際の画面の文言は個別にレビュー）
 - 前提：`docs/brand/brand_guide.md`、いまの試作 `app/src/config/theme.ts`・`app/src/components/ui.tsx`
 - ねらい：**`theme.ts` の値を差し替えるだけで、全画面がこの見た目になる**ようにする。旧トークン名（`sage`・`peach` など）からの置きかえ表を §2-3 に載せています。
 
