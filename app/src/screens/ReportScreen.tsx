@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Platform, ScrollView, Text, View } from 'react-native';
 import { Screen } from '../components/Screen';
-import { Card, CatSwitcher, Choice, H, Note, T, useCurrentCat } from '../components/ui';
+import { buildReportHtml } from '../report/reportHtml';
+import { canMakePdf, sharePdf } from '../report/sharePdf';
+import { Button, Card, CatSwitcher, Choice, H, Note, T, useCurrentCat } from '../components/ui';
 import { WeightChart } from '../components/WeightChart';
 import { APPETITE, ENERGY, FLUID_STATE, labelOf, MED_RESULT, STOOL_STATE, TEXT, URINE_CLUMP, WATER } from '../config/labels';
 import { fonts } from '../config/theme';
@@ -50,6 +52,8 @@ export function ReportScreen({ catId, onBack }: { catId?: string; onBack?: () =>
     update((x) => ({ ...x, usage: { ...x.usage, reportOpens: [...x.usage.reportOpens, new Date().toISOString()].slice(-500) } }));
   }, [update]);
   const [period, setPeriod] = useState<Period>('14');
+  const [pdfBusy, setPdfBusy] = useState(false);
+  const [pdfError, setPdfError] = useState(false);
   const to = nowParts().date;
 
   if (!cat) return <Screen title="獣医師に見せるレポート"><T>猫を登録すると、レポートを作れます。</T></Screen>;
@@ -117,9 +121,29 @@ export function ReportScreen({ catId, onBack }: { catId?: string; onBack?: () =>
           value={period}
           onChange={(v) => v && setPeriod(v)}
         />
-        {Platform.OS === 'web' ? (
-          <T small sub style={{ marginTop: 12 }}>ブラウザの試作では、画面で見る形だけです。PDF にして共有・印刷するのは、iPhone 版で作ります。</T>
-        ) : null}
+        {canMakePdf ? (
+          <>
+            <Button
+              label={pdfBusy ? 'PDF を作っています…' : 'PDF にして共有・印刷する'}
+              disabled={pdfBusy}
+              onPress={async () => {
+                setPdfBusy(true);
+                setPdfError(false);
+                try {
+                  await sharePdf(buildReportHtml(data, cat, from, to), `${cat.name}ちゃんの記録`);
+                } catch {
+                  setPdfError(true);
+                } finally {
+                  setPdfBusy(false);
+                }
+              }}
+              style={{ marginTop: 12 }}
+            />
+            {pdfError ? <T small>PDF を作れませんでした。もう一度お試しください。</T> : null}
+          </>
+        ) : (
+          <T small sub style={{ marginTop: 12 }}>ブラウザの試作では、画面で見る形だけです。PDF にして共有・印刷するのは、iPhone 版でできます。</T>
+        )}
       </View>
 
       {/* 表紙 */}
