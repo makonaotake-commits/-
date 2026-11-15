@@ -31,3 +31,4 @@
 - `/weekly-sns [本数]` … 週次の SNS 運用サイクル
 - `/review <ファイル>` … コンプライアンスレビュー
 - 個別に頼む場合：「ブリショーで食事記録機能のユーザーストーリーを書いて」など
+- [通知「やった」の記録 確認シート](notify_done.html)（[公開ページ](https://claude.ai/artifact/T8oaw54gtfXfae4swPazmK)）
