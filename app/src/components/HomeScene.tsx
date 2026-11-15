@@ -18,10 +18,12 @@ function timeOfDay(h: number) {
   return '夜';
 }
 
-export function HomeScene() {
+export function HomeScene({ paused }: { paused?: boolean }) {
   const c = useColors();
   const { data } = useStore();
-  const calm = useQuiet();
+  const quiet = useQuiet();
+  // お休み中・一覧から外した猫の画面では、演出を止める（F-29）
+  const calm = quiet || !!paused;
   const now = new Date();
   const dayIndex = Math.floor(now.getTime() / 86400000);
   const label = calm ? '静かな絵（演出を止めています）' : `${SEASONS[now.getMonth()]}・${timeOfDay(now.getHours())}・${POSES[dayIndex % POSES.length]}`;

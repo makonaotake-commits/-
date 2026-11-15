@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Platform, ScrollView, Text, View } from 'react-native';
 import { Screen } from '../components/Screen';
 import { Card, CatSwitcher, Choice, H, Note, T, useCurrentCat } from '../components/ui';
 import { WeightChart } from '../components/WeightChart';
 import { APPETITE, ENERGY, FLUID_STATE, labelOf, MED_RESULT, STOOL_STATE, TEXT, URINE_CLUMP, WATER } from '../config/labels';
-import { fonts, sizes } from '../config/theme';
-import { useColors } from '../config/useTheme';
+import { fonts } from '../config/theme';
+import { useColors, useSizes } from '../config/useTheme';
 import { ConditionRecord, nowParts, shortDate, toDateStr, useStore } from '../data/store';
 
 const NR = TEXT.noRecord;
@@ -25,6 +25,7 @@ function daysBetween(from: string, to: string) {
 
 function Cell({ children, w = 96, head, first }: { children: React.ReactNode; w?: number; head?: boolean; first?: boolean }) {
   const colors = useColors();
+  const sizes = useSizes();
   return (
     <View style={{ width: w, paddingVertical: 8, paddingHorizontal: 6, borderBottomWidth: 1, borderColor: colors.border, backgroundColor: head ? colors.primaryTint : first ? colors.background : colors.surface }}>
       <Text style={{ fontFamily: head ? fonts.bodyBold : fonts.body, fontSize: sizes.small, color: colors.text }}>{children}</Text>
@@ -39,10 +40,15 @@ function sumWithDays(recs: (ConditionRecord | undefined)[], key: 'urineCount' | 
   return `合計 ${vals.reduce((a, b) => a + b, 0)}回（記録のある日数 ${vals.length}/${totalDays}日）`;
 }
 
-export function ReportScreen() {
-  const { data } = useStore();
+export function ReportScreen({ catId, onBack }: { catId?: string; onBack?: () => void } = {}) {
+  const { data, update } = useStore();
   const colors = useColors();
-  const cat = useCurrentCat();
+  const current = useCurrentCat();
+  const cat = catId ? data.cats.find((c) => c.id === catId) : current;
+  // 利用のまとめ（F-28）用に、レポートを開いた日時を端末内に残す
+  useEffect(() => {
+    update((x) => ({ ...x, usage: { ...x.usage, reportOpens: [...x.usage.reportOpens, new Date().toISOString()].slice(-500) } }));
+  }, [update]);
   const [period, setPeriod] = useState<Period>('14');
   const to = nowParts().date;
 
@@ -98,9 +104,9 @@ export function ReportScreen() {
   const created = new Date();
 
   return (
-    <Screen title="獣医師に見せるレポート">
+    <Screen title="獣医師に見せるレポート" onBack={onBack}>
       <View nativeID="noprint-controls">
-        <CatSwitcher />
+        {catId ? null : <CatSwitcher />}
         <View style={{ height: 12 }} />
         <Choice
           options={[

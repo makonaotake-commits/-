@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { AccessibilityInfo, Platform, useColorScheme } from 'react-native';
 import { useStore } from '../data/store';
-import { Colors, darkColors, lightColors } from './theme';
+import { Colors, darkColors, lightColors, scaleSizes, Sizes, TEXT_SCALE } from './theme';
 
 /** Web 版：ページの data-theme（表示側の明暗の選択）を優先し、なければ OS の設定を見る */
 function readWebScheme(): 'light' | 'dark' {
@@ -65,4 +65,11 @@ export function useQuiet(): boolean {
   const { data } = useStore();
   const reduce = useReduceMotion();
   return data.settings.calmMotion || reduce;
+}
+
+/** 文字サイズの設定（標準／大／特大）に合わせた大きさ */
+export function useSizes(): Sizes {
+  const { data } = useStore();
+  const f = TEXT_SCALE[data.settings.textSize] ?? 1;
+  return useMemo(() => scaleSizes(f), [f]);
 }

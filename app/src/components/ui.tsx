@@ -1,10 +1,10 @@
 import React, { useMemo } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, TextInputProps, TextStyle, View, ViewStyle } from 'react-native';
-import { Colors, fonts, sizes } from '../config/theme';
-import { useColors } from '../config/useTheme';
+import { Colors, fonts, Sizes } from '../config/theme';
+import { useColors, useSizes } from '../config/useTheme';
 import { Cat, useStore } from '../data/store';
 
-function makeStyles(c: Colors) {
+function makeStyles(c: Colors, sizes: Sizes) {
   return StyleSheet.create({
     card: {
       backgroundColor: c.surface,
@@ -64,17 +64,17 @@ function makeStyles(c: Colors) {
     },
     counterRow: { flexDirection: 'row', alignItems: 'center', gap: 16 },
     round: {
-      width: 56,
-      height: 56,
-      borderRadius: 28,
+      width: sizes.touch,
+      height: sizes.touch,
+      borderRadius: sizes.touch / 2,
       borderWidth: 2,
       borderColor: c.borderStrong,
       backgroundColor: c.surface,
       alignItems: 'center',
       justifyContent: 'center',
     },
-    roundText: { fontSize: 26, color: c.text },
-    counterValue: { fontFamily: fonts.body, fontSize: 22, color: c.text, minWidth: 80, textAlign: 'center' },
+    roundText: { fontSize: Math.round(sizes.body * 1.45), color: c.text },
+    counterValue: { fontFamily: fonts.body, fontSize: Math.round(sizes.body * 1.22), color: c.text, minWidth: 80, textAlign: 'center' },
     badge: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 16 },
     avatar: {
       width: 44,
@@ -94,11 +94,13 @@ function makeStyles(c: Colors) {
 /** 今の明暗に合わせた共通スタイル */
 export function useStyles() {
   const c = useColors();
-  return useMemo(() => ({ c, s: makeStyles(c) }), [c]);
+  const z = useSizes();
+  return useMemo(() => ({ c, z, s: makeStyles(c, z) }), [c, z]);
 }
 
 export function T({ children, style, sub, small, bold }: { children: React.ReactNode; style?: TextStyle; sub?: boolean; small?: boolean; bold?: boolean }) {
   const c = useColors();
+  const sizes = useSizes();
   const size = small ? sizes.small : sizes.body;
   return (
     <Text style={[{ fontFamily: bold ? fonts.bodyBold : fonts.body, color: sub ? c.textSub : c.text, fontSize: size, lineHeight: size * 1.6 }, style]}>
@@ -109,6 +111,7 @@ export function T({ children, style, sub, small, bold }: { children: React.React
 
 export function H({ children, level = 2 }: { children: React.ReactNode; level?: 1 | 2 }) {
   const c = useColors();
+  const sizes = useSizes();
   const size = level === 1 ? sizes.title : sizes.heading;
   return (
     <Text
@@ -256,10 +259,11 @@ export function CatBadge({ cat }: { cat?: Cat }) {
 export function CatSwitcher() {
   const { data, selectedCatId, selectCat } = useStore();
   const { s } = useStyles();
-  if (data.cats.length === 0) return null;
+  const cats = data.cats.filter((c) => !c.archived);
+  if (cats.length === 0) return null;
   return (
     <View style={s.choiceWrap}>
-      {data.cats.map((cat) => {
+      {cats.map((cat) => {
         const on = cat.id === selectedCatId;
         return (
           <Pressable
@@ -272,7 +276,10 @@ export function CatSwitcher() {
             <View style={[s.avatar, { width: 36, height: 36 }]}>
               <Text style={[s.avatarText, { fontSize: 16 }]}>{cat.name.slice(0, 1)}</Text>
             </View>
-            <Text style={[s.chipText, on && s.chipTextOn]}>{cat.name}</Text>
+            <Text style={[s.chipText, on && s.chipTextOn]}>
+              {cat.name}
+              {cat.paused ? '（お休み中）' : ''}
+            </Text>
           </Pressable>
         );
       })}
@@ -282,7 +289,7 @@ export function CatSwitcher() {
 
 export function useCurrentCat() {
   const { data, selectedCatId } = useStore();
-  return data.cats.find((c) => c.id === selectedCatId);
+  return data.cats.find((c) => c.id === selectedCatId) ?? data.cats.find((c) => !c.archived);
 }
 
 export function Note({ children }: { children: React.ReactNode }) {

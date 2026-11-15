@@ -65,3 +65,22 @@ export const sizes = {
   radiusSmall: 12,
   touch: 56, // 押せるものの最小の高さ
 };
+
+export type Sizes = typeof sizes;
+
+/** 文字サイズ（F-11）の倍率。押せるものの高さも一緒に少し大きくする */
+export const TEXT_SCALE = { normal: 1, large: 1.15, xlarge: 1.3 } as const;
+
+export function scaleSizes(f: number): Sizes {
+  const r = (n: number) => Math.round(n * f);
+  return {
+    ...sizes,
+    title: r(sizes.title),
+    heading: r(sizes.heading),
+    body: r(sizes.body),
+    label: r(sizes.label),
+    small: r(sizes.small),
+    number: r(sizes.number),
+    touch: Math.max(sizes.touch, r(sizes.touch * (0.5 + f / 2))),
+  };
+}

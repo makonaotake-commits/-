@@ -4,7 +4,7 @@ import { HomeScene } from '../components/HomeScene';
 import { ConfirmBox, Screen } from '../components/Screen';
 import { Button, Card, CatSwitcher, Field, H, Input, Note, T, useCurrentCat } from '../components/ui';
 import { FLUID_STATE, labelOf, MED_RESULT, TEXT } from '../config/labels';
-import { emptyData, isReminderDay, newId, nowParts, sampleData, useStore } from '../data/store';
+import { Cat, isReminderDay, newId, nowParts, sampleData, shortDate, useStore } from '../data/store';
 import type { Route } from '../../App';
 
 export function HomeScreen({ go }: { go: (r: Route) => void }) {
@@ -13,8 +13,11 @@ export function HomeScreen({ go }: { go: (r: Route) => void }) {
   const { date } = nowParts();
   const [adding, setAdding] = useState(false);
   const [name, setName] = useState('');
-  const [confirmClear, setConfirmClear] = useState(false);
   const [deleting, setDeleting] = useState<string>();
+
+  const patchCat = (id: string, p: Partial<Cat>) => update((x) => ({ ...x, cats: x.cats.map((c) => (c.id === id ? { ...c, ...p } : c)) }));
+  // お休みの期間が過ぎた猫（自動では再開しない。画面の中でだけ聞く。F-10）
+  const endedPauses = data.cats.filter((c) => !c.archived && c.paused?.until && c.paused.until < date && !c.paused.askedAfterEnd);
 
   const d = new Date();
   const today = `${d.getMonth() + 1}月${d.getDate()}日（${['日', '月', '火', '水', '木', '金', '土'][d.getDay()]}）`;
@@ -39,15 +42,17 @@ export function HomeScreen({ go }: { go: (r: Route) => void }) {
     </Card>
   );
 
-  if (data.cats.length === 0) {
+  const activeCats = data.cats.filter((c) => !c.archived);
+  if (activeCats.length === 0) {
     return (
-      <Screen title="はじめまして">
+      <Screen title={data.cats.length === 0 ? 'はじめまして' : '今日の記録'}>
         <T style={{ marginBottom: 16 }}>このアプリは、腎臓病の猫との毎日を記録して、獣医師に見せるためのものです。診断・判定・治療の提案はしません。</T>
         <Note>{TEXT.vetFirst}</Note>
         <H>猫を登録する</H>
         {addForm}
         <H>試作をすぐに触ってみる</H>
         <T sub small style={{ marginBottom: 8 }}>架空の猫2匹（むぎ・こはく）と、2週間分の記録が入ります。</T>
+        {data.cats.length > 0 ? <T sub small style={{ marginBottom: 8 }}>一覧にいる猫はいません。一覧から外した猫は、設定の「一覧から外した猫」から戻せます。</T> : null}
         <Button kind="secondary" label="サンプルの記録を入れる" onPress={() => replaceAll(sampleData())} />
         <Note>{TEXT.prototypeNote}</Note>
       </Screen>
@@ -95,14 +100,23 @@ export function HomeScreen({ go }: { go: (r: Route) => void }) {
   return (
     <Screen>
       <T sub>{today}</T>
-      <HomeScene />
+      <HomeScene paused={!!cat?.paused} />
       <H level={1}>今日の記録</H>
       <CatSwitcher />
       {adding ? addForm : <Button kind="quiet" label="＋ 猫を追加する" onPress={() => setAdding(true)} style={{ alignSelf: 'flex-start' }} />}
       {saveFailed ? <Note>このブラウザでは記録を保存できませんでした。画面を閉じると記録は消えます（試作のため）。</Note> : null}
 
+      {endedPauses.map((c) => (
+        <ConfirmCard3 key={c.id} cat={c} onResume={() => patchCat(c.id, { paused: undefined })} onKeep={() => patchCat(c.id, { paused: { ...c.paused!, until: undefined, askedAfterEnd: true } })} onArchive={() => patchCat(c.id, { archived: true })} />
+      ))}
+
       {cat ? (
         <>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', columnGap: 16 }}>
+            <Button kind="quiet" label={`${cat.name}ちゃんのプロフィール・お休み ›`} onPress={() => go({ name: 'catProfile', id: cat.id })} />
+          </View>
+          {cat.nextVisit && cat.nextVisit >= date ? <T>次の通院：{Number(cat.nextVisit.slice(5, 7))}月{Number(cat.nextVisit.slice(8, 10))}日</T> : null}
+          {cat.paused ? <Note>{cat.name}ちゃんの通知は、お休みしています。記録はこれまでどおりできます。</Note> : null}
           <View style={{ marginTop: 8 }}>
             <Button label={`${cat.name}ちゃんの体調を記録する${conds.length ? '（今日の記録を開く）' : ''}`} onPress={() => go({ name: 'condition' })} style={{ minHeight: 72 }} />
             <Button kind="secondary" label="補液を記録する" onPress={() => go({ name: 'fluid' })} style={{ minHeight: 72 }} />
@@ -150,22 +164,22 @@ export function HomeScreen({ go }: { go: (r: Route) => void }) {
 
       <Note>{TEXT.emergency}</Note>
 
-      <H>試作用</H>
-      <T small sub>{TEXT.prototypeNote}</T>
-      <Button kind="secondary" label="サンプルの記録に入れ替える" onPress={() => replaceAll(sampleData())} />
-      <Button kind="secondary" label="すべての記録を消す" onPress={() => setConfirmClear(true)} />
-      {confirmClear ? (
-        <ConfirmBox
-          message="このブラウザに保存した、すべての猫と記録を消しますか？"
-          yes="すべて消す"
-          no="消さない"
-          onYes={() => {
-            replaceAll(emptyData);
-            setConfirmClear(false);
-          }}
-          onNo={() => setConfirmClear(false)}
-        />
-      ) : null}
     </Screen>
+  );
+}
+
+/** お休みの期間が過ぎたときの確認。3つの選択肢を同じ大きさで並べる */
+function ConfirmCard3({ cat, onResume, onKeep, onArchive }: { cat: Cat; onResume: () => void; onKeep: () => void; onArchive: () => void }) {
+  return (
+    <Card>
+      <T>
+        {cat.name}ちゃんの通知のお休みの期間（{shortDate(cat.paused!.until!)} まで）が過ぎました。再開しますか？
+      </T>
+      <View style={{ gap: 0 }}>
+        <Button kind="secondary" label="再開する" onPress={onResume} />
+        <Button kind="secondary" label="このまま止めておく" onPress={onKeep} />
+        <Button kind="secondary" label="一覧から外す" onPress={onArchive} />
+      </View>
+    </Card>
   );
 }

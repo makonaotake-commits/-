@@ -14,11 +14,11 @@ function parseWeight(t: string): number | undefined {
   return Math.round(n * 100) / 100;
 }
 
-export function ConditionScreen({ back }: { back: (msg?: string) => void }) {
+export function ConditionScreen({ back, initialDate }: { back: (msg?: string) => void; initialDate?: string }) {
   const { data, update } = useStore();
   const cat = useCurrentCat();
   const today = nowParts().date;
-  const [date, setDate] = useState(today);
+  const [date, setDate] = useState(initialDate ?? today);
 
   const existing = data.conditions.find((c) => c.catId === cat?.id && c.date === date);
   const [rec, setRec] = useState<Partial<ConditionRecord>>(existing ?? {});

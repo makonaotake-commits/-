@@ -1,7 +1,7 @@
 import React from 'react';
 import { Pressable, Text, View } from 'react-native';
-import { fonts, sizes } from '../config/theme';
-import { useColors } from '../config/useTheme';
+import { fonts } from '../config/theme';
+import { useColors, useSizes } from '../config/useTheme';
 import { Input, T } from './ui';
 
 /** 2文字以上入力したときだけ候補を出す入力欄。候補にないものもそのまま入力できる */
@@ -21,6 +21,7 @@ export function Autocomplete<C>({
   placeholder?: string;
 }) {
   const colors = useColors();
+  const sizes = useSizes();
   return (
     <View>
       <Input value={value} onChangeText={onChangeText} placeholder={placeholder} autoCorrect={false} />

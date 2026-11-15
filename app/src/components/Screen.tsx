@@ -1,12 +1,13 @@
 import React from 'react';
 import { Platform, Pressable, ScrollView, Text, View } from 'react-native';
-import { fonts, sizes } from '../config/theme';
-import { useColors } from '../config/useTheme';
+import { fonts } from '../config/theme';
+import { useColors, useSizes } from '../config/useTheme';
 import { Button, T } from './ui';
 
 /** 画面の外枠。Web 版はページ全体でスクロール（印刷しやすくするため） */
 export function Screen({ children, title, onBack }: { children: React.ReactNode; title?: string; onBack?: () => void }) {
   const colors = useColors();
+  const sizes = useSizes();
   const body = (
     <View style={{ padding: 20, paddingBottom: 120, maxWidth: 720, width: '100%', alignSelf: 'center' }}>
       {onBack ? (
@@ -41,6 +42,7 @@ export function ConfirmBox({
   onNo: () => void;
 }) {
   const colors = useColors();
+  const sizes = useSizes();
   return (
     <View
       accessibilityRole="alert"

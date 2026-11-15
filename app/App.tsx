@@ -4,8 +4,8 @@ import { KeyboardAvoidingView, Platform, Pressable, Text, View } from 'react-nat
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { T } from './src/components/ui';
 import { useAppFonts } from './src/config/loadFonts';
-import { fonts, sizes } from './src/config/theme';
-import { useColors, useScheme } from './src/config/useTheme';
+import { fonts } from './src/config/theme';
+import { useColors, useQuiet, useScheme, useSizes } from './src/config/useTheme';
 import { StoreProvider, useStore } from './src/data/store';
 import { ConditionScreen } from './src/screens/ConditionScreen';
 import { FluidScreen } from './src/screens/FluidScreen';
@@ -14,12 +14,25 @@ import { MedSettingsScreen } from './src/screens/MedSettingsScreen';
 import { MedsScreen } from './src/screens/MedsScreen';
 import { ReportScreen } from './src/screens/ReportScreen';
 import { SettingsScreen } from './src/screens/SettingsScreen';
+import { OnboardingScreen } from './src/screens/OnboardingScreen';
+import { RecordReaction } from './src/components/RecordReaction';
+import { useCurrentCat } from './src/components/ui';
+import { ArchivedCatsScreen, CatProfileScreen } from './src/screens/CatProfileScreen';
+import { ExportScreen } from './src/screens/ExportScreen';
+import { ReviewScreen } from './src/screens/ReviewScreen';
 
-type Tab = 'home' | 'report' | 'settings';
-export type Route = { name: Tab | 'condition' | 'fluid' | 'meds' | 'medSettings' };
+type Tab = 'home' | 'review' | 'report' | 'settings';
+export type Route = {
+  name: Tab | 'condition' | 'fluid' | 'meds' | 'medSettings' | 'catProfile' | 'archivedCats' | 'export' | 'catReport';
+  /** 猫・記録の id */
+  id?: string;
+  /** 日付（YYYY-MM-DD） */
+  date?: string;
+};
 
 const TABS: [Tab, string][] = [
   ['home', 'ホーム'],
+  ['review', '振り返り'],
   ['report', 'レポート'],
   ['settings', '設定'],
 ];
@@ -44,8 +57,11 @@ function useWebSetup() {
 }
 
 function Main() {
-  const { loaded } = useStore();
+  const { loaded, data } = useStore();
+  const quiet = useQuiet();
+  const currentCat = useCurrentCat();
   const c = useColors();
+  const sizes = useSizes();
   const scheme = useScheme();
   useWebSetup();
   const [stack, setStack] = useState<Route[]>([{ name: 'home' }]);
@@ -79,14 +95,15 @@ function Main() {
   }, [toast]);
 
   if (!loaded) return <T>読み込んでいます…</T>;
+  if (!data.settings.onboarded) return <OnboardingScreen />;
 
   let screen: React.ReactNode;
   switch (route.name) {
     case 'condition':
-      screen = <ConditionScreen back={back} />;
+      screen = <ConditionScreen back={back} initialDate={route.date} />;
       break;
     case 'fluid':
-      screen = <FluidScreen back={back} />;
+      screen = <FluidScreen back={back} editId={route.id} />;
       break;
     case 'meds':
       screen = <MedsScreen back={back} go={go} />;
@@ -98,7 +115,22 @@ function Main() {
       screen = <ReportScreen />;
       break;
     case 'settings':
-      screen = <SettingsScreen />;
+      screen = <SettingsScreen go={go} />;
+      break;
+    case 'review':
+      screen = <ReviewScreen go={go} />;
+      break;
+    case 'catProfile':
+      screen = <CatProfileScreen catId={route.id} back={back} />;
+      break;
+    case 'archivedCats':
+      screen = <ArchivedCatsScreen back={() => back()} openReport={(id) => go({ name: 'catReport', id })} />;
+      break;
+    case 'catReport':
+      screen = <ReportScreen catId={route.id} onBack={() => back()} />;
+      break;
+    case 'export':
+      screen = <ExportScreen back={() => back()} />;
       break;
     default:
       screen = <HomeScreen go={go} />;
@@ -117,15 +149,23 @@ function Main() {
           nativeID="toast"
           accessibilityLiveRegion="polite"
           style={{
-            backgroundColor: c.text,
-            padding: 16,
+            backgroundColor: c.surface,
+            borderWidth: 2,
+            borderColor: c.text,
+            padding: 12,
             borderRadius: 12,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 12,
             marginHorizontal: 20,
             marginBottom: 8,
             ...fixed({ left: 0, right: 0, bottom: 72, maxWidth: 680, marginLeft: 'auto', marginRight: 'auto' }),
           }}
         >
-          <Text style={{ fontFamily: fonts.body, color: c.background, fontSize: sizes.body, textAlign: 'center' }}>{toast}</Text>
+          {/* 記録したときの小さなしぐさ（F-29）。静かな表示・お休み中の猫では出さず、文字だけ */}
+          {toast === '記録しました' && !quiet && !currentCat?.paused ? <RecordReaction fur={data.settings.guideFur} /> : null}
+          <Text style={{ fontFamily: fonts.body, color: c.text, fontSize: sizes.body, textAlign: 'center', flexShrink: 1 }}>{toast}</Text>
         </View>
       ) : null}
       <View

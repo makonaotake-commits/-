@@ -35,13 +35,13 @@ export const FUR_OPTIONS: { v: FurColor; label: string }[] = [
 ];
 
 /** 案内役の猫（ラフ）。毛色は brand_guide.md §5 の描き分けを仮に再現 */
-export function GuideCat({ fur = 'white', size = 64 }: { fur?: FurColor; size?: number }) {
+export function GuideCat({ fur = 'white', size = 64, noTail, squint }: { fur?: FurColor; size?: number; noTail?: boolean; squint?: boolean }) {
   const c = useColors();
   const face = fur === 'black' ? c.text : fur === 'brown' ? c.primaryTint : fur === 'gray' ? c.border : c.surface;
   const eye = fur === 'black' ? c.surface : c.text;
   return (
     <Svg width={size} height={size} viewBox="0 0 64 64" accessibilityLabel="案内役の猫">
-      <Path d="M48 48 A10 10 0 0 0 58 38" fill="none" stroke={c.text} strokeWidth={2} strokeLinecap="round" />
+      {noTail ? null : <Path d="M48 48 A10 10 0 0 0 58 38" fill="none" stroke={c.text} strokeWidth={2} strokeLinecap="round" />}
       <Path d="M17 24 L16 7 L29 15 Z" fill={face} stroke={c.text} strokeWidth={2} strokeLinejoin="round" />
       <Path d="M35 15 L48 7 L47 24 Z" fill={face} stroke={c.text} strokeWidth={2} strokeLinejoin="round" />
       <Circle cx={32} cy={33} r={18} fill={face} stroke={c.text} strokeWidth={2} />
@@ -58,9 +58,28 @@ export function GuideCat({ fur = 'white', size = 64 }: { fur?: FurColor; size?: 
           <Ellipse cx={41} cy={26} rx={4} ry={3.5} fill={c.border} />
         </>
       ) : null}
-      <Circle cx={26} cy={32} r={2} fill={eye} />
-      <Circle cx={38} cy={32} r={2} fill={eye} />
+      {squint ? (
+        <>
+          <Path d="M23.5 32.5 Q26 30.5 28.5 32.5" fill="none" stroke={eye} strokeWidth={1.6} strokeLinecap="round" />
+          <Path d="M35.5 32.5 Q38 30.5 40.5 32.5" fill="none" stroke={eye} strokeWidth={1.6} strokeLinecap="round" />
+        </>
+      ) : (
+        <>
+          <Circle cx={26} cy={32} r={2} fill={eye} />
+          <Circle cx={38} cy={32} r={2} fill={eye} />
+        </>
+      )}
       <Circle cx={32} cy={38} r={1.8} fill={c.primary} />
+    </Svg>
+  );
+}
+
+/** しっぽだけ（記録したときの反応で、しっぽを1回ゆらすために分けて描く） */
+export function GuideTail({ size = 64 }: { size?: number }) {
+  const c = useColors();
+  return (
+    <Svg width={size} height={size} viewBox="0 0 64 64">
+      <Path d="M48 48 A10 10 0 0 0 58 38" fill="none" stroke={c.text} strokeWidth={2} strokeLinecap="round" />
     </Svg>
   );
 }

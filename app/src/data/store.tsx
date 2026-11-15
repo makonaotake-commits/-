@@ -4,7 +4,23 @@ import React, { createContext, useCallback, useContext, useEffect, useMemo, useR
 
 export type Level3 = 'less' | 'usual' | 'more';
 
-export type Cat = { id: string; name: string };
+export type Cat = {
+  id: string;
+  name: string;
+  birthYear?: string;
+  memo?: string;
+  /** お休み（F-10）：この猫の通知をすべて止める。until がなければ「再開するまで」。期間が過ぎても自動では再開しない */
+  paused?: { since: string; until?: string; askedAfterEnd?: boolean };
+  /** 一覧から外した（F-10）：ホームと記録の対象から外す。記録は残る */
+  archived?: boolean;
+  /** 次の通院日（F-13）。1つだけ。通知はしない */
+  nextVisit?: string;
+};
+
+/** お休み中か（期間を指定していても、期間が過ぎたあとも、飼い主さんが再開するまではお休みのまま） */
+export function isPaused(c?: Cat) {
+  return !!c?.paused;
+}
 
 export type ConditionRecord = {
   id: string;
@@ -83,6 +99,7 @@ export type Data = {
   customFluidNames: string[];
   customMedNames: string[];
   settings: Settings;
+  usage: Usage;
 };
 
 export type FurColor = 'white' | 'tabby' | 'black' | 'calico' | 'brown' | 'gray';
@@ -94,9 +111,31 @@ export type Settings = {
   calmMotion: boolean;
   /** 案内役の毛色。初期値「しろ」 */
   guideFur: FurColor;
+  /** 文字サイズ（F-11） */
+  textSize: 'normal' | 'large' | 'xlarge';
+  /** 夜間に通知を鳴らさない時間帯（F-11） */
+  quietHours: { enabled: boolean; start: string; end: string };
+  /** 通知の内容を隠す（F-24） */
+  hideNotificationContent: boolean;
+  /** 使われ方の集計を送る（Q-27：初期値オン。いまは送る仕組みが入っていない） */
+  analytics: boolean;
+  /** はじめに（F-01）を見て同意したか */
+  onboarded: boolean;
 };
 
-export const DEFAULT_SETTINGS: Settings = { appearance: 'system', calmMotion: false, guideFur: 'white' };
+export const DEFAULT_SETTINGS: Settings = {
+  appearance: 'system',
+  calmMotion: false,
+  guideFur: 'white',
+  textSize: 'normal',
+  quietHours: { enabled: false, start: '22:00', end: '07:00' },
+  hideNotificationContent: false,
+  analytics: true,
+  onboarded: false,
+};
+
+/** 利用のまとめ（F-28）用に、端末内で数える件数 */
+export type Usage = { reportOpens: string[] /* 開いた日時（ISO） */ };
 
 const EMPTY: Data = {
   cats: [],
@@ -108,6 +147,7 @@ const EMPTY: Data = {
   customFluidNames: [],
   customMedNames: [],
   settings: DEFAULT_SETTINGS,
+  usage: { reportOpens: [] },
 };
 
 const KEY = 'nyan-kidney-prototype:v1';
@@ -153,9 +193,9 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       .then((raw) => {
         if (raw) {
           const saved = JSON.parse(raw) as Partial<Data>;
-          const parsed = { ...EMPTY, ...saved, settings: { ...DEFAULT_SETTINGS, ...(saved.settings ?? {}) } };
+          const parsed = { ...EMPTY, ...saved, settings: { ...DEFAULT_SETTINGS, ...(saved.settings ?? {}) }, usage: { ...EMPTY.usage, ...(saved.usage ?? {}) } };
           setData(parsed);
-          setSelectedCatId(parsed.cats[0]?.id);
+          setSelectedCatId(parsed.cats.find((c) => !c.archived)?.id);
         }
       })
       .catch(() => setSaveFailed(true))
@@ -176,8 +216,8 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const update = useCallback((fn: (d: Data) => Data) => setData((d) => fn(d)), []);
   const replaceAll = useCallback((d: Data) => {
     // 表示の設定は、記録の入れ替え・削除のあとも残す
-    setData((cur) => ({ ...d, settings: cur.settings }));
-    setSelectedCatId(d.cats[0]?.id);
+    setData((cur) => ({ ...d, settings: cur.settings, usage: cur.usage }));
+    setSelectedCatId(d.cats.find((c) => !c.archived)?.id);
   }, []);
 
   const value = useMemo(
@@ -238,6 +278,9 @@ export function sampleData(): Data {
   ];
   meds.push({ id: 'm3', catId: 'c1', name: 'マロピタット注', candidateId: 'maropitat_inj', form: '注射', maker: 'リケンベッツファーマ株式会社', kind: 'hospital', reminder: { enabled: false, times: [], freq: { kind: 'daily' } } });
   const today = new Date();
+  const visit = new Date(today);
+  visit.setDate(visit.getDate() + 6);
+  cats[0].nextVisit = toDateStr(visit);
   const weights = [3.62, 3.6, undefined, 3.58, 3.6, undefined, 3.55, 3.57, undefined, undefined, 3.54, 3.56, 3.55, 3.53];
   for (let i = 13; i >= 1; i--) {
     const d = new Date(today);

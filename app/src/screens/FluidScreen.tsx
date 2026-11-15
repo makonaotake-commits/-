@@ -9,23 +9,25 @@ import { FLUID_CONFIRM_ABOVE_ML, FLUID_NAME_CANDIDATES, FLUID_SIDES, FLUID_SITES
 import { searchCandidates } from '../data/drugs';
 import { FluidRecord, newId, nowParts, shortDate, useStore } from '../data/store';
 
-export function FluidScreen({ back }: { back: (msg?: string) => void }) {
+export function FluidScreen({ back, editId }: { back: (msg?: string) => void; editId?: string }) {
   const { data, update } = useStore();
-  const cat = useCurrentCat();
+  const editing = editId ? data.fluids.find((f) => f.id === editId) : undefined;
+  const current = useCurrentCat();
+  const cat = editing ? data.cats.find((c) => c.id === editing.catId) : current;
   const now = nowParts();
-  const [date, setDate] = useState(now.date);
-  const [time, setTime] = useState(now.time);
-  const [mlText, setMlText] = useState('');
-  const [site, setSite] = useState<string>();
-  const [side, setSide] = useState<string>();
-  const [fluidName, setFluidName] = useState('');
-  const [state, setState] = useState<FluidRecord['state']>();
-  const [memo, setMemo] = useState('');
+  const [date, setDate] = useState(editing?.date ?? now.date);
+  const [time, setTime] = useState(editing?.time ?? now.time);
+  const [mlText, setMlText] = useState(editing?.ml !== undefined ? String(editing.ml) : '');
+  const [site, setSite] = useState<string | undefined>(editing?.site);
+  const [side, setSide] = useState<string | undefined>(editing?.side);
+  const [fluidName, setFluidName] = useState(editing?.fluidName ?? '');
+  const [state, setState] = useState<FluidRecord['state']>(editing?.state);
+  const [memo, setMemo] = useState(editing?.memo ?? '');
   const [confirmBig, setConfirmBig] = useState(false);
   const [showReminder, setShowReminder] = useState(false);
 
   const past = useMemo(
-    () => data.fluids.filter((f) => f.catId === cat?.id).sort((a, b) => (a.date + a.time < b.date + b.time ? 1 : -1)),
+    () => data.fluids.filter((f) => f.catId === cat?.id && f.id !== editId && (!editing || f.date + f.time < editing.date + editing.time)).sort((a, b) => (a.date + a.time < b.date + b.time ? 1 : -1)),
     [data.fluids, cat?.id],
   );
   const prevMl = past.find((f) => f.ml !== undefined);
@@ -50,10 +52,10 @@ export function FluidScreen({ back }: { back: (msg?: string) => void }) {
   const doSave = () => {
     if (!cat) return;
     const name = fluidName.trim() || undefined;
-    const r: FluidRecord = { id: newId(), catId: cat.id, date, time, ml, site, side, fluidName: name, state, memo: memo.trim() || undefined };
+    const r: FluidRecord = { id: editing?.id ?? newId(), catId: cat.id, date, time, ml, site, side, fluidName: name, state, memo: memo.trim() || undefined };
     update((x) => ({
       ...x,
-      fluids: [...x.fluids, r],
+      fluids: [...x.fluids.filter((f) => f.id !== r.id), r],
       customFluidNames: name && !x.customFluidNames.includes(name) && !FLUID_NAME_CANDIDATES.includes(name) ? [...x.customFluidNames, name] : x.customFluidNames,
     }));
     back('記録しました');
@@ -68,7 +70,7 @@ export function FluidScreen({ back }: { back: (msg?: string) => void }) {
   const reminder = (cat && data.fluidReminders[cat.id]) || defaultReminder();
 
   return (
-    <Screen title="補液を記録する" onBack={() => back()}>
+    <Screen title={editing ? '補液の記録を直す' : '補液を記録する'} onBack={() => back()}>
       <CatBadge cat={cat} />
       <DateStepper date={date} onChange={setDate} max={now.date} />
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 8 }}>
