@@ -161,7 +161,7 @@ export const colors = lightColors;
 ## 9. 線画・案内役・演出
 
 ### 9-1. 線画の部品
-- 置き場所：`docs/brand/assets/svg/`（`guide_cat.svg`・`logo_mark.svg` など）。アプリでは `react-native-svg` で描く。
+- 置き場所・ファイル名・表示サイズは `brand_guide.md` §5-4（`docs/brand/assets/svg/{light|dark}/…`）。アプリでは `react-native-svg` で描く。
 - 色はトークンで渡す（線 `text`、面 `surface`・`accentTint`・`primaryTint`、鼻 `primary`）。暗い表示では、同じトークンの暗い値に切りかわる。
 - 描き方のルールは `brand_guide.md` §5。
 

@@ -1,6 +1,6 @@
 # 線画の清書案（参考画像の雰囲気を取り入れた版）
 
-- ステータス：`draft`（ユーザーの選択待ち）
+- ステータス：**回答済み**（2026-11-15 10:14）：タッチ **a 細い線＋しっぽのベタ**、案内役 **縁からのぞく**。清書は `assets/svg/`、ルールは `brand_guide.md` §5。ロゴとアイコンの最終確認は [ロゴ確認シート](https://claude.ai/artifact/QAKCTBH2T2qEvFdauiHtTa)（`answers/brand_logo`、元ファイル `brand_logo_sheet.html`）
 - 作成：ペルシャ／2026-11-15
 - 選択シート：[ねこと、ゆっくり 清書シート](https://claude.ai/artifact/ShmbhCiDv5LuSoCFDa2mYR)（元ファイル `docs/brand/brand_art_v3_sheet.html`）
 - 回答の保存先：シートの db、collection `answers`、doc id `brand_art_v3`（`answers.style`・`answers.guide`・`notes`・`free`・`summary`・`submittedAt`）
