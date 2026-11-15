@@ -38,6 +38,7 @@ React Native ＋ Expo（TypeScript）。今は「タップできる試作」の�
 |---|---|---|
 | expo / react-native / react-native-web | アプリの土台 | なし |
 | @react-native-async-storage/async-storage | 端末内への保存 | なし |
+| expo-notifications | リマインダーのローカル通知（端末の中だけで予約。プッシュ配信サービスは使わない） | なし |
 | react-native-svg | 体重グラフ | なし |
 | react-native-safe-area-context / expo-status-bar | 画面の端の調整 | なし |
 | expo-font ＋ @expo-google-fonts/zen-maru-gothic・biz-udpgothic | フォントをアプリに同梱（OFL 1.1）。Web 版は `scripts/web-fonts.py` で文字を絞ってページに埋め込む | なし（外部から読み込まない） |
