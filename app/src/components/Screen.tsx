@@ -71,12 +71,14 @@ export function DateStepper({ date, onChange, max }: { date: string; onChange: (
   const wd = ['日', '月', '火', '水', '木', '金', '土'][d.getDay()];
   const isMax = max !== undefined && date >= max;
   return (
-    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-      <Button kind="secondary" label="‹ 前の日" onPress={() => move(-1)} />
-      <T bold style={{ flex: 1, textAlign: 'center' }}>
+    <View>
+      <T bold style={{ textAlign: 'center' }}>
         {d.getMonth() + 1}月{d.getDate()}日（{wd}）
       </T>
-      <Button kind="secondary" label="次の日 ›" onPress={() => move(1)} disabled={isMax} />
+      <View style={{ flexDirection: 'row', gap: 12 }}>
+        <Button kind="secondary" label="‹ 前の日" onPress={() => move(-1)} style={{ flex: 1 }} />
+        <Button kind="secondary" label="次の日 ›" onPress={() => move(1)} disabled={isMax} style={{ flex: 1 }} />
+      </View>
     </View>
   );
 }

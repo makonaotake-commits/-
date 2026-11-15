@@ -123,12 +123,12 @@ export function ReviewScreen({ go }: { go: (r: Route) => void }) {
     <Screen title="振り返り">
       <CatSwitcher />
       <Card style={{ marginTop: 12 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-          <Button kind="secondary" label="‹ 前の月" onPress={() => moveMonth(-1)} />
-          <T bold style={{ flex: 1, textAlign: 'center' }}>
-            {y}年{m}月
-          </T>
-          <Button kind="secondary" label="次の月 ›" onPress={() => moveMonth(1)} disabled={isThisMonth} />
+        <T bold style={{ textAlign: 'center' }}>
+          {y}年{m}月
+        </T>
+        <View style={{ flexDirection: 'row', gap: 12 }}>
+          <Button kind="secondary" label="‹ 前の月" onPress={() => moveMonth(-1)} style={{ flex: 1 }} />
+          <Button kind="secondary" label="次の月 ›" onPress={() => moveMonth(1)} disabled={isThisMonth} style={{ flex: 1 }} />
         </View>
         <View style={{ flexDirection: 'row', marginTop: 8 }}>
           {WD.map((w) => (
