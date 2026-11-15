@@ -5,7 +5,7 @@ iPhone で開く手順：[EXPO_GO.md](EXPO_GO.md)
 React Native ＋ Expo（TypeScript）。今は「タップできる試作」の段階です。
 
 - 試作（ブラウザ版）：https://claude.ai/artifact/V7JqhUfoTPy25hUZmrA2k4 （非公開。共有はページの共有メニューから）
-- 記録はブラウザの中（端末内）だけに保存します。外部には何も送りません。
+- 記録はブラウザの中（端末内）だけに保存します。外部には何も送りません。フォントもページに埋め込んでいて、外部からは読み込みません。
 
 ## 入っている画面
 | 画面 | 要件 |
@@ -16,11 +16,14 @@ React Native ＋ Expo（TypeScript）。今は「タップできる試作」の�
 | お薬を記録する（自宅で与えたお薬／病院での処置） | S-06、F-05 |
 | お薬リスト・時刻の設定（候補は2文字以上で表示） | S-07、F-05、F-06、F-26 |
 | 獣医師に見せるレポート（一覧・体重グラフ） | S-09、F-07、F-12 |
+| 設定（表示の明るさ・演出を控えめにする・案内役の毛色・目印の見本・ライセンス） | S-12、F-11 |
 
 ## 差し替えやすくしてある場所
 | ファイル | 中身 |
 |---|---|
-| `src/config/theme.ts` | 配色・フォント・文字の大きさ（ペルシャのスタイルガイドが届いたらここを差し替える） |
+| `src/config/theme.ts` | 配色（明るい・暗い）・フォント・文字の大きさ。`docs/brand/ui_style_guide.md` v1.0 の値 |
+| `src/components/Marks.tsx` | 線画の部品（しおりの目印・葉っぱ・案内役の猫）。いまはラフ |
+| `src/components/HomeScene.tsx` | ホームの上の演出の仮の入れ物 |
 | `src/config/vetValues.ts` | 獣医師が決める値（補液量の確認を出す境目・体重グラフの縦軸の最小幅・部位の選択肢・輸液名の候補） |
 | `src/config/labels.ts` | 画面の言葉（ロシアンのレビュー前の仮） |
 | `src/data/drugs.ts` | 薬の候補リスト（`drug_list_draft.md` v0.2 の仮データ。「要確認」の行は試作用） |
@@ -32,7 +35,7 @@ React Native ＋ Expo（TypeScript）。今は「タップできる試作」の�
 | @react-native-async-storage/async-storage | 端末内への保存 | なし |
 | react-native-svg | 体重グラフ | なし |
 | react-native-safe-area-context / expo-status-bar | 画面の端の調整 | なし |
-| Google Fonts（Web 版のみ） | フォントの読み込み | フォントの取得時に、閲覧者の IP アドレスなど通常の通信情報が Google に届く。記録の内容は送らない |
+| expo-font ＋ @expo-google-fonts/zen-maru-gothic・biz-udpgothic | フォントをアプリに同梱（OFL 1.1）。Web 版は `scripts/web-fonts.py` で文字を絞ってページに埋め込む | なし（外部から読み込まない） |
 
 分析・クラッシュ報告の SDK はまだ入れていません。
 
@@ -49,7 +52,7 @@ React Native ＋ Expo（TypeScript）。今は「タップできる試作」の�
 候補（**推測。仕様・送信先・規約は未確認**）：Aptabase（端末 ID を使わない設計とされる）、自前の集計（送信先を自分たちで決められる）。候補を絞ったら、ロシアンの確認を通してから入れます。
 
 ロシアンのレビュー（`docs/compliance/review_2026-11-12_app_prototype.md`）を受けた製品版の方針：
-- フォントはアプリに同梱し、Google Fonts からは読み込まない（Web 版を公開する場合は自前で配信するか、ポリシーに書く）。
+- フォントはアプリに同梱し、Google Fonts からは読み込まない（対応済み。Web 版もページに埋め込み）。
 - リマインダーなどの通知は、端末内のローカル通知で出す。外部のプッシュ配信サービスは使わない。
 - 分析 SDK・クラッシュ報告・Expo の更新配信を使う場合は、この一覧に追加して、ロシアンの確認を通す。
 
@@ -61,6 +64,6 @@ React Native ＋ Expo（TypeScript）。今は「タップできる試作」の�
 ```
 npm install
 npm run web        # 手元で開く
-npm run build:web  # dist/prototype.html（1ファイル）を作る
+npm run build:web  # dist/prototype.html（1ファイル）を作る。pip install fonttools brotli が必要
 npm run typecheck
 ```

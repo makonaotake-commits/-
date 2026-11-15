@@ -80,7 +80,7 @@ export function ConditionScreen({ back }: { back: (msg?: string) => void }) {
       copiedFields: (rec.copiedFields ?? []).filter((f) => (f === 'weightKg' ? weight !== undefined && weight === prev?.weightKg : true)),
     };
     update((x) => ({ ...x, conditions: [...x.conditions.filter((c) => c.id !== r.id), r] }));
-    back('体調の記録を保存しました');
+    back('記録しました');
   };
 
   return (

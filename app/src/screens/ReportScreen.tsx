@@ -4,7 +4,8 @@ import { Screen } from '../components/Screen';
 import { Card, CatSwitcher, Choice, H, Note, T, useCurrentCat } from '../components/ui';
 import { WeightChart } from '../components/WeightChart';
 import { APPETITE, ENERGY, FLUID_STATE, labelOf, MED_RESULT, STOOL_STATE, TEXT, URINE_CLUMP, WATER } from '../config/labels';
-import { colors, fonts, sizes } from '../config/theme';
+import { fonts, sizes } from '../config/theme';
+import { useColors } from '../config/useTheme';
 import { ConditionRecord, nowParts, shortDate, toDateStr, useStore } from '../data/store';
 
 const NR = TEXT.noRecord;
@@ -23,9 +24,10 @@ function daysBetween(from: string, to: string) {
 }
 
 function Cell({ children, w = 96, head, first }: { children: React.ReactNode; w?: number; head?: boolean; first?: boolean }) {
+  const colors = useColors();
   return (
-    <View style={{ width: w, paddingVertical: 8, paddingHorizontal: 6, borderBottomWidth: 1, borderColor: colors.border, backgroundColor: head ? colors.sageTint : first ? '#F3EEE7' : colors.surface }}>
-      <Text style={{ fontFamily: fonts.body, fontSize: sizes.small, color: colors.text, fontWeight: head ? '700' : '400' }}>{children}</Text>
+    <View style={{ width: w, paddingVertical: 8, paddingHorizontal: 6, borderBottomWidth: 1, borderColor: colors.border, backgroundColor: head ? colors.primaryTint : first ? colors.background : colors.surface }}>
+      <Text style={{ fontFamily: head ? fonts.bodyBold : fonts.body, fontSize: sizes.small, color: colors.text }}>{children}</Text>
     </View>
   );
 }
@@ -39,6 +41,7 @@ function sumWithDays(recs: (ConditionRecord | undefined)[], key: 'urineCount' | 
 
 export function ReportScreen() {
   const { data } = useStore();
+  const colors = useColors();
   const cat = useCurrentCat();
   const [period, setPeriod] = useState<Period>('14');
   const to = nowParts().date;

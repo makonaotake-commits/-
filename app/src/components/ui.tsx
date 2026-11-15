@@ -1,34 +1,119 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, TextInputProps, TextStyle, View, ViewStyle } from 'react-native';
-import { colors, fonts, sizes } from '../config/theme';
+import { Colors, fonts, sizes } from '../config/theme';
+import { useColors } from '../config/useTheme';
 import { Cat, useStore } from '../data/store';
 
+function makeStyles(c: Colors) {
+  return StyleSheet.create({
+    card: {
+      backgroundColor: c.surface,
+      borderRadius: sizes.radius,
+      padding: sizes.cardPadding,
+      marginBottom: sizes.gap,
+      borderWidth: 1,
+      borderColor: c.border,
+    },
+    btn: {
+      minHeight: sizes.touch,
+      borderRadius: sizes.radius,
+      paddingHorizontal: 20,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginVertical: 6,
+    },
+    btnPrimary: { backgroundColor: c.primary },
+    btnSecondary: { backgroundColor: c.surface, borderWidth: 2, borderColor: c.borderStrong },
+    btnQuiet: { minHeight: 44, paddingHorizontal: 4 },
+    btnText: { fontFamily: fonts.bodyBold, color: c.text, fontSize: sizes.label },
+    choiceWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+    chip: {
+      minHeight: 52,
+      paddingHorizontal: 18,
+      borderRadius: 26,
+      borderWidth: 2,
+      borderColor: c.borderStrong,
+      backgroundColor: c.surface,
+      justifyContent: 'center',
+    },
+    chipOn: { borderColor: c.text, backgroundColor: c.primaryTint },
+    chipText: { fontFamily: fonts.body, color: c.text, fontSize: sizes.label },
+    chipTextOn: { fontFamily: fonts.bodyBold },
+    catTab: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 10,
+      minHeight: sizes.touch,
+      paddingHorizontal: 14,
+      borderRadius: 28,
+      borderWidth: 2,
+      borderColor: c.borderStrong,
+      backgroundColor: c.surface,
+    },
+    label: { fontFamily: fonts.heading, color: c.text, fontSize: sizes.label, marginBottom: 8 },
+    input: {
+      fontFamily: fonts.body,
+      fontSize: sizes.body,
+      color: c.text,
+      backgroundColor: c.surface,
+      borderWidth: 2,
+      borderColor: c.borderStrong,
+      borderRadius: sizes.radiusSmall,
+      minHeight: sizes.touch,
+      paddingHorizontal: 14,
+    },
+    counterRow: { flexDirection: 'row', alignItems: 'center', gap: 16 },
+    round: {
+      width: 56,
+      height: 56,
+      borderRadius: 28,
+      borderWidth: 2,
+      borderColor: c.borderStrong,
+      backgroundColor: c.surface,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    roundText: { fontSize: 26, color: c.text },
+    counterValue: { fontFamily: fonts.body, fontSize: 22, color: c.text, minWidth: 80, textAlign: 'center' },
+    badge: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 16 },
+    avatar: {
+      width: 44,
+      height: 44,
+      borderRadius: 22,
+      backgroundColor: c.primaryTint,
+      borderWidth: 2,
+      borderColor: c.borderStrong,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    avatarText: { fontFamily: fonts.heading, fontSize: 20, color: c.text },
+    note: { backgroundColor: c.accentTint, borderRadius: sizes.radiusSmall, padding: 14, marginBottom: 16 },
+  });
+}
+
+/** 今の明暗に合わせた共通スタイル */
+export function useStyles() {
+  const c = useColors();
+  return useMemo(() => ({ c, s: makeStyles(c) }), [c]);
+}
+
 export function T({ children, style, sub, small, bold }: { children: React.ReactNode; style?: TextStyle; sub?: boolean; small?: boolean; bold?: boolean }) {
+  const c = useColors();
+  const size = small ? sizes.small : sizes.body;
   return (
-    <Text
-      style={[
-        { fontFamily: fonts.body, color: sub ? colors.textSub : colors.text, fontSize: small ? sizes.small : sizes.body, lineHeight: (small ? sizes.small : sizes.body) * 1.6 },
-        bold && { fontWeight: '700' },
-        style,
-      ]}
-    >
+    <Text style={[{ fontFamily: bold ? fonts.bodyBold : fonts.body, color: sub ? c.textSub : c.text, fontSize: size, lineHeight: size * 1.6 }, style]}>
       {children}
     </Text>
   );
 }
 
 export function H({ children, level = 2 }: { children: React.ReactNode; level?: 1 | 2 }) {
+  const c = useColors();
+  const size = level === 1 ? sizes.title : sizes.heading;
   return (
     <Text
       accessibilityRole="header"
-      style={{
-        fontFamily: fonts.heading,
-        color: colors.text,
-        fontWeight: '700',
-        fontSize: level === 1 ? sizes.title : sizes.heading,
-        marginTop: level === 1 ? 0 : 8,
-        marginBottom: 8,
-      }}
+      style={{ fontFamily: fonts.heading, color: c.text, fontSize: size, lineHeight: size * 1.45, marginTop: level === 1 ? 0 : 8, marginBottom: 8 }}
     >
       {children}
     </Text>
@@ -36,6 +121,7 @@ export function H({ children, level = 2 }: { children: React.ReactNode; level?: 
 }
 
 export function Card({ children, style }: { children: React.ReactNode; style?: ViewStyle }) {
+  const { s } = useStyles();
   return <View style={[s.card, style]}>{children}</View>;
 }
 
@@ -52,6 +138,7 @@ export function Button({
   style?: ViewStyle;
   disabled?: boolean;
 }) {
+  const { c, s } = useStyles();
   return (
     <Pressable
       accessibilityRole="button"
@@ -62,12 +149,12 @@ export function Button({
         kind === 'primary' && s.btnPrimary,
         kind === 'secondary' && s.btnSecondary,
         kind === 'quiet' && s.btnQuiet,
-        pressed && { opacity: 0.7 },
-        disabled && { opacity: 0.4 },
+        pressed && (kind === 'primary' ? { opacity: 0.85 } : { backgroundColor: c.primaryTint }),
+        disabled && { opacity: 0.45 },
         style,
       ]}
     >
-      <Text style={[s.btnText, kind === 'quiet' && { fontWeight: '400', textDecorationLine: 'underline' }]}>{label}</Text>
+      <Text style={[s.btnText, kind === 'primary' && { color: c.onPrimary }, kind === 'quiet' && { fontFamily: fonts.body }]}>{label}</Text>
     </Pressable>
   );
 }
@@ -84,6 +171,7 @@ export function Choice<V extends string>({
   onChange: (v?: V) => void;
   copied?: boolean;
 }) {
+  const { s } = useStyles();
   return (
     <View style={s.choiceWrap}>
       {options.map((o) => {
@@ -96,7 +184,7 @@ export function Choice<V extends string>({
             onPress={() => onChange(on ? undefined : o.v)}
             style={[s.chip, on && s.chipOn]}
           >
-            <Text style={[s.chipText, on && { fontWeight: '700' }]}>
+            <Text style={[s.chipText, on && s.chipTextOn]}>
               {on ? '● ' : ''}
               {o.label}
               {on && copied ? '（コピー）' : ''}
@@ -110,6 +198,7 @@ export function Choice<V extends string>({
 
 /** 回数の入力。未入力（—）と 0 を区別する */
 export function Counter({ value, onChange, unit = '回' }: { value?: number; onChange: (v?: number) => void; unit?: string }) {
+  const { s } = useStyles();
   return (
     <View>
       <View style={s.counterRow}>
@@ -131,21 +220,28 @@ export function Counter({ value, onChange, unit = '回' }: { value?: number; onC
 }
 
 export function Field({ label, children, hint }: { label: string; children: React.ReactNode; hint?: string }) {
+  const { s } = useStyles();
   return (
     <View style={{ marginBottom: 20 }}>
       <Text style={s.label}>{label}</Text>
-      {hint ? <T small sub style={{ marginBottom: 6 }}>{hint}</T> : null}
+      {hint ? (
+        <T small sub style={{ marginBottom: 6 }}>
+          {hint}
+        </T>
+      ) : null}
       {children}
     </View>
   );
 }
 
 export function Input(props: TextInputProps) {
-  return <TextInput placeholderTextColor={colors.textSub} {...props} style={[s.input, props.multiline && { minHeight: 96, textAlignVertical: 'top' }, props.style]} />;
+  const { c, s } = useStyles();
+  return <TextInput placeholderTextColor={c.textSub} {...props} style={[s.input, props.multiline && { minHeight: 96, textAlignVertical: 'top' }, props.style]} />;
 }
 
 /** 記録対象の猫を名前つきで常に表示する（取り違え防止） */
 export function CatBadge({ cat }: { cat?: Cat }) {
+  const { s } = useStyles();
   if (!cat) return null;
   return (
     <View style={s.badge}>
@@ -159,23 +255,24 @@ export function CatBadge({ cat }: { cat?: Cat }) {
 
 export function CatSwitcher() {
   const { data, selectedCatId, selectCat } = useStore();
+  const { s } = useStyles();
   if (data.cats.length === 0) return null;
   return (
     <View style={s.choiceWrap}>
-      {data.cats.map((c) => {
-        const on = c.id === selectedCatId;
+      {data.cats.map((cat) => {
+        const on = cat.id === selectedCatId;
         return (
           <Pressable
-            key={c.id}
+            key={cat.id}
             accessibilityRole="tab"
             accessibilityState={{ selected: on }}
-            onPress={() => selectCat(c.id)}
+            onPress={() => selectCat(cat.id)}
             style={[s.catTab, on && s.chipOn]}
           >
             <View style={[s.avatar, { width: 36, height: 36 }]}>
-              <Text style={[s.avatarText, { fontSize: 16 }]}>{c.name.slice(0, 1)}</Text>
+              <Text style={[s.avatarText, { fontSize: 16 }]}>{cat.name.slice(0, 1)}</Text>
             </View>
-            <Text style={[s.chipText, on && { fontWeight: '700' }]}>{c.name}</Text>
+            <Text style={[s.chipText, on && s.chipTextOn]}>{cat.name}</Text>
           </Pressable>
         );
       })}
@@ -189,84 +286,10 @@ export function useCurrentCat() {
 }
 
 export function Note({ children }: { children: React.ReactNode }) {
+  const { s } = useStyles();
   return (
     <View style={s.note}>
       <T small>{children}</T>
     </View>
   );
 }
-
-export const s = StyleSheet.create({
-  card: {
-    backgroundColor: colors.surface,
-    borderRadius: sizes.radius,
-    padding: 20,
-    marginBottom: sizes.gap,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  btn: {
-    minHeight: sizes.touch,
-    borderRadius: sizes.radius,
-    paddingHorizontal: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginVertical: 6,
-  },
-  btnPrimary: { backgroundColor: colors.sage },
-  btnSecondary: { backgroundColor: colors.surface, borderWidth: 2, borderColor: colors.sage },
-  btnQuiet: { minHeight: 44, paddingHorizontal: 4 },
-  btnText: { fontFamily: fonts.body, color: colors.text, fontSize: sizes.label, fontWeight: '700' },
-  choiceWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
-  chip: {
-    minHeight: 52,
-    paddingHorizontal: 18,
-    borderRadius: 26,
-    borderWidth: 2,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
-    justifyContent: 'center',
-  },
-  chipOn: { borderColor: colors.text, backgroundColor: colors.sageTint },
-  chipText: { fontFamily: fonts.body, color: colors.text, fontSize: sizes.label },
-  catTab: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-    minHeight: 56,
-    paddingHorizontal: 14,
-    borderRadius: 28,
-    borderWidth: 2,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
-  },
-  label: { fontFamily: fonts.heading, color: colors.text, fontSize: sizes.label, fontWeight: '700', marginBottom: 8 },
-  input: {
-    fontFamily: fonts.body,
-    fontSize: sizes.body,
-    color: colors.text,
-    backgroundColor: colors.surface,
-    borderWidth: 2,
-    borderColor: colors.border,
-    borderRadius: 12,
-    minHeight: sizes.touch,
-    paddingHorizontal: 14,
-  },
-  counterRow: { flexDirection: 'row', alignItems: 'center', gap: 16 },
-  round: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    borderWidth: 2,
-    borderColor: colors.sage,
-    backgroundColor: colors.surface,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  roundText: { fontSize: 26, color: colors.text },
-  counterValue: { fontFamily: fonts.body, fontSize: 22, color: colors.text, minWidth: 80, textAlign: 'center' },
-  badge: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 16 },
-  avatar: { width: 44, height: 44, borderRadius: 22, backgroundColor: colors.peachTint, borderWidth: 2, borderColor: colors.peach, alignItems: 'center', justifyContent: 'center' },
-  avatarText: { fontFamily: fonts.heading, fontSize: 20, color: colors.text, fontWeight: '700' },
-  note: { backgroundColor: colors.peachTint, borderRadius: 12, padding: 14, marginBottom: 16 },
-});

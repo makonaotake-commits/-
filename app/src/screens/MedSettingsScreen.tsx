@@ -5,6 +5,7 @@ import { defaultReminder, ReminderEditor } from '../components/ReminderEditor';
 import { ConfirmBox, Screen } from '../components/Screen';
 import { Button, Card, CatBadge, Choice, Field, H, Input, Note, T, useCurrentCat } from '../components/ui';
 import { TEXT } from '../config/labels';
+import { useColors } from '../config/useTheme';
 import { DRUG_CANDIDATES, DRUG_LIST_VERSION, DrugCandidate, searchCandidates } from '../data/drugs';
 import { Medication, newId, useStore } from '../data/store';
 
@@ -17,6 +18,7 @@ type Suggest = { kind: 'drug'; d: DrugCandidate } | { kind: 'own'; name: string 
 
 export function MedSettingsScreen({ back }: { back: (msg?: string) => void }) {
   const { data, update } = useStore();
+  const colors = useColors();
   const cat = useCurrentCat();
   const meds = data.meds.filter((m) => m.catId === cat?.id);
   const [draft, setDraft] = useState<Draft>();
@@ -63,7 +65,7 @@ export function MedSettingsScreen({ back }: { back: (msg?: string) => void }) {
             <T small sub style={{ marginTop: 6 }}>{TEXT.candidateNote}</T>
           </Field>
           {draft.candidateId ? (
-            <View style={{ backgroundColor: '#F3EEE7', borderRadius: 12, padding: 14, marginBottom: 20 }}>
+            <View style={{ backgroundColor: colors.background, borderWidth: 1, borderColor: colors.border, borderRadius: 12, padding: 14, marginBottom: 20 }}>
               <T bold>選んだお薬</T>
               <T>{draft.name}</T>
               <T>剤形：{draft.form}</T>

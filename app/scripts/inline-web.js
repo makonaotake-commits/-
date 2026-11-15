@@ -9,16 +9,19 @@ const m = index.match(/<script src="\/?(_expo\/static\/js\/web\/[^"]+\.js)" defe
 if (!m) throw new Error('バンドルの script タグが見つかりません');
 const js = fs.readFileSync(path.join(dist, m[1]), 'utf8').replace(/<\/script/gi, '<\\/script');
 
-const fontsUrl = 'https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Zen+Maru+Gothic:wght@500;700&display=swap';
+// フォントは scripts/web-fonts.py が作った dist/fonts.css（同梱フォントを埋め込んだもの）を使う。外部からは読み込まない。
+const fontsCss = fs.readFileSync(path.join(dist, 'fonts.css'), 'utf8');
 
 const html = `<title>Nyan Kidney 試作</title>
 <meta name="description" content="慢性腎臓病の猫の記録アプリの試作（タップして確かめる用）" />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link rel="stylesheet" href="${fontsUrl}" />
+<style id="app-fonts">
+${fontsCss}
+</style>
 <style id="expo-reset">
-  :root { color-scheme: light; }
-  html, body { height: 100%; background: #FAF6F0; color: #4A4038; }
+  :root { color-scheme: light; --bg: #FBF5EA; --fg: #4D3F33; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { color-scheme: dark; --bg: #1F1A14; --fg: #F3E8D8; } }
+  :root[data-theme="dark"] { color-scheme: dark; --bg: #1F1A14; --fg: #F3E8D8; }
+  html, body { height: 100%; background: var(--bg); color: var(--fg); }
   body { overflow-y: auto; }
   #root { display: flex; min-height: 100%; flex: 1; }
 </style>

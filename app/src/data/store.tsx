@@ -82,7 +82,21 @@ export type Data = {
   fluidReminders: Record<string, Reminder>; // catId → 補液のリマインダー
   customFluidNames: string[];
   customMedNames: string[];
+  settings: Settings;
 };
+
+export type FurColor = 'white' | 'tabby' | 'black' | 'calico' | 'brown' | 'gray';
+
+export type Settings = {
+  /** 表示の明るさ。初期値は端末の設定に合わせる */
+  appearance: 'system' | 'light' | 'dark';
+  /** 演出を控えめにする（動きを止め、静かな絵だけにする） */
+  calmMotion: boolean;
+  /** 案内役の毛色。初期値「しろ」 */
+  guideFur: FurColor;
+};
+
+export const DEFAULT_SETTINGS: Settings = { appearance: 'system', calmMotion: false, guideFur: 'white' };
 
 const EMPTY: Data = {
   cats: [],
@@ -93,6 +107,7 @@ const EMPTY: Data = {
   fluidReminders: {},
   customFluidNames: [],
   customMedNames: [],
+  settings: DEFAULT_SETTINGS,
 };
 
 const KEY = 'nyan-kidney-prototype:v1';
@@ -137,7 +152,8 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     AsyncStorage.getItem(KEY)
       .then((raw) => {
         if (raw) {
-          const parsed = { ...EMPTY, ...(JSON.parse(raw) as Data) };
+          const saved = JSON.parse(raw) as Partial<Data>;
+          const parsed = { ...EMPTY, ...saved, settings: { ...DEFAULT_SETTINGS, ...(saved.settings ?? {}) } };
           setData(parsed);
           setSelectedCatId(parsed.cats[0]?.id);
         }
@@ -159,7 +175,8 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
 
   const update = useCallback((fn: (d: Data) => Data) => setData((d) => fn(d)), []);
   const replaceAll = useCallback((d: Data) => {
-    setData(d);
+    // 表示の設定は、記録の入れ替え・削除のあとも残す
+    setData((cur) => ({ ...d, settings: cur.settings }));
     setSelectedCatId(d.cats[0]?.id);
   }, []);
 

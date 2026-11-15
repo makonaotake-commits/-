@@ -1,10 +1,12 @@
 import React from 'react';
 import { Platform, Pressable, ScrollView, Text, View } from 'react-native';
-import { colors, fonts, sizes } from '../config/theme';
+import { fonts, sizes } from '../config/theme';
+import { useColors } from '../config/useTheme';
 import { Button, T } from './ui';
 
 /** 画面の外枠。Web 版はページ全体でスクロール（印刷しやすくするため） */
 export function Screen({ children, title, onBack }: { children: React.ReactNode; title?: string; onBack?: () => void }) {
+  const colors = useColors();
   const body = (
     <View style={{ padding: 20, paddingBottom: 120, maxWidth: 720, width: '100%', alignSelf: 'center' }}>
       {onBack ? (
@@ -13,7 +15,7 @@ export function Screen({ children, title, onBack }: { children: React.ReactNode;
         </Pressable>
       ) : null}
       {title ? (
-        <Text accessibilityRole="header" style={{ fontFamily: fonts.heading, fontSize: sizes.title, color: colors.text, fontWeight: '700', marginBottom: 16 }}>
+        <Text accessibilityRole="header" style={{ fontFamily: fonts.heading, fontSize: sizes.title, color: colors.text, lineHeight: sizes.title * 1.4, marginBottom: 16 }}>
           {title}
         </Text>
       ) : null}
@@ -38,10 +40,11 @@ export function ConfirmBox({
   onYes: () => void;
   onNo: () => void;
 }) {
+  const colors = useColors();
   return (
     <View
       accessibilityRole="alert"
-      style={{ backgroundColor: colors.surface, borderWidth: 2, borderColor: colors.text, borderRadius: sizes.radius, padding: 20, marginVertical: 12 }}
+      style={{ backgroundColor: colors.surface, borderWidth: 2, borderColor: colors.text, borderRadius: sizes.radius, padding: sizes.cardPadding, marginVertical: 12 }}
     >
       <T style={{ marginBottom: 12 }}>{message}</T>
       <View style={{ flexDirection: 'row', gap: 12 }}>

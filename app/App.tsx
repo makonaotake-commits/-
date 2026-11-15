@@ -3,7 +3,9 @@ import React, { useEffect, useState } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, Text, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { T } from './src/components/ui';
-import { colors, fonts, sizes } from './src/config/theme';
+import { useAppFonts } from './src/config/loadFonts';
+import { fonts, sizes } from './src/config/theme';
+import { useColors, useScheme } from './src/config/useTheme';
 import { StoreProvider, useStore } from './src/data/store';
 import { ConditionScreen } from './src/screens/ConditionScreen';
 import { FluidScreen } from './src/screens/FluidScreen';
@@ -11,36 +13,45 @@ import { HomeScreen } from './src/screens/HomeScreen';
 import { MedSettingsScreen } from './src/screens/MedSettingsScreen';
 import { MedsScreen } from './src/screens/MedsScreen';
 import { ReportScreen } from './src/screens/ReportScreen';
+import { SettingsScreen } from './src/screens/SettingsScreen';
 
-export type Route = { name: 'home' | 'condition' | 'fluid' | 'meds' | 'medSettings' | 'report' };
+type Tab = 'home' | 'report' | 'settings';
+export type Route = { name: Tab | 'condition' | 'fluid' | 'meds' | 'medSettings' };
 
+const TABS: [Tab, string][] = [
+  ['home', 'ホーム'],
+  ['report', 'レポート'],
+  ['settings', '設定'],
+];
+
+/** Web 版：ページ全体でスクロールし、背景色とキーボード操作の枠を明暗に合わせる */
 function useWebSetup() {
+  const c = useColors();
   useEffect(() => {
     if (Platform.OS !== 'web' || typeof document === 'undefined') return;
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = fonts.googleFontsUrl;
-    document.head.appendChild(link);
-    const style = document.createElement('style');
+    let style = document.getElementById('app-theme') as HTMLStyleElement | null;
+    if (!style) {
+      style = document.createElement('style');
+      style.id = 'app-theme';
+      document.head.appendChild(style);
+    }
     style.textContent = `
-      html, body { background: ${colors.background}; }
+      html, body { background: ${c.background}; color: ${c.text}; }
       body { overflow-y: auto !important; }
       #root { min-height: 100%; height: auto !important; }
-      @media print {
-        #tabbar, #noprint-back, #noprint-controls, #toast { display: none !important; }
-        body { background: #fff; }
-      }`;
-    document.head.appendChild(style);
-    document.title = 'Nyan Kidney 試作';
-  }, []);
+      :focus-visible { outline: 3px solid ${c.focus} !important; outline-offset: 2px; }`;
+  }, [c]);
 }
 
 function Main() {
   const { loaded } = useStore();
+  const c = useColors();
+  const scheme = useScheme();
+  useWebSetup();
   const [stack, setStack] = useState<Route[]>([{ name: 'home' }]);
   const [toast, setToast] = useState<string>();
   const route = stack[stack.length - 1];
-  const tab = stack[0].name === 'report' ? 'report' : 'home';
+  const tab = stack[0].name as Tab;
 
   const scrollTop = () => {
     if (Platform.OS === 'web' && typeof window !== 'undefined') window.scrollTo(0, 0);
@@ -55,7 +66,7 @@ function Main() {
     setToast(msg);
     scrollTop();
   };
-  const switchTab = (t: 'home' | 'report') => {
+  const switchTab = (t: Tab) => {
     setStack([{ name: t }]);
     setToast(undefined);
     scrollTop();
@@ -86,45 +97,18 @@ function Main() {
     case 'report':
       screen = <ReportScreen />;
       break;
+    case 'settings':
+      screen = <SettingsScreen />;
+      break;
     default:
       screen = <HomeScreen go={go} />;
   }
 
-  const tabBar = (
-    <View
-      nativeID="tabbar"
-      style={{
-        flexDirection: 'row',
-        borderTopWidth: 1,
-        borderColor: colors.border,
-        backgroundColor: colors.surface,
-        ...(Platform.OS === 'web' ? ({ position: 'fixed', left: 0, right: 0, bottom: 0 } as object) : {}),
-      }}
-    >
-      {(
-        [
-          ['home', 'ホーム'],
-          ['report', 'レポート'],
-        ] as const
-      ).map(([k, label]) => {
-        const on = tab === k;
-        return (
-          <Pressable
-            key={k}
-            accessibilityRole="tab"
-            accessibilityState={{ selected: on }}
-            onPress={() => switchTab(k)}
-            style={{ flex: 1, minHeight: 64, alignItems: 'center', justifyContent: 'center', borderTopWidth: 4, borderTopColor: on ? colors.sage : 'transparent' }}
-          >
-            <Text style={{ fontFamily: fonts.heading, fontSize: sizes.label, color: colors.text, fontWeight: on ? '700' : '400' }}>{label}</Text>
-          </Pressable>
-        );
-      })}
-    </View>
-  );
+  const fixed = (extra: object) => (Platform.OS === 'web' ? ({ position: 'fixed', ...extra } as object) : {});
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.background }}>
+    <View style={{ flex: 1, backgroundColor: c.background }}>
+      <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         {screen}
       </KeyboardAvoidingView>
@@ -133,32 +117,57 @@ function Main() {
           nativeID="toast"
           accessibilityLiveRegion="polite"
           style={{
-            backgroundColor: colors.text,
+            backgroundColor: c.text,
             padding: 16,
             borderRadius: 12,
             marginHorizontal: 20,
             marginBottom: 8,
-            ...(Platform.OS === 'web' ? ({ position: 'fixed', left: 0, right: 0, bottom: 72, maxWidth: 680, marginLeft: 'auto', marginRight: 'auto' } as object) : {}),
+            ...fixed({ left: 0, right: 0, bottom: 72, maxWidth: 680, marginLeft: 'auto', marginRight: 'auto' }),
           }}
         >
-          <Text style={{ fontFamily: fonts.body, color: colors.background, fontSize: sizes.body, textAlign: 'center' }}>{toast}</Text>
+          <Text style={{ fontFamily: fonts.body, color: c.background, fontSize: sizes.body, textAlign: 'center' }}>{toast}</Text>
         </View>
       ) : null}
-      {tabBar}
+      <View
+        nativeID="tabbar"
+        style={{ flexDirection: 'row', borderTopWidth: 1, borderColor: c.border, backgroundColor: c.surface, ...fixed({ left: 0, right: 0, bottom: 0 }) }}
+      >
+        {TABS.map(([k, label]) => {
+          const on = tab === k;
+          return (
+            <Pressable
+              key={k}
+              accessibilityRole="tab"
+              accessibilityState={{ selected: on }}
+              onPress={() => switchTab(k)}
+              style={{ flex: 1, minHeight: 64, alignItems: 'center', justifyContent: 'center', borderTopWidth: 4, borderTopColor: on ? c.primary : 'transparent' }}
+            >
+              <Text style={{ fontFamily: on ? fonts.heading : fonts.headingMedium, fontSize: sizes.label, color: c.text }}>{label}</Text>
+            </Pressable>
+          );
+        })}
+      </View>
     </View>
   );
 }
 
+function Root() {
+  const c = useColors();
+  return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: c.background }} edges={['top', 'bottom']}>
+      <Main />
+    </SafeAreaView>
+  );
+}
+
 export default function App() {
-  useWebSetup();
+  const fontsReady = useAppFonts();
+  if (!fontsReady) return null; // 読み込み中はスプラッシュのまま
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top', 'bottom']}>
-        <StoreProvider>
-          <Main />
-        </StoreProvider>
-      </SafeAreaView>
-      <StatusBar style="dark" />
+      <StoreProvider>
+        <Root />
+      </StoreProvider>
     </SafeAreaProvider>
   );
 }

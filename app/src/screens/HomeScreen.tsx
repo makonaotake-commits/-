@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
+import { HomeScene } from '../components/HomeScene';
 import { ConfirmBox, Screen } from '../components/Screen';
 import { Button, Card, CatSwitcher, Field, H, Input, Note, T, useCurrentCat } from '../components/ui';
 import { FLUID_STATE, labelOf, MED_RESULT, TEXT } from '../config/labels';
@@ -94,6 +95,7 @@ export function HomeScreen({ go }: { go: (r: Route) => void }) {
   return (
     <Screen>
       <T sub>{today}</T>
+      <HomeScene />
       <H level={1}>今日の記録</H>
       <CatSwitcher />
       {adding ? addForm : <Button kind="quiet" label="＋ 猫を追加する" onPress={() => setAdding(true)} style={{ alignSelf: 'flex-start' }} />}
@@ -103,8 +105,8 @@ export function HomeScreen({ go }: { go: (r: Route) => void }) {
         <>
           <View style={{ marginTop: 8 }}>
             <Button label={`${cat.name}ちゃんの体調を記録する${conds.length ? '（今日の記録を開く）' : ''}`} onPress={() => go({ name: 'condition' })} style={{ minHeight: 72 }} />
-            <Button label="補液を記録する" onPress={() => go({ name: 'fluid' })} style={{ minHeight: 72 }} />
-            <Button label="お薬を記録する" onPress={() => go({ name: 'meds' })} style={{ minHeight: 72 }} />
+            <Button kind="secondary" label="補液を記録する" onPress={() => go({ name: 'fluid' })} style={{ minHeight: 72 }} />
+            <Button kind="secondary" label="お薬を記録する" onPress={() => go({ name: 'meds' })} style={{ minHeight: 72 }} />
           </View>
 
           <H>今日のケア予定</H>

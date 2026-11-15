@@ -1,38 +1,67 @@
-// 見た目の設定（仮）
-// ペルシャのスタイルガイドが届いたら、このファイルの値だけを差し替えれば、全画面に反映されます。
+// 見た目の設定
 import { Platform } from 'react-native';
 
-export const colors = {
-  background: '#FAF6F0', // 生成り
-  surface: '#FFFFFF',
-  text: '#4A4038', // 焦げ茶
-  textSub: '#6E6259',
-  border: '#DDD3C7',
-  sage: '#8FB5A8', // セージ（選択中の印など。文字色には使わない）
-  sageTint: '#E3EEEA',
-  peach: '#E8B4A0', // 淡いピーチ（飾り。警告の意味では使わない）
-  peachTint: '#F8E8E0',
-  chartLine: '#4A4038', // グラフの線は中立の色
+// 出典：docs/brand/ui_style_guide.md v1.0（ペルシャ、2026-11-15）。値を変えるときは、このファイルだけを直せば全画面に反映されます。
+
+export const lightColors = {
+  background: '#FBF5EA',
+  surface: '#FFFDF8',
+  text: '#4D3F33',
+  textSub: '#6F5E4A',
+  border: '#E6D7C0',
+  borderStrong: '#9A8468',
+  primary: '#87602F',
+  onPrimary: '#FFFFFF',
+  primaryTint: '#F3E3C8',
+  accent: '#8FB5A8', // 飾りの線だけ（文字には使わない）
+  accentTint: '#E2EDE8',
+  chartLine: '#4D3F33',
+  focus: '#4D3F33',
+  mark: '#4D3F33', // 記録のお知らせの目印（しおり形）
 };
 
-// Web 版では Google Fonts を読み込みます（App.tsx）。iPhone・Android 版は次の段階で同梱します。
-const webHeading = "'Zen Maru Gothic', 'BIZ UDPGothic', sans-serif";
-const webBody = "'BIZ UDPGothic', 'Zen Maru Gothic', sans-serif";
+export type Colors = typeof lightColors;
 
+export const darkColors: Colors = {
+  background: '#1F1A14',
+  surface: '#2A231B',
+  text: '#F3E8D8',
+  textSub: '#C2B19A',
+  border: '#43382B',
+  borderStrong: '#8E7B62',
+  primary: '#E2B87F',
+  onPrimary: '#1F1A14',
+  primaryTint: '#3E3222',
+  accent: '#9CC3B5',
+  accentTint: '#263530',
+  chartLine: '#F3E8D8',
+  focus: '#F3E8D8',
+  mark: '#F3E8D8',
+};
+
+// フォントはアプリに同梱（OFL 1.1）。iPhone・Android は useFonts で、Web 版はビルド時に埋め込みます。
+// 太字が効かない端末があるため、太さごとに別のフォント名で指定します。
+// Web 版の見出しフォントは画面の文字だけに絞っているので、ない字は本文のフォントで表示する
+const fallback = ", 'BIZUDPGothic_400Regular', 'Hiragino Sans', 'Yu Gothic', sans-serif";
+const web = Platform.OS === 'web';
 export const fonts = {
-  heading: Platform.select({ web: webHeading, default: undefined }),
-  body: Platform.select({ web: webBody, default: undefined }),
-  googleFontsUrl:
-    'https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Zen+Maru+Gothic:wght@500;700&display=swap',
+  heading: web ? 'ZenMaruGothic_700Bold' + fallback : 'ZenMaruGothic_700Bold',
+  headingMedium: web ? 'ZenMaruGothic_500Medium' + fallback : 'ZenMaruGothic_500Medium',
+  body: web ? 'BIZUDPGothic_400Regular' + fallback : 'BIZUDPGothic_400Regular',
+  bodyBold: web ? 'BIZUDPGothic_700Bold' + fallback : 'BIZUDPGothic_700Bold',
 };
 
 export const sizes = {
-  body: 18,
-  small: 15,
-  label: 17,
   title: 24,
   heading: 20,
-  touch: 56, // 押せる大きさの最小値（片手で押しやすい高さ）
-  radius: 16,
+  body: 18,
+  label: 17,
+  small: 15, // これより小さくしない
+  number: 28,
   gap: 16,
+  screenPadding: 20,
+  cardPadding: 20,
+  radius: 16,
+  radiusSmall: 12,
+  touch: 56, // 押せるものの最小の高さ
 };

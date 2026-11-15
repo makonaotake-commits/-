@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Pressable, View } from 'react-native';
 import Svg, { Circle, Line, Polyline, Text as SvgText } from 'react-native-svg';
-import { colors } from '../config/theme';
+import { fonts } from '../config/theme';
+import { useColors } from '../config/useTheme';
 import { WEIGHT_AXIS_MIN_HALF_RANGE_KG } from '../config/vetValues';
 import { shortDate } from '../data/store';
 import { T } from './ui';
@@ -10,6 +11,7 @@ type Pt = { date: string; kg: number; copied?: boolean };
 
 /** 体重だけの折れ線グラフ。基準線・目標線・色分け・コメントは付けない（F-12） */
 export function WeightChart({ points, from, to }: { points: Pt[]; from: string; to: string }) {
+  const colors = useColors();
   const [w, setW] = useState(0);
   const [sel, setSel] = useState<Pt>();
   const h = 220;
@@ -44,16 +46,16 @@ export function WeightChart({ points, from, to }: { points: Pt[]; from: string; 
           <Svg width={w} height={h}>
             {/* 縦軸の目盛りの数字だけ。横線（基準線に見えるもの）は引かない */}
             {ticks.map((t, i) => (
-              <SvgText key={i} x={padL - 8} y={y(t) + 5} fontSize={13} fill={colors.textSub} textAnchor="end">
+              <SvgText key={i} x={padL - 8} y={y(t) + 5} fontSize={13} fontFamily={fonts.body} fill={colors.textSub} textAnchor="end">
                 {t.toFixed(2)}
               </SvgText>
             ))}
             <Line x1={padL} y1={padT} x2={padL} y2={h - padB} stroke={colors.border} strokeWidth={1} />
             <Line x1={padL} y1={h - padB} x2={w - padR} y2={h - padB} stroke={colors.border} strokeWidth={1} />
-            <SvgText x={padL} y={h - 10} fontSize={13} fill={colors.textSub} textAnchor="start">
+            <SvgText x={padL} y={h - 10} fontSize={13} fontFamily={fonts.body} fill={colors.textSub} textAnchor="start">
               {shortDate(from)}
             </SvgText>
-            <SvgText x={w - padR} y={h - 10} fontSize={13} fill={colors.textSub} textAnchor="end">
+            <SvgText x={w - padR} y={h - 10} fontSize={13} fontFamily={fonts.body} fill={colors.textSub} textAnchor="end">
               {shortDate(to)}
             </SvgText>
             {points.length > 1 ? (

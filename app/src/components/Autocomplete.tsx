@@ -1,6 +1,7 @@
 import React from 'react';
 import { Pressable, Text, View } from 'react-native';
-import { colors, fonts, sizes } from '../config/theme';
+import { fonts, sizes } from '../config/theme';
+import { useColors } from '../config/useTheme';
 import { Input, T } from './ui';
 
 /** 2文字以上入力したときだけ候補を出す入力欄。候補にないものもそのまま入力できる */
@@ -19,6 +20,7 @@ export function Autocomplete<C>({
   onPick: (c: C) => void;
   placeholder?: string;
 }) {
+  const colors = useColors();
   return (
     <View>
       <Input value={value} onChangeText={onChangeText} placeholder={placeholder} autoCorrect={false} />
@@ -34,7 +36,7 @@ export function Autocomplete<C>({
                 key={i}
                 accessibilityRole="button"
                 onPress={() => onPick(c)}
-                style={({ pressed }) => ({ minHeight: 52, paddingHorizontal: 14, paddingVertical: 8, justifyContent: 'center', borderTopWidth: 1, borderTopColor: colors.border, backgroundColor: pressed ? colors.sageTint : colors.surface })}
+                style={({ pressed }) => ({ minHeight: 52, paddingHorizontal: 14, paddingVertical: 8, justifyContent: 'center', borderTopWidth: 1, borderTopColor: colors.border, backgroundColor: pressed ? colors.primaryTint : colors.surface })}
               >
                 <Text style={{ fontFamily: fonts.body, fontSize: sizes.label, color: colors.text }}>{r.title}</Text>
                 {r.sub ? <Text style={{ fontFamily: fonts.body, fontSize: sizes.small, color: colors.textSub }}>{r.sub}</Text> : null}

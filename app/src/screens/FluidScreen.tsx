@@ -56,7 +56,7 @@ export function FluidScreen({ back }: { back: (msg?: string) => void }) {
       fluids: [...x.fluids, r],
       customFluidNames: name && !x.customFluidNames.includes(name) && !FLUID_NAME_CANDIDATES.includes(name) ? [...x.customFluidNames, name] : x.customFluidNames,
     }));
-    back('補液の記録を保存しました');
+    back('記録しました');
   };
 
   const save = () => {
@@ -119,7 +119,10 @@ export function FluidScreen({ back }: { back: (msg?: string) => void }) {
           onNo={() => setConfirmBig(false)}
         />
       ) : (
-        <Button label="保存する" onPress={save} disabled={!hasAny} />
+        <>
+          <Button label="保存する" onPress={save} disabled={!hasAny} />
+          {!hasAny ? <T small sub>どれか1つ入力すると保存できます。</T> : null}
+        </>
       )}
 
       <H>補液のリマインダー</H>
