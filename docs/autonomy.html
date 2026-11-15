@@ -1,0 +1,180 @@
+<title>自動記録と行動のうながし</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap">
+<style>
+/* Layout: 1カラムの質問カード列＋下部固定の送信バー。カードはタップで選ぶ大きな選択肢 */
+:root{
+  --bg:#f5f6f2; --surface:#ffffff; --ink:#1f2420; --muted:#5d665f; --line:#d9ded6;
+  --accent:#2f6b57; --accent-soft:#e3efe9; --rec:#8a5a12; --rec-soft:#f6ecd9;
+  --display:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Noto Sans JP",sans-serif;
+  --body:"Noto Sans JP","Hiragino Sans","Yu Gothic",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141714; --surface:#1d211e; --ink:#e9ece7; --muted:#a3aca5; --line:#323833; --accent:#7cc4a6; --accent-soft:#1f3a30; --rec:#e3b66a; --rec-soft:#3a2f1c; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141714; --surface:#1d211e; --ink:#e9ece7; --muted:#a3aca5; --line:#323833;
+  --accent:#7cc4a6; --accent-soft:#1f3a30; --rec:#e3b66a; --rec-soft:#3a2f1c; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.7;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 120px}
+.wrap{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+header h1{font-family:var(--display);font-size:1.6rem;line-height:1.35;margin:0 0 6px;text-wrap:balance}
+header p{margin:0;color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;font-size:.8rem;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:4px}
+.q{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:12px}
+.q.done{border-color:var(--accent)}
+.qhead{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.qnum{font-size:.75rem;letter-spacing:.06em;color:var(--muted);font-variant-numeric:tabular-nums}
+.q h2{font-family:var(--display);font-size:1.12rem;margin:2px 0 0;line-height:1.45;text-wrap:balance}
+.why{margin:0;font-size:.86rem;color:var(--muted)}
+.cats{display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-end;flex-shrink:0;max-width:45%}
+.cat{font-size:.72rem;padding:2px 8px;border-radius:999px;background:var(--accent-soft);color:var(--accent);white-space:nowrap}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px}
+.opt{position:relative;display:flex;flex-direction:column;gap:2px;text-align:left;font:inherit;color:inherit;
+  background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px 10px 38px;cursor:pointer;min-width:0}
+.opt:hover{border-color:var(--accent)}
+.opt:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.opt::before{content:"";position:absolute;left:12px;top:14px;width:16px;height:16px;border:2px solid var(--muted);border-radius:50%}
+.opt.multi::before{border-radius:4px}
+.opt[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.opt[aria-pressed="true"]::before{border-color:var(--accent);background:var(--accent);box-shadow:inset 0 0 0 3px var(--accent-soft)}
+.opt b{font-weight:700;font-size:.95rem}
+.opt small{color:var(--muted);font-size:.8rem;line-height:1.5}
+.rec{display:inline-block;margin-left:6px;font-size:.68rem;font-weight:700;padding:1px 6px;border-radius:4px;background:var(--rec-soft);color:var(--rec);vertical-align:1px}
+textarea{width:100%;font:inherit;color:inherit;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-height:44px;resize:vertical}
+textarea:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);
+  padding:12px max(16px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.bar .in{max-width:720px;margin:0 auto;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.prog{flex:1;min-width:160px}
+.track{height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.fill{height:100%;background:var(--accent);width:0;transition:width .25s}
+@media (prefers-reduced-motion:reduce){.fill{transition:none}}
+.prog p{margin:4px 0 0;font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums}
+button.send{font:inherit;font-weight:700;background:var(--accent);color:var(--surface);border:0;border-radius:999px;padding:10px 20px;cursor:pointer}
+button.send:disabled{opacity:.5;cursor:default}
+button.send:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.status{font-size:.82rem;color:var(--muted);width:100%}
+@media (max-width:480px){.qhead{flex-direction:column}.cats{justify-content:flex-start;max-width:none}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>自動記録と行動のうながし 🐈‍⬛</h1>
+    <p>「基本的には自律的に記録され、能動的に飼い主さんの行動を促してほしい」というご要望を、具体的な形にするための確認です。手間を減らす工夫や、予定・記録の抜けを知らせる工夫は、今の設計のまま入れられます。一方で、アプリが猫の状態を判断して行動をすすめる形は、獣医師法や医療機器の規制にかかわるため、線引きを決める必要があります。迷ったら<span class="rec">おすすめ</span>を選んでおけば大丈夫です。回答をもとに、ブリショーとロシアンが要件とリスクを整理します。</p>
+    <div class="legend"><span>各質問の右上：その答えを使う猫</span></div>
+  </header>
+  <main id="qs" class="wrap" style="gap:16px"></main>
+</div>
+
+<div class="bar"><div class="in">
+  <div class="prog"><div class="track"><div class="fill" id="fill"></div></div><p id="count">0 / 5 回答済み</p></div>
+  <button class="send" id="send" type="button">ボンベイに送る</button>
+  <div class="status" id="status" role="status"></div>
+</div></div>
+
+<script>
+const Q = [
+ {id:"auto_record",multi:true,title:"「自律的に記録される」は、どれをイメージしていますか？（いくつでも）",why:"今の設計は、飼い主さんがタップして記録する形です。手間を減らす方法はいくつかあり、開発量とリスクが大きく違います。",cats:["ブリショー","マンチカン"],opts:[
+  ["device","スマート機器から自動で取り込む","体重計・給水器・トイレなどの計測値を取り込む。対応する機器と連携方法の調査が必要（機器によっては連携できない）",1],
+  ["ocr","検査結果の用紙を撮影して読み取る","CRE・SDMA などを写真から自動で入力（確認してから保存）。検査値の記録は第2弾の予定"],
+  ["reminder_tap","通知から1タップで記録","補液・投薬のリマインダーの通知から「やった」をそのまま記録（第1弾で予定済み）",1],
+  ["draft","いつものパターンを下書きにしておく","毎日の記録を前日と同じ内容で下書きし、違うところだけ直す"],
+  ["photo_ai","猫の写真や動画から様子を推定する","食事量・活動量などの推定。精度と、判定にあたるリスクの検討が大きい"]]},
+ {id:"proactive",multi:true,title:"「能動的に行動を促す」は、どこまでを考えていますか？（いくつでも）",why:"上の3つは今の設計の範囲で入れられます。下の2つは、アプリが猫の状態を判断して行動をすすめる形になり、獣医師法（診療）や動物用医療機器プログラムにあたる可能性が高くなります。",cats:["ブリショー","ロシアン"],opts:[
+  ["care_remind","ケアや記録の時間をお知らせする","補液・投薬・記録の時刻のリマインダー",1],
+  ["gap_remind","記録が抜けている日をそっと知らせる","「今日はまだ記録がありません」。せかさない言い方と回数の上限が必要",1],
+  ["ahead","予定を先回りして知らせる","通院日の前日、薬や輸液の残りが少なくなったら（残量を記録している場合）",1],
+  ["vet_consult","記録の変化に応じて「獣医師に相談しましょう」とすすめる","受診のすすめは判定にあたる可能性が高い"],
+  ["action_advice","変化に応じて、具体的な対処（補液を増やす等）を提案する","診療行為にあたる可能性が非常に高く、承認なしでは難しい"]]},
+ {id:"judge_line",title:"変化に応じた「すすめ」を入れる場合、どの形にしますか？",why:"上の問いで下の2つを選んだ場合の線引きです。今の「記録のお知らせ（自分で決めた条件）」は、アプリ側が判断しない形で、ロシアンの OK が出ています。",cats:["ブリショー","ロシアン"],opts:[
+  ["vet_set","かかりつけの獣医師と決めた条件・言葉を飼い主さんが設定する","今の F-27 を広げ、「先生に連絡」などの文言も飼い主さん（先生）が決める。アプリ側は判断しない",1],
+  ["app_rule","アプリ側の基準で「受診をすすめる」を出す","動物用医療機器プログラムとして承認を受ける前提になる（期間・費用が大きい）"],
+  ["none","すすめは入れない","上の3つ（リマインダー系）だけにする"]]},
+ {id:"timing",title:"入れる時期は？",why:"第1弾は3か月以内のリリース予定で、範囲を広げると遅れる可能性があります。",cats:["ブリショー","マンチカン","ベンガル"],opts:[
+  ["split","リマインダー系は第1弾、機器連携・読み取り・すすめは第2弾以降","第1弾の時期を守りつつ方向を決める",1],
+  ["phase1_all","選んだものをすべて第1弾に入れる","リリースが遅れる可能性が高い"],
+  ["phase2","すべて第2弾以降","第1弾は今の範囲のまま"]]},
+ {id:"samd",title:"将来、動物用医療機器プログラムとして承認を受けることを目指しますか？",why:"承認を受ければ、アプリが基準にもとづいて受診をすすめることも可能になり得ます。ただし、臨床での裏付け・申請・品質管理の体制が必要で、期間と費用がかかります（詳細はロシアンと専門家に確認）。",cats:["ロシアン","ベンガル"],opts:[
+  ["no","目指さない","記録・見える化と、飼い主さんが決めた条件でのお知らせに徹する",1],
+  ["consider","将来の選択肢として検討する","第1弾は今の線引きで出し、専門家に相談しておく"],
+  ["yes","目指す","事業計画から見直しが必要"]]}
+];
+const state = {answers:{}, notes:{}, free:""};
+const $ = s=>document.querySelector(s);
+function render(){
+  const root=$("#qs"); root.innerHTML="";
+  Q.forEach((q,i)=>{
+    const sec=document.createElement("section"); sec.className="q"; sec.id="q-"+q.id;
+    const head=document.createElement("div"); head.className="qhead";
+    const left=document.createElement("div");
+    left.innerHTML=`<div class="qnum">Q${i+1} / ${Q.length}${q.multi?"・複数選択":""}</div>`;
+    const h=document.createElement("h2"); h.textContent=q.title; left.appendChild(h);
+    const cats=document.createElement("div"); cats.className="cats";
+    q.cats.forEach(c=>{const s=document.createElement("span");s.className="cat";s.textContent=c;cats.appendChild(s)});
+    head.append(left,cats); sec.appendChild(head);
+    const why=document.createElement("p"); why.className="why"; why.textContent=q.why; sec.appendChild(why);
+    const opts=document.createElement("div"); opts.className="opts"; opts.setAttribute("role","group"); opts.setAttribute("aria-label",q.title);
+    q.opts.forEach(([v,label,desc,rec])=>{
+      const b=document.createElement("button"); b.type="button"; b.className="opt"+(q.multi?" multi":""); b.dataset.q=q.id; b.dataset.v=v;
+      const bl=document.createElement("b"); bl.textContent=label;
+      if(rec){const r=document.createElement("span");r.className="rec";r.textContent="おすすめ";bl.appendChild(r)}
+      const sm=document.createElement("small"); sm.textContent=desc;
+      b.append(bl,sm); b.addEventListener("click",()=>pick(q,v)); opts.appendChild(b);
+    });
+    sec.appendChild(opts);
+    const ta=document.createElement("textarea"); ta.id="note-"+q.id; ta.placeholder="補足があれば（任意）"; ta.rows=1;
+    ta.value=state.notes[q.id]||""; ta.addEventListener("input",()=>{state.notes[q.id]=ta.value;dirty()});
+    sec.appendChild(ta); root.appendChild(sec);
+  });
+  const sec=document.createElement("section"); sec.className="q";
+  sec.innerHTML=`<div class="qnum">自由記入（任意）</div><h2>イメージしている使い方を、自由に書いてください</h2><p class="why">例：「朝起きたら、夜のうちのトイレと体重が記録されていて、気になる変化があれば先生に相談するよう声をかけてほしい」など。使いたい機器があれば、その名前も。</p>`;
+  const ta=document.createElement("textarea"); ta.id="free"; ta.rows=3; ta.value=state.free; ta.addEventListener("input",()=>{state.free=ta.value;dirty()});
+  sec.appendChild(ta); root.appendChild(sec);
+  paint();
+}
+function pick(q,v){
+  if(q.multi){const cur=new Set(state.answers[q.id]||[]); cur.has(v)?cur.delete(v):cur.add(v); state.answers[q.id]=[...cur];}
+  else state.answers[q.id]=v;
+  paint(); dirty();
+}
+function answered(q){const a=state.answers[q.id];return q.multi?(a&&a.length>0):!!a}
+function paint(){
+  document.querySelectorAll(".opt").forEach(b=>{
+    const a=state.answers[b.dataset.q]; const on=Array.isArray(a)?a.includes(b.dataset.v):a===b.dataset.v;
+    b.setAttribute("aria-pressed",on?"true":"false");
+  });
+  let n=0; Q.forEach(q=>{const ok=answered(q); if(ok)n++; const s=document.getElementById("q-"+q.id); if(s)s.classList.toggle("done",ok)});
+  $("#fill").style.width=(n/Q.length*100)+"%"; $("#count").textContent=`${n} / ${Q.length} 回答済み`;
+}
+function dirty(){$("#status").textContent="未送信の変更があります";}
+function labelOf(q,v){const o=q.opts.find(o=>o[0]===v);return o?o[1]:v}
+function summary(){
+  return Q.map((q,i)=>{const a=state.answers[q.id];const t=!a||(Array.isArray(a)&&!a.length)?"（未回答）":Array.isArray(a)?a.map(v=>labelOf(q,v)).join("、"):labelOf(q,a);
+    const n=state.notes[q.id]?`／補足：${state.notes[q.id]}`:""; return `Q${i+1} ${q.title}\n→ ${t}${n}`}).join("\n\n")+(state.free?`\n\n自由記入：${state.free}`:"");
+}
+let db=null, ref=null;
+render();
+(async()=>{
+  try{ db = await window.claude?.use?.("db"); }catch(e){ db=null; }
+  if(!db){ $("#send").textContent="回答をコピー"; $("#status").textContent="保存機能が使えない表示です。「回答をコピー」でチャットに貼り付けてください。"; return; }
+  ref = db.doc("answers/autonomy");
+  const t=setTimeout(()=>{$("#status").textContent="前回の回答を読み込めませんでした。新しく回答できます。"},10000);
+  try{const s=await ref.get(); clearTimeout(t);
+    if(s.exists){const d=s.data(); Object.assign(state.answers,d.answers||{}); Object.assign(state.notes,d.notes||{}); state.free=d.free||""; render();
+      $("#status").textContent="前回送った回答を読み込みました。変更して送り直せます。";}
+  }catch(e){clearTimeout(t);}
+})();
+$("#send").addEventListener("click",async()=>{
+  const btn=$("#send");
+  if(!ref){ try{await navigator.clipboard.writeText(summary()); $("#status").textContent="コピーしました。チャットに貼り付けてください。";}
+    catch(e){$("#status").textContent="コピーできませんでした。お手数ですが選んだ内容をチャットでお知らせください。";} return; }
+  btn.disabled=true; $("#status").textContent="送信中…";
+  try{ await ref.set({answers:state.answers,notes:state.notes,free:state.free,summary:summary(),submittedAt:new Date().toISOString()});
+    $("#status").textContent="ボンベイに届きました。チャットで「送ったよ」と伝えてください。";
+  }catch(e){ $("#status").textContent="保存できませんでした（"+(e&&e.code||"エラー")+"）。もう一度押すか、チャットで答えを教えてください。"; }
+  btn.disabled=false;
+});
+</script>
