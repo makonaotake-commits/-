@@ -28,7 +28,7 @@ export function SettingsScreen() {
             onChange={(v) => v && set({ appearance: v })}
           />
         </Field>
-        <Field label="演出を控えめにする" hint="オンにすると、ホームの絵の季節・時間帯・しぐさの切りかえと、記録したときの動きを止めて、静かな絵だけにします。">
+        <Field label="演出を控えめにする" hint="オンにすると、季節・時間帯の日だまり・しぐさの切りかえと、記録したときの動きをすべて止めて、静かな絵1枚だけにします。端末の「視差効果を減らす」がオンのときも、同じ表示になります。">
           <Choice
             options={[
               { v: 'off', label: 'オフ' },

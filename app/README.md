@@ -26,7 +26,7 @@ React Native ＋ Expo（TypeScript）。今は「タップできる試作」の�
 | `src/components/HomeScene.tsx` | ホームの上の演出の仮の入れ物 |
 | `src/config/vetValues.ts` | 獣医師が決める値（補液量の確認を出す境目・体重グラフの縦軸の最小幅・部位の選択肢・輸液名の候補） |
 | `src/config/labels.ts` | 画面の言葉（ロシアンのレビュー前の仮） |
-| `src/data/drugs.ts` | 薬の候補リスト（`drug_list_draft.md` v0.2 の仮データ。「要確認」の行は試作用） |
+| `src/data/drugs.ts` | 薬の候補リスト（`drug_list_draft.md` v0.3。動物用の確認済み11件は `verified: true`。人体用・レンジアレンは試作用の仮データ） |
 
 ## 使っているライブラリ（SDK 一覧のたたき台。NFR-PRV-05）
 | 名前 | 目的 | 外部に送る情報 |
@@ -58,7 +58,7 @@ React Native ＋ Expo（TypeScript）。今は「タップできる試作」の�
 
 ## 製品版の前に外すもの
 - 「サンプルの記録を入れる」ボタン（実在の製品名を使っているため）。ストア画像・Instagram・LP に使う画面では「お薬A」のような架空の名前にする。
-- 薬の候補リストの「要確認」の行（`verified: false`）。
+- 薬の候補リストの「要確認」の行（`verified: false`）と、輸液名の候補（`vetValues.ts`）のうち確認が済んでいないもの。
 
 ## 作り方（開発者向け）
 ```

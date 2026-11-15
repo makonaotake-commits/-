@@ -1,5 +1,5 @@
 // 薬の候補リスト（仮のデータ）
-// 出典：docs/requirements/drug_list_draft.md（案 v0.2・draft）。
+// 出典：docs/requirements/drug_list_draft.md（案 v0.3・draft）。
 // v0.2 で「要確認」の行（verified: false）は、試作の仮データとしてだけ使います。製品版には確認が済むまで入れません。
 // ⚠️ 獣医師の確認・出典の利用条件の確認・ロシアンのレビューが済んでいない試作用のデータです。
 // 表示するのは「名前・剤形・メーカー名」だけ。効能・用途・区分は持たせません（F-26）。
@@ -14,7 +14,7 @@ export type DrugCandidate = {
   maker: string; // 未確認のものは「試作用の仮データ」
   /** 選んだときの記録の種類の初期値（注射は「病院での処置」） */
   kind: 'home' | 'hospital';
-  /** 一次情報で確認済みか（v0.2 の「一次確認：済」）。false は試作用の仮データ */
+  /** 一次情報と獣医師の確認が済んでいるか。false は試作用の仮データ */
   verified: boolean;
 };
 
@@ -22,7 +22,7 @@ const UNKNOWN = '試作用の仮データ';
 const BI = 'ベーリンガーインゲルハイムアニマルヘルスジャパン株式会社';
 const RV = 'リケンベッツファーマ株式会社';
 
-export const DRUG_LIST_VERSION = '試作用（2026-11-11 の案 v0.2 をもとに作成。確認前の仮データを含む）';
+export const DRUG_LIST_VERSION = '試作用（2026-11-15 の案 v0.3 をもとに作成。確認前の仮データを含む）';
 
 const h = (id: string, generic: string, brands: string[], form: string): DrugCandidate => ({
   id,
@@ -35,19 +35,24 @@ const h = (id: string, generic: string, brands: string[], form: string): DrugCan
 });
 
 export const DRUG_CANDIDATES: DrugCandidate[] = [
-  // 動物用医薬品
-  { id: 'covalzin', name: 'コバルジン', aliases: [], form: 'カプセル', maker: 'エランコジャパン（試作用の仮データ）', kind: 'home', verified: false },
+  // 動物用医薬品（v0.3：動物用医薬品等データベースで一次確認済み、かつ獣医師が確認済みの11件。ロシアン R-13）
+  { id: 'covalzin', name: 'コバルジンカプセル', aliases: ['コバルジン'], form: 'カプセル', maker: '株式会社クレハ', kind: 'home', verified: true },
   { id: 'semintra4', name: 'セミントラ 4mg/mL 経口液猫', aliases: ['セミントラ'], form: '経口液', maker: BI, kind: 'home', verified: true },
   { id: 'semintra10', name: 'セミントラ 10mg/mL 経口液猫', aliases: ['セミントラ'], form: '経口液', maker: BI, kind: 'home', verified: true },
-  { id: 'fortekor', name: 'フォルテコール', aliases: [], form: '錠剤', maker: UNKNOWN, kind: 'home', verified: false },
+  { id: 'fortekor25', name: 'フォルテコール錠 2.5mg フレーバー', aliases: ['フォルテコール'], form: '錠剤', maker: 'エランコジャパン株式会社', kind: 'home', verified: true },
+  { id: 'fortekor5', name: 'フォルテコール錠 5mg フレーバー', aliases: ['フォルテコール'], form: '錠剤', maker: 'エランコジャパン株式会社', kind: 'home', verified: true },
   { id: 'maropitat_tab', name: 'マロピタット錠16', aliases: ['マロピタット'], form: '錠剤', maker: RV, kind: 'home', verified: true },
   { id: 'maropitat_inj', name: 'マロピタット注', aliases: ['マロピタット'], form: '注射', maker: RV, kind: 'hospital', verified: true },
-  { id: 'cerenia_tab', name: 'セレニア錠', aliases: ['セレニア'], form: '錠剤', maker: UNKNOWN, kind: 'home', verified: false },
-  { id: 'cerenia_inj', name: 'セレニア注射液', aliases: ['セレニア'], form: '注射', maker: UNKNOWN, kind: 'hospital', verified: false },
-  { id: 'rapros', name: 'ラプロス', aliases: [], form: '錠剤', maker: '東レ（試作用の仮データ）', kind: 'home', verified: false },
-  { id: 'elura', name: 'エルーラ', aliases: [], form: UNKNOWN, maker: 'エランコジャパン（試作用の仮データ）', kind: 'home', verified: false },
+  { id: 'cerenia_inj', name: 'セレニア注', aliases: ['セレニア'], form: '注射', maker: 'ゾエティス・ジャパン株式会社', kind: 'hospital', verified: true },
+  // セレニア錠：R-13 の条件つき（製品名・剤形・メーカーだけを表示し、「猫用」などを付けない）
+  { id: 'cerenia_tab', name: 'セレニア錠 16/24/60', aliases: ['セレニア'], form: '錠剤', maker: 'ゾエティス・ジャパン株式会社', kind: 'home', verified: true },
+  { id: 'rapros', name: 'ラプロス', aliases: [], form: '錠剤', maker: '東レ株式会社', kind: 'home', verified: true },
+  { id: 'elura', name: 'エルーラ', aliases: [], form: '—', // 剤形は v0.3 に記載なし
+    maker: 'エランコジャパン株式会社', kind: 'home', verified: true },
+  // ここから下は試作用の仮データ（製品版には、確認が済むまで入れない）
+  // レンジアレン：動物用医薬品と確認できなければ収録しない（R-13）
   { id: 'renalzin', name: 'レンジアレン', aliases: [], form: UNKNOWN, maker: UNKNOWN, kind: 'home', verified: false },
-  // 人体用医薬品（一般名＋代表的な製品名。v0.2 では全件「要確認」）
+  // 人体用医薬品（一般名＋製品名）
   h('kremezin', '球形吸着炭', ['クレメジン'], 'カプセル・細粒'),
   h('amlodipine', 'アムロジピン', ['ノルバスク', 'アムロジン'], '錠剤'),
   h('telmisartan', 'テルミサルタン', ['ミカルディス'], '錠剤'),

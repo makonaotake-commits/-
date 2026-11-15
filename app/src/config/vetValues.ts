@@ -12,9 +12,16 @@ export const WEIGHT_AXIS_MIN_HALF_RANGE_KG = 0.5;
 export const FLUID_SITES = ['首の後ろ〜肩のあたり', '背中', '腰のあたり', 'その他'];
 export const FLUID_SIDES = ['左', '右', '中央'];
 
-/** 輸液名の入力補完に、あらかじめ出す候補。第4版の F-04 では「自由入力＋過去に入力した名前」なので空にしています。
- *  輸液剤の候補リストを作るか（Q-31）が決まったら、ここに名前を足します。 */
-export const FLUID_NAME_CANDIDATES: string[] = [];
+/** 輸液名の入力補完に出す候補（drug_list_draft.md v0.3 §2-4）。
+ *  メーカー名が二次情報までの確認のため、試作では「試作用の仮データ」と表示します。製品版には確認が済むまで入れません。 */
+export const FLUID_NAME_CANDIDATES: string[] = [
+  '乳酸リンゲル液（ソルラクト）',
+  '乳酸リンゲル液（ラクテック）',
+  '酢酸リンゲル液（ヴィーンF）',
+  '生理食塩液（大塚生食注）',
+  '維持液（ソリタ-T3号）',
+  '開始液（ソリタ-T1号）',
+];
 
 /** 「あとで」を押したときに延ばす分数（F-06。仮） */
 export const SNOOZE_MINUTES = 30;

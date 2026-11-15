@@ -94,8 +94,9 @@ export function FluidScreen({ back }: { back: (msg?: string) => void }) {
           <Choice options={FLUID_SIDES.map((x) => ({ v: x, label: x }))} value={side} onChange={setSide} />
         </Field>
 
-        <Field label="輸液の名前（任意）" hint={prevName ? `前回：${prevName.fluidName}（${shortDate(prevName.date)}）` : '自由に入力できます。前に入力した名前は、2文字以上入力すると候補に出ます。'}>
-          <Autocomplete value={fluidName} onChangeText={setFluidName} suggestions={suggestions} render={(x) => ({ title: x })} onPick={setFluidName} placeholder="例：乳酸リンゲル液" />
+        <Field label="輸液の名前（任意）" hint={prevName ? `前回：${prevName.fluidName}（${shortDate(prevName.date)}）` : '自由に入力できます。2文字以上入力すると候補が出ます。'}>
+          <Autocomplete value={fluidName} onChangeText={setFluidName} suggestions={suggestions} render={(x) => ({ title: x, sub: FLUID_NAME_CANDIDATES.includes(x) ? '試作用の仮データ' : '前に入力した名前' })} onPick={setFluidName} placeholder="例：乳酸リンゲル液" />
+          <T small sub style={{ marginTop: 6 }}>{TEXT.candidateListNote}</T>
           {prevName && !fluidName ? (
             <Button kind="quiet" label={`前回と同じ（${prevName.fluidName}）を入れる`} style={{ alignSelf: 'flex-start' }} onPress={() => setFluidName(prevName.fluidName!)} />
           ) : null}

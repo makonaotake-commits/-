@@ -63,6 +63,7 @@ export function MedSettingsScreen({ back }: { back: (msg?: string) => void }) {
               placeholder="例：ラプロス"
             />
             <T small sub style={{ marginTop: 6 }}>{TEXT.candidateNote}</T>
+            <T small style={{ marginTop: 4 }}>{TEXT.candidateListNote}</T>
           </Field>
           {draft.candidateId ? (
             <View style={{ backgroundColor: colors.background, borderWidth: 1, borderColor: colors.border, borderRadius: 12, padding: 14, marginBottom: 20 }}>

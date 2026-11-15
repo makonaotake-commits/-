@@ -1,9 +1,10 @@
 // ホームの上の小さな絵（演出の仮の入れ物）。線画・ロゴがラフのため、試作では切りかえの仕組みと置き場所だけ。
-// 記録の内容や体調とは関係させない。「演出を控えめにする」がオンのときは、静かな絵（日だまりだけ）にする。
+// 記録の内容や体調とは関係させない。静かな表示（F-30。設定のスイッチまたは OS の動きを減らす設定）のときは、
+// 日だまりも含めて演出をすべて止め、静かな絵1枚だけにする。
 import React from 'react';
 import { View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
-import { useColors } from '../config/useTheme';
+import { useColors, useQuiet } from '../config/useTheme';
 import { useStore } from '../data/store';
 import { GuideCat } from './Marks';
 import { T } from './ui';
@@ -20,20 +21,22 @@ function timeOfDay(h: number) {
 export function HomeScene() {
   const c = useColors();
   const { data } = useStore();
-  const calm = data.settings.calmMotion;
+  const calm = useQuiet();
   const now = new Date();
   const dayIndex = Math.floor(now.getTime() / 86400000);
-  const label = calm ? '静かな絵（日だまりだけ）' : `${SEASONS[now.getMonth()]}・${timeOfDay(now.getHours())}・${POSES[dayIndex % POSES.length]}`;
+  const label = calm ? '静かな絵（演出を止めています）' : `${SEASONS[now.getMonth()]}・${timeOfDay(now.getHours())}・${POSES[dayIndex % POSES.length]}`;
 
   return (
     <View
       accessibilityElementsHidden
       importantForAccessibility="no-hide-descendants"
-      style={{ height: 112, borderRadius: 16, backgroundColor: c.primaryTint, marginBottom: 12, flexDirection: 'row', alignItems: 'flex-end', paddingHorizontal: 16, paddingBottom: 8, overflow: 'hidden' }}
+      style={{ height: 112, borderRadius: 16, backgroundColor: calm ? c.surface : c.primaryTint, borderWidth: calm ? 1 : 0, borderColor: c.border, marginBottom: 12, flexDirection: 'row', alignItems: 'flex-end', paddingHorizontal: 16, paddingBottom: 8, overflow: 'hidden' }}
     >
-      <Svg width={40} height={40} style={{ position: 'absolute', right: 16, top: 12 }}>
-        <Circle cx={20} cy={20} r={12} fill={c.primary} opacity={0.5} />
-      </Svg>
+      {calm ? null : (
+        <Svg width={40} height={40} style={{ position: 'absolute', right: 16, top: 12 }}>
+          <Circle cx={20} cy={20} r={12} fill={c.primary} opacity={0.5} />
+        </Svg>
+      )}
       <GuideCat fur={data.settings.guideFur} size={72} />
       <View style={{ flex: 1, marginLeft: 12, marginBottom: 6 }}>
         <T small sub>演出の仮の入れ物</T>

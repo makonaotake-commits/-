@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Platform, useColorScheme } from 'react-native';
+import { AccessibilityInfo, Platform, useColorScheme } from 'react-native';
 import { useStore } from '../data/store';
 import { Colors, darkColors, lightColors } from './theme';
 
@@ -39,4 +39,30 @@ export function useScheme(): 'light' | 'dark' {
 
 export function useColors(): Colors {
   return useScheme() === 'dark' ? darkColors : lightColors;
+}
+
+/** OS の「視差効果を減らす（動きを減らす）」設定 */
+function useReduceMotion(): boolean {
+  const [on, setOn] = useState(false);
+  useEffect(() => {
+    let alive = true;
+    AccessibilityInfo.isReduceMotionEnabled()
+      .then((v) => alive && setOn(v))
+      .catch(() => {});
+    const sub = AccessibilityInfo.addEventListener('reduceMotionChanged', setOn);
+    return () => {
+      alive = false;
+      sub?.remove?.();
+    };
+  }, []);
+  return on;
+}
+
+/** 静かな表示にするか（F-30）。設定の「演出を控えめにする」がオン、または OS の動きを減らす設定がオンのとき。
+ *  このときは F-29 の演出（季節・時間帯の日だまり・しぐさ・記録したときの動き）をすべて止める。
+ *  カレンダーの葉っぱは記録の印なので、この値では変えない（ui_style_guide.md §9-4）。 */
+export function useQuiet(): boolean {
+  const { data } = useStore();
+  const reduce = useReduceMotion();
+  return data.settings.calmMotion || reduce;
 }
