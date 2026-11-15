@@ -2,7 +2,7 @@
 
 - 作成：ブリショー（要件定義）
 - 版：第6版（2026-11-15。薬リストの決定と、「自動記録と行動のうながし」の方針を反映）
-- レビュー状態：`compliance_reviewed`（第5版。ロシアン 2026-11-12 → `docs/compliance/review_2026-11-12_requirements_v5.md`）
+- レビュー状態：`compliance_reviewed`（第6版。ロシアン 2026-11-15 → `docs/compliance/review_2026-11-15_requirements_v6.md`）
 - 前提資料：`CLAUDE.md`、`docs/kickoff_answers.md`（ユーザー回答・決定事項。最優先）
 
 > 本書の記載はすべてアプリの仕様の検討であり、獣医療上の助言ではありません。治療・食事・補液・投薬は **かかりつけの獣医師の指示を優先** します。
