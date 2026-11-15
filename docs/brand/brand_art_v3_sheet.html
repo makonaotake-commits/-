@@ -1,0 +1,275 @@
+<title>ねこと、ゆっくり 清書シート</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+/* Layout: 1カラムの問いカード列。選択肢はカード（見本＋「この案にする」ボタン）。見本の中の小さな画面は実際にタップして反応を試せる。ページはひだまり寄り（画面用に調整）の配色 */
+:root{
+  --bg:#FBF5EA; --surface:#FFFDF8; --ink:#4D3F33; --muted:#6F5E4A; --line:#E6D7C0; --line-strong:#9A8468;
+  --accent:#87602F; --on-accent:#FFFFFF; --accent-soft:#F3E3C8; --sage:#8FB5A8; --sage-soft:#E2EDE8;
+  --sky-night:#3A3229; --moon:#F3E8D8;
+  --display:"Zen Maru Gothic","Hiragino Maru Gothic ProN","BIZ UDPGothic",sans-serif;
+  --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#1F1A14; --surface:#2A231B; --ink:#F3E8D8; --muted:#C2B19A; --line:#43382B; --line-strong:#8E7B62;
+  --accent:#E2B87F; --on-accent:#1F1A14; --accent-soft:#3E3222; --sage:#9CC3B5; --sage-soft:#263530;
+  --sky-night:#14110D; --moon:#E2B87F; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1F1A14; --surface:#2A231B; --ink:#F3E8D8; --muted:#C2B19A; --line:#43382B; --line-strong:#8E7B62;
+  --accent:#E2B87F; --on-accent:#1F1A14; --accent-soft:#3E3222; --sage:#9CC3B5; --sage-soft:#263530;
+  --sky-night:#14110D; --moon:#E2B87F; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 132px}
+.wrap{max-width:880px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+header{display:flex;flex-direction:column;gap:8px}
+.eyebrow{font-size:.78rem;letter-spacing:.08em;color:var(--muted)}
+h1{font-family:var(--display);font-weight:700;font-size:1.7rem;line-height:1.35;margin:0;text-wrap:balance}
+header p{margin:0;color:var(--muted);max-width:64ch}
+.q{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:20px;display:flex;flex-direction:column;gap:14px}
+.q.done{border-color:var(--accent)}
+.qnum{font-size:.75rem;letter-spacing:.08em;color:var(--muted)}
+.q h2{font-family:var(--display);font-weight:700;font-size:1.2rem;margin:2px 0 0;line-height:1.45;text-wrap:balance}
+.why{margin:0;font-size:.86rem;color:var(--muted);max-width:68ch}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:10px}
+.cards.wide{grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr))}
+.card{display:flex;flex-direction:column;gap:8px;background:var(--bg);border:1.5px solid var(--line);border-radius:14px;padding:14px;min-width:0}
+.card.on{border-color:var(--accent)}
+.card .t{font-family:var(--display);font-weight:700;font-size:1.02rem;line-height:1.5}
+.card p{margin:0;font-size:.83rem;color:var(--muted);line-height:1.65}
+.rec{display:inline-block;margin-left:6px;font-family:var(--body);font-size:.7rem;font-weight:700;padding:1px 8px;border-radius:999px;background:var(--accent-soft);color:var(--ink);border:1px solid var(--line-strong);vertical-align:2px}
+.pick{margin-top:auto;font:inherit;font-weight:700;font-size:.88rem;display:flex;align-items:center;justify-content:center;gap:8px;min-height:44px;border-radius:999px;cursor:pointer;
+  background:var(--surface);color:var(--ink);border:1.5px solid var(--line-strong)}
+.pick::before{content:"";width:14px;height:14px;border-radius:50%;border:2px solid var(--line-strong)}
+.pick.multi::before{border-radius:4px}
+.pick[aria-pressed="true"]{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.pick[aria-pressed="true"]::before{border-color:var(--on-accent);background:var(--on-accent);box-shadow:inset 0 0 0 3px var(--accent)}
+.pick:focus-visible,.demo-btn:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.art{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px;color:var(--ink);display:flex;align-items:flex-end;justify-content:center;gap:4px;flex-wrap:wrap}
+.art svg{display:block;max-width:100%;height:auto}
+.cap{font-size:.72rem;color:var(--muted);text-align:center}
+.fig{display:flex;flex-direction:column;align-items:center;gap:2px}
+/* 反応のデモ */
+.phone{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:8px;font-size:.8rem}
+.phone .row{display:flex;justify-content:space-between;gap:8px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:6px 10px;font-variant-numeric:tabular-nums}
+.phone .foot{display:flex;align-items:center;gap:10px}
+.demo-btn{white-space:nowrap;font:inherit;font-weight:700;background:var(--accent);color:var(--on-accent);border:0;border-radius:999px;padding:8px 18px;cursor:pointer;min-height:40px}
+.done-msg{font-size:.78rem;color:var(--muted);opacity:0;transition:opacity .6s}
+.done-msg.show{opacity:1}
+.tail{transform-box:fill-box;transform-origin:0% 100%}
+.react .tail{animation:sway 1.6s ease-in-out 1}
+.tilt{transform-box:fill-box;transform-origin:50% 100%}
+.react .tilt{animation:tilt 1.6s ease-in-out 1}
+@keyframes tilt{0%,100%{transform:rotate(0)}40%,60%{transform:rotate(-9deg)}}
+.react .eyes-open{animation:blinkA 1.6s ease-in-out 1}
+.react .eyes-soft{animation:blinkB 1.6s ease-in-out 1}
+.eyes-soft{opacity:0}
+@keyframes sway{0%,100%{transform:rotate(0)}35%{transform:rotate(-14deg)}70%{transform:rotate(6deg)}}
+@keyframes blinkA{0%,30%,80%,100%{opacity:1}40%,70%{opacity:0}}
+@keyframes blinkB{0%,30%,80%,100%{opacity:0}40%,70%{opacity:1}}
+@media (prefers-reduced-motion:reduce){.react .tilt,.react .tail,.react .eyes-open,.react .eyes-soft{animation:none}.done-msg{transition:none}}
+/* 配色 */
+.pal{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:10px}
+.scr{border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:7px;font-size:.78rem;line-height:1.5;border:1px solid var(--line)}
+.scr .h{font-family:var(--display);font-weight:700;font-size:.92rem}
+.scr .r{border-radius:9px;padding:6px 9px;display:flex;justify-content:space-between;font-variant-numeric:tabular-nums}
+.scr .b{border-radius:999px;padding:6px 0;text-align:center;font-weight:700}
+.scr .o{border-radius:999px;padding:5px 0;text-align:center;font-weight:700;background:transparent}
+.tblwrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.8rem;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:5px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:400;color:var(--muted)}
+td.n{text-align:right;white-space:nowrap}
+code{font-size:.78rem;background:var(--accent-soft);padding:0 4px;border-radius:4px}
+.nots{margin:0;padding-left:1.2em;font-size:.84rem;color:var(--muted);display:flex;flex-direction:column;gap:2px}
+textarea{width:100%;font:inherit;color:inherit;background:var(--bg);border:1px solid var(--line-strong);border-radius:10px;padding:8px 10px;min-height:44px;resize:vertical}
+textarea:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+label.nl{font-size:.8rem;color:var(--muted)}
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);
+  padding:12px max(16px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.bar .in{max-width:880px;margin:0 auto;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.prog{flex:1;min-width:160px}
+.track{height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.fill{height:100%;background:var(--accent);width:0;transition:width .3s}
+@media (prefers-reduced-motion:reduce){.fill{transition:none}}
+.prog p{margin:4px 0 0;font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums}
+button.send{font:inherit;font-weight:700;background:var(--accent);color:var(--on-accent);border:0;border-radius:999px;padding:10px 22px;cursor:pointer}
+button.send:disabled{opacity:.5;cursor:default}
+button.send:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">ペルシャより ／ ねこと、ゆっくり ／ 線画の清書案 ／ 2026-11-15</div>
+    <h1>まる形の猫を、すきまのある線で清書しました</h1>
+    <p>参考にいただいた2枚の絵から、雰囲気と線の考え方だけを取り入れました（途切れる線・端の丸い単線・点の目・縁からのぞく構図・広い余白・ベタ塗り1か所・動きのあるしぐさ）。キャラクターや構図は写していません。問い1で清書のタッチ、問い2で案内役の形を選んでください。見本の「記録する」は押して試せます。</p>
+  </header>
+  <div id="qs" style="display:flex;flex-direction:column;gap:22px"></div>
+  <section class="q">
+    <div class="qnum">自由記入（任意）</div>
+    <h2>ほかにペルシャへ伝えたいこと</h2>
+    <textarea id="free" rows="3" aria-label="自由記入"></textarea>
+  </section>
+</div>
+<div class="bar"><div class="in">
+  <div class="prog"><div class="track"><div class="fill" id="fill"></div></div><p id="count">0 / 2 回答済み</p></div>
+  <span id="status" style="font-size:.8rem;color:var(--muted);flex-basis:100%;order:3"></span>
+  <button class="send" id="send">ボンベイに送る</button>
+</div></div>
+
+<script>
+const $=s=>document.querySelector(s);
+const svg=(w,h,vb,inner,label)=>`<svg width="${w}" height="${h}" viewBox="${vb}" role="img" aria-label="${label}">${inner}</svg>`;
+const fig=(s,c)=>`<div class="fig">${s}<span class="cap">${c}</span></div>`;
+
+/* ---------- 3つの清書タッチ ----------
+  sw: 線の太さ / gap: 輪郭にすきまを入れるか / solid: ベタ塗りの場所 / fill: ベタの色 */
+const STY={
+ a:{sw:1.8,gap:true, solid:"tail",fill:"currentColor"},
+ b:{sw:2.8,gap:true, solid:"patch",fill:"currentColor"},
+ c:{sw:2.1,gap:true, solid:"collar",fill:"var(--sage)"},
+};
+function L(st,extra=""){return `fill="none" stroke="currentColor" stroke-width="${st.sw}" stroke-linecap="round" stroke-linejoin="round" ${extra}`;}
+const G=(st,pat)=>st.gap?`pathLength="100" stroke-dasharray="${pat}"`:"";
+function face(st,cx,cy){return `<circle cx="${cx-5}" cy="${cy}" r="${st.sw*0.8+0.6}" fill="currentColor"/><circle cx="${cx+5}" cy="${cy}" r="${st.sw*0.8+0.6}" fill="currentColor"/><circle cx="${cx}" cy="${cy+4}" r="${st.sw*0.45+0.4}" fill="currentColor"/>`;}
+function ears(st,cx,cy){return `<path d="M${cx-11} ${cy-7} Q${cx-11} ${cy-17} ${cx-4} ${cy-13}" ${L(st)}/><path d="M${cx+4} ${cy-13} Q${cx+11} ${cy-17} ${cx+11} ${cy-7}" ${L(st)}/>`;}
+function patch(st,cx,cy){return st.solid==="patch"?`<path d="M${cx+3} ${cy-13} Q${cx+12} ${cy-12} ${cx+13} ${cy-3} Q${cx+6} ${cy-4} ${cx+3} ${cy-13} Z" fill="${st.fill}"/>`:"";}
+function collar(st,cx,cy){return st.solid==="collar"?`<path d="M${cx-9} ${cy} Q${cx} ${cy+5} ${cx+9} ${cy} L${cx+8} ${cy+4} Q${cx} ${cy+8} ${cx-8} ${cy+4} Z" fill="${st.fill}"/>`:"";}
+function tail(st,d){return st.solid==="tail"?`<path class="tail" d="${d}" fill="none" stroke="${st.fill}" stroke-width="${st.sw*3}" stroke-linecap="round"/>`:`<path class="tail" d="${d}" ${L(st)}/>`;}
+
+/* すわる */
+function sit(st){
+  return `<path d="M14 80 H58 M64 80 H90 M96 80 H106" ${L(st)} stroke-opacity=".7"/>
+  <path d="M40 80 C40 58 48 48 60 48 C72 48 80 58 80 80" ${L(st,G(st,"44 6 50"))}/>
+  <path d="M54 80 v-7 M66 80 v-7" ${L(st)}/>
+  ${tail(st,"M80 78 C94 78 98 66 90 60")}
+  ${collar(st,60,47)}
+  <g class="tilt"><circle cx="60" cy="36" r="14" fill="var(--surface)" ${L(st,G(st,"70 7 23"))}/>${ears(st,60,36)}${patch(st,60,36)}${face(st,60,37)}</g>`;
+}
+/* 縁からのぞく */
+function peek(st){
+  return `<path d="M14 64 H52 M58 64 H106" ${L(st)}/>
+  <path d="M100 64 V54 H86 V64" ${L(st)}/><path d="M89 58 H97" ${L(st)} stroke-opacity=".6"/>
+  ${collar(st,48,63)}
+  <g class="tilt"><path d="M34 64 A14 14 0 0 1 62 64" fill="var(--surface)" ${L(st,G(st,"58 8 34"))}/>${ears(st,48,58)}${patch(st,48,58)}${face(st,48,55)}</g>
+  <path d="M37 64 q3 -4 6 0 M53 64 q3 -4 6 0" ${L(st)}/>`;
+}
+/* のびる */
+function stretch(st){
+  return `<path d="M10 80 H40 M46 80 H110" ${L(st)} stroke-opacity=".7"/>
+  <path d="M34 62 C50 62 66 52 84 48" ${L(st,G(st,"60 8 32"))}/>
+  <path d="M38 76 C52 74 62 72 74 70" ${L(st)}/>
+  <path d="M84 48 C89 58 89 70 87 80 M76 68 L78 80" ${L(st)}/>
+  <path d="M18 79 H34 M22 75 H36" ${L(st)}/>
+  ${tail(st,"M86 48 C92 38 90 30 97 26")}
+  ${collar(st,34,64)}
+  <g class="tilt"><circle cx="26" cy="64" r="10" fill="var(--surface)" ${L(st,G(st,"72 8 20"))}/><path d="M18 58 Q17 50 23 54 M29 54 Q34 50 34 58" ${L(st)}/>${patch(st,26,62).replace(/\d+(\.\d+)?/g,n=>n)}<circle cx="23" cy="64" r="${st.sw*0.8+0.4}" fill="currentColor"/><circle cx="29" cy="64" r="${st.sw*0.8+0.4}" fill="currentColor"/></g>`;
+}
+/* 案内役 */
+function guidePeek(st,size=64){
+  return svg(size,size*0.7,"20 26 56 44",`<path d="M22 64 H40 M46 64 H74" ${L(st)}/>
+   ${tail(st,"M62 63 C70 62 72 54 68 50")}
+   <g class="tilt"><path d="M34 64 A14 14 0 0 1 62 64" fill="var(--surface)" ${L(st,G(st,"58 8 34"))}/>${ears(st,48,58)}${patch(st,48,58)}${face(st,48,56)}</g>
+   <path d="M38 64 q3 -5 6 0 M52 64 q3 -5 6 0" ${L(st)}/>`,"縁からのぞく案内役");
+}
+function guideFace(st,size=56){
+  return svg(size,size,"30 16 60 50",`${tail(st,"M74 50 C84 48 86 38 80 34")}<g class="tilt"><circle cx="60" cy="40" r="16" fill="var(--surface)" ${L(st,G(st,"70 7 23"))}/>${ears(st,60,38)}${patch(st,60,38)}${face(st,60,41)}</g>`,"顔だけの案内役");
+}
+function guideSit(st,size=56){return svg(size,size,"30 14 72 72",sit(st),"すわる案内役");}
+
+/* 季節の小物（ベタは1か所だけ） */
+function seasons(st){
+  const f=st.fill, l=L(st);
+  const box=(inner,label)=>fig(svg(76,60,"0 0 76 60",`<path d="M8 50 H30 M36 50 H68" ${l} stroke-opacity=".6"/>${inner}`,label),label);
+  return box(`<path d="M38 50 V34" ${l}/><path d="M38 38 C30 36 26 30 28 24 C34 26 38 30 38 38 Z" fill="${f}"/><path d="M38 34 C44 30 50 30 52 34 C48 38 42 38 38 34 Z" ${l}/>`,"春：若葉")+
+   box(`<path d="M38 8 V16" ${l}/><path d="M28 28 A10 10 0 0 1 48 28 Z" ${l}/><path d="M36 30 H40 V46 H36 Z" fill="${f}"/>`,"夏：風鈴")+
+   box(`<path d="M28 34 A10 8 0 0 1 48 34 Z" fill="${f}"/><path d="M30 34 C30 44 46 44 46 34" ${l}/><path d="M38 26 V22" ${l}/>`,"秋：どんぐり")+
+   box(`<circle cx="22" cy="18" r="2" fill="currentColor"/><circle cx="50" cy="12" r="2" fill="currentColor"/><circle cx="58" cy="30" r="1.6" fill="currentColor"/><circle cx="34" cy="28" r="1.6" fill="currentColor"/><path d="M14 50 C24 44 50 44 62 50" ${l}/><circle cx="40" cy="38" r="3" fill="${f}"/>`,"冬：ちらつく雪");
+}
+function demoPhone(key,id){
+  return `<div class="phone" id="${id}"><div class="row"><span>補液</span><span>100 mL ・ 19:30</span></div>
+   <div class="foot">${guidePeek(STY[key],64)}<button class="demo-btn" type="button" data-demo="${id}">記録する</button><span class="done-msg">記録しました</span></div></div>`;
+}
+const OPTS=[
+ {v:"a",label:"細い線＋しっぽのベタ",rec:true,desc:"いちばん細い線で、輪郭にすきまを残します。ベタ塗りは、しっぽ1か所だけ。参考の1枚目（細い単線と広い余白）にいちばん近い軽さです。"},
+ {v:"b",label:"太めの線＋頭のぶち",desc:"太めの線で、ぽってりした印象に。ベタ塗りは頭の片側のぶちだけ。参考の2枚目のような、ユーモアと存在感があります。小さく表示しても線が消えにくいです。"},
+ {v:"c",label:"中くらいの線＋セージの首輪",desc:"線は中くらい。ベタ塗りを焦げ茶ではなく、セージの首輪1か所にします。いちばんやさしく、色のある印象です。"},
+];
+const Q=[
+ {id:"style",title:"清書のタッチ",why:"どの案も、まる形の猫・点の目・端の丸い線・すきまのある輪郭・広い余白は同じです。違うのは、線の太さと、ベタ塗りを入れる場所です。描かないもの（横たわって目を閉じた姿、苦しむ・泣く姿、猫に有害な植物）はこれまでと同じです。",
+  opts:OPTS.map(o=>({v:o.v,label:o.label,rec:o.rec,html:`
+   <span class="t">${o.label}${o.rec?'<span class="rec">おすすめ</span>':''}</span>
+   <div class="art">${fig(svg(150,94,"8 18 112 70",sit(STY[o.v]),"すわる"),"すわる")}${fig(svg(150,48,"8 34 112 34",peek(STY[o.v]),"縁からのぞく"),"のぞく")}${fig(svg(150,86,"6 20 112 64",stretch(STY[o.v]),"のびる"),"のびる")}</div>
+   <div class="art">${seasons(STY[o.v])}</div>
+   ${demoPhone(o.v,"demo-"+o.v)}<p>${o.desc}</p>`}))},
+ {id:"guide",title:"案内役の形",why:"画面の見出しの横や、記録したときに出る小さな猫です。記録したときは、首を少しかしげ、しっぽを1回ゆらします（何を記録しても同じ。「演出を控えめにする」がオンなら動きません）。見本は問い1のおすすめのタッチで描いています。",
+  opts:[
+   {v:"peek",rec:true,label:"縁からのぞく",html:`<span class="t">縁からのぞく<span class="rec">おすすめ</span></span><div class="art">${guidePeek(STY.a,96)}</div><p>見出しやカードの線から、顔と前足だけのぞかせます。画面の線とつながって、そっと横にいる感じになります。</p>`},
+   {v:"face",label:"顔だけ（丸）",html:`<span class="t">顔だけ（丸）</span><div class="art">${guideFace(STY.a,80)}</div><p>丸い顔だけのアイコン。小さくしても形がわかりやすく、アプリアイコンにもそろえやすいです。</p>`},
+   {v:"sit",label:"すわった全身（小さく）",html:`<span class="t">すわった全身（小さく）</span><div class="art">${guideSit(STY.a,90)}</div><p>全身を小さく。しぐさを変えやすい反面、24px くらいまで小さくすると細部が見えにくくなります。</p>`},
+  ]},
+];
+
+let state={answers:{},notes:{},free:""};
+function render(){
+  const root=$("#qs"); root.innerHTML="";
+  Q.forEach((q,i)=>{
+    const sec=document.createElement("section"); sec.className="q"; sec.id="q-"+q.id;
+    sec.innerHTML=`<div class="qnum">問い ${i+1} / ${Q.length}</div><h2>${q.title}</h2><p class="why">${q.why}</p>`;
+    const g=document.createElement("div"); g.className="cards";
+    q.opts.forEach(o=>{
+      const c=document.createElement("div"); c.className="card"; c.innerHTML=o.html;
+      const b=document.createElement("button"); b.type="button"; b.className="pick"; b.dataset.q=q.id; b.dataset.v=o.v;
+      b.textContent="この案にする"; b.setAttribute("aria-label",`${o.label}を選ぶ`);
+      b.addEventListener("click",()=>{state.answers[q.id]=o.v;paint();dirty();}); c.appendChild(b); g.appendChild(c);
+    });
+    sec.appendChild(g);
+    const lb=document.createElement("label"); lb.className="nl"; lb.htmlFor="note-"+q.id; lb.textContent="補足（任意）";
+    const ta=document.createElement("textarea"); ta.id="note-"+q.id; ta.rows=1; ta.value=state.notes[q.id]||"";
+    ta.addEventListener("input",()=>{state.notes[q.id]=ta.value;dirty()});
+    sec.appendChild(lb); sec.appendChild(ta); root.appendChild(sec);
+  });
+  $("#free").value=state.free;
+  document.querySelectorAll("[data-demo]").forEach(b=>b.addEventListener("click",()=>{
+    const ph=document.getElementById(b.dataset.demo); ph.classList.remove("react"); void ph.offsetWidth; ph.classList.add("react");
+    const m=ph.querySelector(".done-msg"); m.classList.add("show"); clearTimeout(ph._t); ph._t=setTimeout(()=>{m.classList.remove("show");ph.classList.remove("react")},2400);
+  }));
+  paint();
+}
+$("#free").addEventListener("input",e=>{state.free=e.target.value;dirty()});
+function paint(){
+  document.querySelectorAll(".pick").forEach(b=>{const on=state.answers[b.dataset.q]===b.dataset.v;b.setAttribute("aria-pressed",on?"true":"false");b.closest(".card").classList.toggle("on",on)});
+  let n=0; Q.forEach(q=>{const ok=!!state.answers[q.id]; if(ok)n++; document.getElementById("q-"+q.id).classList.toggle("done",ok)});
+  $("#fill").style.width=(n/Q.length*100)+"%"; $("#count").textContent=`${n} / ${Q.length} 回答済み`;
+}
+function dirty(){$("#status").textContent="未送信の変更があります";}
+function labelOf(q,v){const o=q.opts.find(o=>o.v===v);return o?o.label:v}
+function summary(){
+  return Q.map((q,i)=>{const a=state.answers[q.id];const t=a?labelOf(q,a):"（未回答）";
+    const n=state.notes[q.id]?`／補足：${state.notes[q.id]}`:""; return `Q${i+1} ${q.title}\n→ ${t}${n}`}).join("\n\n")+(state.free?`\n\n自由記入：${state.free}`:"");
+}
+let ref=null;
+render();
+(async()=>{
+  let db=null;
+  try{ db = await window.claude?.use?.("db"); }catch(e){ db=null; }
+  if(!db){ $("#send").textContent="回答をコピー"; $("#status").textContent="この表示では保存できません。「回答をコピー」を押して、チャットに貼り付けてください。"; return; }
+  ref = db.doc("answers/brand_art_v3");
+  const t=setTimeout(()=>{$("#status").textContent="前回の回答を読み込めませんでした。新しく回答できます。"},10000);
+  try{const s=await ref.get(); clearTimeout(t);
+    if(s.exists){const d=s.data(); Object.assign(state.answers,d.answers||{}); Object.assign(state.notes,d.notes||{}); state.free=d.free||""; render();
+      $("#status").textContent="前回送った回答を読み込みました。変更して送り直せます。";}
+  }catch(e){clearTimeout(t);}
+})();
+$("#send").addEventListener("click",async()=>{
+  const btn=$("#send");
+  if(!ref){ try{await navigator.clipboard.writeText(summary()); $("#status").textContent="コピーしました。チャットに貼り付けてください。";}
+    catch(e){$("#status").textContent="コピーできませんでした。選んだ内容をチャットでお知らせください。";} return; }
+  btn.disabled=true; $("#status").textContent="送信中…";
+  try{ await ref.set({answers:state.answers,notes:state.notes,free:state.free,summary:summary(),submittedAt:new Date().toISOString()});
+    $("#status").textContent="ボンベイに届きました。チャットで「送ったよ」と伝えてください。";
+  }catch(e){ $("#status").textContent="保存できませんでした（"+(e&&e.code||"エラー")+"）。もう一度押すか、チャットで答えを教えてください。"; }
+  btn.disabled=false;
+});
+</script>
