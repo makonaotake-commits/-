@@ -18,7 +18,13 @@ const LATER = { identifier: 'later', buttonTitle: `あとで（${SNOOZE_MINUTES}
 const MED_DONE = { identifier: 'done', buttonTitle: '飲めた', options: { opensAppToForeground: false } };
 const FLUID_DONE = { identifier: 'done', buttonTitle: 'やった', options: { opensAppToForeground: false } };
 
-const categoryFor = (kind: 'fluid' | 'med', last = false) => (kind === 'med' ? (last ? CAT_MED_LAST : CAT_MED) : last ? CAT_FLUID_LAST : CAT_FLUID);
+// 今日の記録のお知らせ（F-31）：「記録する」「今日はお休み」「この子のお知らせをお休みする」
+const CAT_DAILY = 'care-daily';
+const RECORD = { identifier: 'record', buttonTitle: '記録する', options: { opensAppToForeground: true } };
+const SKIP_TODAY = { identifier: 'skip', buttonTitle: '今日はお休み', options: { opensAppToForeground: false } };
+
+const categoryFor = (kind: 'fluid' | 'med' | 'daily' | 'visit', last = false) =>
+  kind === 'med' ? (last ? CAT_MED_LAST : CAT_MED) : kind === 'fluid' ? (last ? CAT_FLUID_LAST : CAT_FLUID) : kind === 'daily' ? CAT_DAILY : undefined;
 
 let categoriesReady: Promise<unknown> | undefined;
 function ensureCategories() {
@@ -27,6 +33,7 @@ function ensureCategories() {
     Notifications.setNotificationCategoryAsync(CAT_FLUID, [FLUID_DONE, LATER, PAUSE]),
     Notifications.setNotificationCategoryAsync(CAT_MED_LAST, [MED_DONE, PAUSE]),
     Notifications.setNotificationCategoryAsync(CAT_FLUID_LAST, [FLUID_DONE, PAUSE]),
+    Notifications.setNotificationCategoryAsync(CAT_DAILY, [RECORD, SKIP_TODAY, PAUSE]),
   ]).catch(() => undefined);
   return categoriesReady;
 }
@@ -59,7 +66,8 @@ async function sync(data: Data) {
 
 /** 予約に関わる設定・記録が変わったら、予約を作り直す */
 export function useReminderSync(data: Data) {
-  const key = JSON.stringify([data.cats, data.meds, data.fluidReminders, data.settings.quietHours, data.settings.hideNotificationContent]);
+  // 体調の記録の日付も入れる（今日の記録があれば、その日の F-31 を取り消すため）
+  const key = JSON.stringify([data.cats, data.meds, data.fluidReminders, data.settings, data.conditions.map((c) => c.catId + c.date)]);
   const last = useRef('');
   useEffect(() => {
     if (key === last.current) return;
@@ -73,7 +81,7 @@ export function useReminderSync(data: Data) {
 }
 
 /** 通知のボタン・通知を開いたときの動き。画面の移動は onNavigate で App に伝える */
-export function useNotificationActions(onNavigate?: (r: { name: 'meds' | 'fluid' | 'catProfile'; id?: string }) => void) {
+export function useNotificationActions(onNavigate?: (r: { name: 'meds' | 'fluid' | 'catProfile' | 'condition' | 'report'; id?: string }) => void) {
   const { data, update } = useStore();
   const dataRef = useRef(data);
   dataRef.current = data;
@@ -81,14 +89,26 @@ export function useNotificationActions(onNavigate?: (r: { name: 'meds' | 'fluid'
   navRef.current = onNavigate;
   useEffect(() => {
     const handle = (res: Notifications.NotificationResponse) => {
-      const d = res.notification.request.content.data as { kind?: 'fluid' | 'med'; catId?: string; medId?: string };
+      const d = res.notification.request.content.data as { kind?: 'fluid' | 'med' | 'daily' | 'visit'; catId?: string; medId?: string };
       if (!d?.kind || !d.catId) return;
       const cur = dataRef.current;
       const cat = cur.cats.find((c) => c.id === d.catId);
       if (!cat || cat.archived || cat.paused) return; // お休み中・外した猫には何もしない
+      const a = res.actionIdentifier;
+      if (a === 'pause') return navRef.current?.({ name: 'catProfile', id: cat.id });
+      if (d.kind === 'daily') {
+        // 「記録する」・通知を開いたとき → 体調の記録へ。「今日はお休み」→ 何もしない（その日の分はもう鳴らない）
+        if (a === 'record' || a === Notifications.DEFAULT_ACTION_IDENTIFIER) navRef.current?.({ name: 'condition', id: cat.id });
+        return;
+      }
+      if (d.kind === 'visit') {
+        if (a === Notifications.DEFAULT_ACTION_IDENTIFIER) navRef.current?.({ name: 'report', id: cat.id });
+        return;
+      }
+      const kind = d.kind;
       if (res.actionIdentifier === 'done') {
         const { date, time } = nowParts();
-        if (d.kind === 'fluid') {
+        if (kind === 'fluid') {
           update((x) => ({ ...x, fluids: [...x.fluids, { id: newId(), catId: cat.id, date, time, viaNotification: true }] }));
         } else {
           const med = cur.meds.find((m) => m.id === d.medId);
@@ -103,9 +123,9 @@ export function useNotificationActions(onNavigate?: (r: { name: 'meds' | 'fluid'
         navRef.current?.({ name: d.kind === 'med' ? 'meds' : 'fluid', id: cat.id });
       } else if (res.actionIdentifier === 'later') {
         const med = cur.meds.find((m) => m.id === d.medId);
-        const text = notificationText(cur, d.kind, cat.name, med?.name);
+        const text = notificationText(cur, kind, cat.name, med?.name);
         Notifications.scheduleNotificationAsync({
-          content: { title: text.title, body: text.body || undefined, data: d, categoryIdentifier: categoryFor(d.kind, true) },
+          content: { title: text.title, body: text.body || undefined, data: d, categoryIdentifier: categoryFor(kind, true) },
           trigger: { type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL, seconds: SNOOZE_MINUTES * 60 },
         }).catch(() => undefined);
       }

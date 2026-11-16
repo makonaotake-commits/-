@@ -15,7 +15,7 @@ export type PlannedNotification = {
   title: string;
   body: string;
   trigger: PlannedTrigger;
-  data: { kind: 'fluid' | 'med'; catId: string; medId?: string };
+  data: { kind: 'fluid' | 'med' | 'daily' | 'visit'; catId: string; medId?: string };
 };
 
 /** iOS は予約できる通知が 64 件までなので、余裕を見て抑える */
@@ -64,8 +64,65 @@ function triggersFor(r: Reminder, time: string, now: Date): PlannedTrigger[] {
   return out;
 }
 
-export function planNotifications(data: Data, now = new Date()): PlannedNotification[] {
+/** 今日の記録のお知らせ（F-31）を止めるまでの日数：この日数続けて記録がなければ、記録されるまで送らない */
+export const DAILY_NOTICE_STOP_DAYS = 3;
+/** 今日の記録のお知らせを、先に何日分まで予約するか（アプリを開いたとき・記録したときに作り直す） */
+const DAILY_NOTICE_DAYS_AHEAD = 3;
+
+const dayDiff = (a: string, b: string) => Math.round((new Date(a + 'T00:00:00').getTime() - new Date(b + 'T00:00:00').getTime()) / 86400000);
+
+/** F-31 が「記録されるまでお休み」になっているか（設定画面で状態を見せるだけ。通知はしない：V6-2） */
+export function dailyNoticeStopped(data: Data, catId: string, today: string) {
+  const last = data.conditions.filter((c) => c.catId === catId).map((c) => c.date).sort().pop();
+  if (!last) return false;
+  return dayDiff(today, last) > DAILY_NOTICE_STOP_DAYS;
+}
+
+function dailyNotices(data: Data, now: Date): PlannedNotification[] {
   const out: PlannedNotification[] = [];
+  const dn = data.settings.dailyNotice;
+  if (!dn?.enabled || inQuietHours(dn.time, data.settings.quietHours)) return out;
+  const [hour, minute] = dn.time.split(':').map(Number);
+  for (const cat of data.cats) {
+    if (cat.archived || cat.paused) continue;
+    const dates = new Set(data.conditions.filter((c) => c.catId === cat.id).map((c) => c.date));
+    const last = Array.from(dates).sort().pop();
+    if (!last) continue; // 記録が一度もない猫には送らない
+    for (let i = 0; i < DAILY_NOTICE_DAYS_AHEAD; i++) {
+      const d = new Date(now);
+      d.setDate(d.getDate() + i);
+      d.setHours(hour, minute, 0, 0);
+      if (d <= now) continue;
+      const ds = toDateStr(d);
+      if (dates.has(ds)) continue; // その日の記録があれば送らない
+      // 直前に3日続けて記録がなければ、それ以降は記録されるまで送らない
+      if (dayDiff(ds, last) - 1 >= DAILY_NOTICE_STOP_DAYS) continue;
+      const title = data.settings.hideNotificationContent ? '今日の記録は、手が空いたときにどうぞ。' : `${cat.name}ちゃんの今日の記録は、手が空いたときにどうぞ。`;
+      out.push({ title, body: '', trigger: { type: 'date', date: d.toISOString() }, data: { kind: 'daily', catId: cat.id } });
+    }
+  }
+  return out;
+}
+
+function visitNotices(data: Data, now: Date): PlannedNotification[] {
+  const out: PlannedNotification[] = [];
+  const vn = data.settings.visitNotice;
+  if (!vn?.enabled || inQuietHours(vn.time, data.settings.quietHours)) return out;
+  const [hour, minute] = vn.time.split(':').map(Number);
+  for (const cat of data.cats) {
+    if (cat.archived || cat.paused || !cat.nextVisit) continue;
+    const d = new Date(cat.nextVisit + 'T00:00:00');
+    d.setDate(d.getDate() - 1);
+    d.setHours(hour, minute, 0, 0);
+    if (d <= now) continue;
+    const title = data.settings.hideNotificationContent ? '明日は通院日です' : `明日は${cat.name}ちゃんの通院日です`;
+    out.push({ title, body: '獣医師に見せるレポートを作れます。', trigger: { type: 'date', date: d.toISOString() }, data: { kind: 'visit', catId: cat.id } });
+  }
+  return out;
+}
+
+export function planNotifications(data: Data, now = new Date()): PlannedNotification[] {
+  const out: PlannedNotification[] = [...visitNotices(data, now), ...dailyNotices(data, now)];
   for (const cat of data.cats) {
     if (cat.archived || cat.paused) continue; // お休み中・一覧から外した猫には出さない
     const fr = data.fluidReminders[cat.id];

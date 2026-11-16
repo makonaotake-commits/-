@@ -71,7 +71,7 @@ function Main() {
   // 通知から開いたとき：その猫を選んで、記録またはお休みの画面へ
   useNotificationActions((r) => {
     if (r.id) selectCat(r.id);
-    setStack([{ name: 'home' }, r.name === 'catProfile' ? { name: 'catProfile', id: r.id } : { name: r.name }]);
+    setStack(r.name === 'report' ? [{ name: 'report' }] : [{ name: 'home' }, r.name === 'catProfile' ? { name: 'catProfile', id: r.id } : { name: r.name }]);
   });
   const [toast, setToast] = useState<string>();
   const route = stack[stack.length - 1];

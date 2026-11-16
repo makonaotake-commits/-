@@ -132,6 +132,12 @@ export type Settings = {
   onboarded: boolean;
   /** 体調の記録を前回の内容の下書きから始める（F-33。初期値オン） */
   draftFromPrevious: boolean;
+  /** 今日の記録のお知らせ（F-31。初期値オフ・確定 Q-35） */
+  dailyNotice: { enabled: boolean; time: string };
+  /** F-31 を使えることを、ホームで1回だけ案内したか */
+  dailyNoticeIntroShown: boolean;
+  /** 予定のお知らせ（F-32）：通院日の前日 */
+  visitNotice: { enabled: boolean; time: string };
 };
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -144,6 +150,9 @@ export const DEFAULT_SETTINGS: Settings = {
   analytics: true,
   onboarded: false,
   draftFromPrevious: true,
+  dailyNotice: { enabled: false, time: '21:00' }, // 時刻は仮
+  dailyNoticeIntroShown: false,
+  visitNotice: { enabled: true, time: '19:00' }, // 初期値・時刻は仮
 };
 
 /** 利用のまとめ（F-28）用に、端末内で数える件数 */

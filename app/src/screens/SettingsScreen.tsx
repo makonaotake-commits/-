@@ -6,6 +6,7 @@ import { ConfirmBox, Screen } from '../components/Screen';
 import { Button, Card, Choice, Field, H, Input, Note, T } from '../components/ui';
 import { TEXT } from '../config/labels';
 import { LICENSES } from '../data/licenses';
+import { dailyNoticeStopped } from '../notifications/plan';
 import { emptyData, nowParts, sampleData, Settings, toDateStr, useStore } from '../data/store';
 import type { Route } from '../../App';
 
@@ -100,6 +101,43 @@ export function SettingsScreen({ go }: { go: (r: Route) => void }) {
       <H>通知</H>
       <Card>
         <Note>ブラウザの試作では、通知は鳴りません。ここで決めた内容は、iPhone 版の通知で使います。</Note>
+        <Field label="今日の記録のお知らせ" hint="その日の体調の記録がない猫について、決めた時刻に1回だけお知らせします。同じ子に3日続けて記録がなかったときは、記録されるまでお知らせを止めます。">
+          <Choice
+            options={[
+              { v: 'off', label: '使わない' },
+              { v: 'on', label: '使う' },
+            ]}
+            value={st.dailyNotice.enabled ? 'on' : 'off'}
+            onChange={(v) => v && set({ dailyNotice: { ...st.dailyNotice, enabled: v === 'on' } })}
+          />
+          {st.dailyNotice.enabled ? (
+            <View style={{ marginTop: 8 }}>
+              <TimeField value={st.dailyNotice.time} onChange={(t) => set({ dailyNotice: { ...st.dailyNotice, time: t } })} />
+              {data.cats
+                .filter((c) => !c.archived && !c.paused && dailyNoticeStopped(data, c.id, nowParts().date))
+                .map((c) => (
+                  <T key={c.id} small sub>
+                    {c.name}ちゃんへのお知らせは、記録されるまでお休みしています。
+                  </T>
+                ))}
+            </View>
+          ) : null}
+        </Field>
+        <Field label="予定のお知らせ（通院日の前日）" hint="猫のプロフィールで登録した通院日の前日にお知らせします。">
+          <Choice
+            options={[
+              { v: 'on', label: '使う' },
+              { v: 'off', label: '使わない' },
+            ]}
+            value={st.visitNotice.enabled ? 'on' : 'off'}
+            onChange={(v) => v && set({ visitNotice: { ...st.visitNotice, enabled: v === 'on' } })}
+          />
+          {st.visitNotice.enabled ? (
+            <View style={{ marginTop: 8 }}>
+              <TimeField value={st.visitNotice.time} onChange={(t) => set({ visitNotice: { ...st.visitNotice, time: t } })} />
+            </View>
+          ) : null}
+        </Field>
         <Field label="夜間に通知を鳴らさない">
           <Choice
             options={[
@@ -235,5 +273,25 @@ export function SettingsScreen({ go }: { go: (r: Route) => void }) {
         <Button kind="secondary" label="「はじめに」をもう一度見る" onPress={() => set({ onboarded: false })} />
       </Card>
     </Screen>
+  );
+}
+
+/** 時刻の入力（「8:00」のように入れる） */
+function TimeField({ value, onChange }: { value: string; onChange: (t: string) => void }) {
+  const [text, setText] = useState(value);
+  return (
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+      <T>時刻</T>
+      <Input
+        value={text}
+        onChangeText={setText}
+        onBlur={() => {
+          const t = validTime(text);
+          if (t) onChange(t);
+          setText(t ?? value);
+        }}
+        style={{ width: 110 }}
+      />
+    </View>
   );
 }
