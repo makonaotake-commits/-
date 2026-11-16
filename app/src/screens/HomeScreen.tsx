@@ -166,7 +166,7 @@ export function HomeScreen({ go }: { go: (r: Route) => void }) {
 
       {!data.settings.dailyNoticeIntroShown && !data.settings.dailyNotice.enabled ? (
         <Card>
-          <T small>その日の体調の記録がないときに、決めた時刻にそっとお知らせする機能もあります（初めはオフ）。設定の「今日の記録のお知らせ」で使えます。</T>
+          <T small>設定すると、その日の体調の記録がないときに、決めた時刻にお知らせします（初めはオフ）。設定の「今日の記録のお知らせ」で使えます。</T>
           <Button kind="quiet" label="閉じる" onPress={() => update((x) => ({ ...x, settings: { ...x.settings, dailyNoticeIntroShown: true } }))} style={{ alignSelf: 'flex-start' }} />
         </Card>
       ) : null}
