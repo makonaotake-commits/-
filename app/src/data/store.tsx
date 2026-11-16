@@ -168,9 +168,9 @@ export const DEFAULT_SETTINGS: Settings = {
   analytics: true,
   onboarded: false,
   draftFromPrevious: true,
-  dailyNotice: { enabled: false, time: '21:00' }, // 時刻は仮
+  dailyNotice: { enabled: false, time: '21:00' }, // 初期値オフ・21:00（ユーザー決定 2026-11-16）
   dailyNoticeIntroShown: false,
-  visitNotice: { enabled: true, time: '19:00' }, // 初期値・時刻は仮
+  visitNotice: { enabled: true, time: '19:00' }, // 初期値オン・19:00（ユーザー決定 2026-11-16）
 };
 
 /** 利用のまとめ（F-28）用に、端末内で数える件数 */
@@ -391,9 +391,8 @@ export function sampleData(): Data {
   };
 }
 
-/** お薬を記録したとき、手元の残りを減らす（「飲めなかった」は減らさない。仮） */
-export function applyMedUse(x: Data, medId: string, result?: MedResult): Data {
-  if (result === 'no') return x;
+/** お薬を記録したとき、手元の残りを減らす（「飲めなかった」でも減らす。ユーザー決定 2026-11-16） */
+export function applyMedUse(x: Data, medId: string, _result?: MedResult): Data {
   return { ...x, meds: x.meds.map((m) => (m.id === medId && m.stock ? { ...m, stock: consumeStock(m.stock) } : m)) };
 }
 
