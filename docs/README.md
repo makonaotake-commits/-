@@ -37,3 +37,4 @@
 - [第1弾のスケジュール 確認シート](schedule.html)（[公開ページ](https://claude.ai/artifact/5KJRPm5wPQEiKg7JCEvxqW)）
 - [開発者アカウント登録の手順](ops/dev_account_guide.md)
 - [開発者アカウントの名義 確認シート](dev_account.html)（[公開ページ](https://claude.ai/artifact/N1TLraXzKsHQgwj2AELbeC)）
+- [アイコンの新しい方向 確認シート](icon_v2.html)（[公開ページ](https://claude.ai/artifact/HVGNUJEM56HkHWhX6MQSBh)）
