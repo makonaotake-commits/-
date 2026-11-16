@@ -35,3 +35,5 @@
 - [通知「やった」の記録 確認シート](notify_done.html)（[公開ページ](https://claude.ai/artifact/T8oaw54gtfXfae4swPazmK)）
 - [アイコンの耳選び 確認シート](icon_ear.html)（[公開ページ](https://claude.ai/artifact/Q8nQDVgjoZFhPzcrC9A65W)）
 - [第1弾のスケジュール 確認シート](schedule.html)（[公開ページ](https://claude.ai/artifact/5KJRPm5wPQEiKg7JCEvxqW)）
+- [開発者アカウント登録の手順](ops/dev_account_guide.md)
+- [開発者アカウントの名義 確認シート](dev_account.html)（[公開ページ](https://claude.ai/artifact/N1TLraXzKsHQgwj2AELbeC)）
