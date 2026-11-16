@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="アイコン新案C（ちょこんとおすわり）"><rect width="100" height="100" fill="#87602F"></rect>
+  <path d="M30 86 H70" fill="none" stroke="#4D3F33" stroke-width="2.15" stroke-linecap="round" stroke-linejoin="round" stroke-opacity=".8"></path>
+  <path d="M66 84 C82 84 84 70 76 64" fill="none" stroke="#4D3F33" stroke-width="5.59" stroke-linecap="round"></path>
+  <path d="M33 85 C31 64 39 53 50 53 C61 53 69 64 67 85 Z" fill="#FFFDF8" stroke="#4D3F33" stroke-width="2.15" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="81.14 6.96 27.82"></path>
+  <path d="M44 85 v-9 M56 85 v-9" fill="none" stroke="#4D3F33" stroke-width="2.15" stroke-linecap="round" stroke-linejoin="round"></path>
+  <g transform="rotate(-10 50 37)"><path d="M34 34 Q31 15 37 12 Q44 17 47 24" fill="#FFFDF8" stroke="#4D3F33" stroke-width="2.15" stroke-linecap="round" stroke-linejoin="round"></path><path d="M53 24 Q56 17 63 12 Q69 15 66 34" fill="#FFFDF8" stroke="#4D3F33" stroke-width="2.15" stroke-linecap="round" stroke-linejoin="round"></path>
+  <circle cx="50" cy="37" r="17" fill="#FFFDF8"></circle><circle cx="50" cy="37" r="17" fill="none" stroke="#4D3F33" stroke-width="2.15" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="76.41 7.43 22.29"></circle>
+  <circle cx="43" cy="37" r="2.6" fill="#4D3F33"></circle><circle cx="57" cy="37" r="2.6" fill="#4D3F33"></circle><circle cx="50" cy="42" r="1.4" fill="#4D3F33"></circle><path d="M47 45 q3 2.4 6 0" fill="none" stroke="#4D3F33" stroke-width="2.15" stroke-linecap="round" stroke-linejoin="round"></path></g></svg>
