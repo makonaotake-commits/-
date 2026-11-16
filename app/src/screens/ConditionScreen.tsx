@@ -3,6 +3,7 @@ import { View } from 'react-native';
 import { DateStepper, Screen } from '../components/Screen';
 import { Button, Card, CatBadge, Choice, Counter, Field, Input, Note, T, useCurrentCat } from '../components/ui';
 import { APPETITE, ENERGY, STOOL_STATE, TEXT, URINE_CLUMP, WATER } from '../config/labels';
+import { evaluateNotices } from '../data/notices';
 import { ConditionRecord, newId, nowParts, shortDate, useStore } from '../data/store';
 
 const COPY_FIELDS = ['appetite', 'water', 'waterMl', 'urineCount', 'urineClump', 'vomitCount', 'stoolCount', 'stoolState', 'energy', 'weightKg'] as const;
@@ -79,6 +80,9 @@ export function ConditionScreen({ back, initialDate }: { back: (msg?: string) =>
       memo: rec.memo?.trim() || undefined,
       copiedFields: (rec.copiedFields ?? []).filter((f) => (f === 'weightKg' ? weight !== undefined && weight === prev?.weightKg : true)),
     };
+    // 記録のお知らせ（F-27）：保存したこの記録だけを、飼い主さんが決めた条件と照らす（端末の中だけ）
+    r.noticeHits = evaluateNotices(data.notices, data.cats, r);
+    if (r.noticeHits.length === 0) delete r.noticeHits;
     update((x) => ({ ...x, conditions: [...x.conditions.filter((c) => c.id !== r.id), r] }));
     back('記録しました');
   };

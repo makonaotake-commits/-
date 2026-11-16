@@ -134,6 +134,12 @@ export function SettingsScreen({ go }: { go: (r: Route) => void }) {
         </Field>
       </Card>
 
+      <H>記録のお知らせ</H>
+      <Card>
+        <T small sub>自分で決めた条件にあてはまる記録があったときに、画面に目印を出します。いまは{data.notices.enabled ? `使っています（条件 ${data.notices.conditions.length}件）` : '使っていません'}。</T>
+        <Button kind="secondary" label="記録のお知らせの設定" onPress={() => go({ name: 'notices' })} />
+      </Card>
+
       <H>猫</H>
       <Card>
         <T small sub>名前の変更・通知のお休み・一覧から外すは、ホームの「◯◯ちゃんのプロフィール・お休み」からできます。</T>
@@ -187,7 +193,6 @@ export function SettingsScreen({ go }: { go: (r: Route) => void }) {
           <CalendarLeaf />
           <T>記録した日の葉っぱ（振り返りのカレンダー）</T>
         </View>
-        <T small sub style={{ marginTop: 8 }}>記録のお知らせは、まだ試作に入っていません。</T>
       </Card>
 
       <Note>{TEXT.emergency}</Note>

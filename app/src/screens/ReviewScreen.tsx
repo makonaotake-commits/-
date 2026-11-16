@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { CalendarLeaf } from '../components/Marks';
+import { NoticeLine } from '../components/NoticeLine';
 import { ConfirmBox, Screen } from '../components/Screen';
 import { Button, Card, CatSwitcher, Choice, H, Input, T, useCurrentCat } from '../components/ui';
 import { WeightChart } from '../components/WeightChart';
@@ -180,6 +181,7 @@ export function ReviewScreen({ go }: { go: (r: Route) => void }) {
               <View style={{ flex: 1 }}>
                 <T bold>{it.title}</T>
                 {it.detail ? <T small sub>{it.detail}</T> : null}
+                {it.kind === 'cond' && conds.find((x) => x.id === it.id) ? <NoticeLine record={conds.find((x) => x.id === it.id)!} /> : null}
               </View>
             </View>
             <View style={{ flexDirection: 'row', gap: 12 }}>

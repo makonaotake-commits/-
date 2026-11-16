@@ -20,11 +20,12 @@ import { useCurrentCat } from './src/components/ui';
 import { useNotificationActions, useReminderSync } from './src/notifications';
 import { ArchivedCatsScreen, CatProfileScreen } from './src/screens/CatProfileScreen';
 import { ExportScreen } from './src/screens/ExportScreen';
+import { NoticesScreen } from './src/screens/NoticesScreen';
 import { ReviewScreen } from './src/screens/ReviewScreen';
 
 type Tab = 'home' | 'review' | 'report' | 'settings';
 export type Route = {
-  name: Tab | 'condition' | 'fluid' | 'meds' | 'medSettings' | 'catProfile' | 'archivedCats' | 'export' | 'catReport';
+  name: Tab | 'condition' | 'fluid' | 'meds' | 'medSettings' | 'catProfile' | 'archivedCats' | 'export' | 'catReport' | 'notices';
   /** 猫・記録の id */
   id?: string;
   /** 日付（YYYY-MM-DD） */
@@ -135,6 +136,9 @@ function Main() {
       break;
     case 'catReport':
       screen = <ReportScreen catId={route.id} onBack={() => back()} />;
+      break;
+    case 'notices':
+      screen = <NoticesScreen back={() => back()} />;
       break;
     case 'export':
       screen = <ExportScreen back={() => back()} />;

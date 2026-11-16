@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
 import { HomeScene } from '../components/HomeScene';
+import { NoticeLine } from '../components/NoticeLine';
 import { ConfirmBox, Screen } from '../components/Screen';
 import { Button, Card, CatSwitcher, Field, H, Input, Note, T, useCurrentCat } from '../components/ui';
 import { FLUID_STATE, labelOf, MED_RESULT, TEXT } from '../config/labels';
@@ -152,6 +153,7 @@ export function HomeScreen({ go }: { go: (r: Route) => void }) {
                     <T style={{ flex: 1 }}>{it.text}</T>
                     <Button kind="quiet" label="消す" onPress={() => setDeleting(it.id)} />
                   </View>
+                  {it.kind === 'cond' ? <NoticeLineFor id={it.id} /> : null}
                   {deleting === it.id ? (
                     <ConfirmBox message="この記録を消しますか？" yes="消す" no="消さない" onYes={() => remove(it)} onNo={() => setDeleting(undefined)} />
                   ) : null}
@@ -182,4 +184,10 @@ function ConfirmCard3({ cat, onResume, onKeep, onArchive }: { cat: Cat; onResume
       </View>
     </Card>
   );
+}
+
+function NoticeLineFor({ id }: { id: string }) {
+  const { data } = useStore();
+  const r = data.conditions.find((c) => c.id === id);
+  return r ? <NoticeLine record={r} /> : null;
 }

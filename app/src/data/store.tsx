@@ -1,5 +1,6 @@
 // 記録の保存（端末内。Web 版ではブラウザ内）。外部には送りません。
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import type { Notices } from './notices';
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 
 export type Level3 = 'less' | 'usual' | 'more';
@@ -40,6 +41,8 @@ export type ConditionRecord = {
   /** 「前回と同じ」でコピーして、直さずに保存した項目 */
   copiedFields?: string[];
   memo?: string;
+  /** 記録のお知らせ（F-27）：保存したときにあてはまった条件の id */
+  noticeHits?: string[];
 };
 
 export type FluidRecord = {
@@ -104,6 +107,8 @@ export type Data = {
   customMedNames: string[];
   settings: Settings;
   usage: Usage;
+  /** 記録のお知らせ（F-27）。初期値オフ・条件なし */
+  notices: Notices;
 };
 
 export type FurColor = 'white' | 'tabby' | 'black' | 'calico' | 'brown' | 'gray';
@@ -152,6 +157,7 @@ const EMPTY: Data = {
   customMedNames: [],
   settings: DEFAULT_SETTINGS,
   usage: { reportOpens: [] },
+  notices: { enabled: false, conditions: [] },
 };
 
 const KEY = 'nyan-kidney-prototype:v1';
@@ -197,7 +203,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       .then((raw) => {
         if (raw) {
           const saved = JSON.parse(raw) as Partial<Data>;
-          const parsed = { ...EMPTY, ...saved, settings: { ...DEFAULT_SETTINGS, ...(saved.settings ?? {}) }, usage: { ...EMPTY.usage, ...(saved.usage ?? {}) } };
+          const parsed = { ...EMPTY, ...saved, settings: { ...DEFAULT_SETTINGS, ...(saved.settings ?? {}) }, usage: { ...EMPTY.usage, ...(saved.usage ?? {}) }, notices: saved.notices ?? EMPTY.notices };
           setData(parsed);
           setSelectedCatId(parsed.cats.find((c) => !c.archived)?.id);
         }
@@ -220,7 +226,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const update = useCallback((fn: (d: Data) => Data) => setData((d) => fn(d)), []);
   const replaceAll = useCallback((d: Data) => {
     // 表示の設定は、記録の入れ替え・削除のあとも残す
-    setData((cur) => ({ ...d, settings: cur.settings, usage: cur.usage }));
+    setData((cur) => ({ ...d, settings: cur.settings, usage: cur.usage, notices: d === EMPTY ? EMPTY.notices : cur.notices }));
     setSelectedCatId(d.cats.find((c) => !c.archived)?.id);
   }, []);
 
