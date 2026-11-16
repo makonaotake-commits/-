@@ -3,3 +3,4 @@ import type { Data } from '../data/store';
 
 export function useReminderSync(_data: Data) {}
 export function useNotificationActions(_onNavigate?: (r: { name: 'meds' | 'fluid' | 'catProfile' | 'condition' | 'report'; id?: string }) => void) {}
+export function useStockNotices() {}

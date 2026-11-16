@@ -7,7 +7,8 @@ import { Button, Card, CatBadge, Choice, Field, H, Input, Note, T, useCurrentCat
 import { FLUID_STATE, TEXT } from '../config/labels';
 import { FLUID_CONFIRM_ABOVE_ML, FLUID_NAME_CANDIDATES, FLUID_SIDES, FLUID_SITES } from '../config/vetValues';
 import { searchCandidates } from '../data/drugs';
-import { FluidRecord, newId, nowParts, shortDate, useStore } from '../data/store';
+import { applyFluidUse, FluidRecord, newId, nowParts, shortDate, Stock, stockLow, useStore } from '../data/store';
+import { StockEditor } from '../components/StockEditor';
 
 export function FluidScreen({ back, editId }: { back: (msg?: string) => void; editId?: string }) {
   const { data, update } = useStore();
@@ -54,7 +55,7 @@ export function FluidScreen({ back, editId }: { back: (msg?: string) => void; ed
     const name = fluidName.trim() || undefined;
     const r: FluidRecord = { id: editing?.id ?? newId(), catId: cat.id, date, time, ml, site, side, fluidName: name, state, memo: memo.trim() || undefined };
     update((x) => ({
-      ...x,
+      ...(editing ? x : applyFluidUse(x, cat.id)),
       fluids: [...x.fluids.filter((f) => f.id !== r.id), r],
       customFluidNames: name && !x.customFluidNames.includes(name) && !FLUID_NAME_CANDIDATES.includes(name) ? [...x.customFluidNames, name] : x.customFluidNames,
     }));
@@ -141,6 +142,28 @@ export function FluidScreen({ back, editId }: { back: (msg?: string) => void; ed
           onPress={() => setShowReminder(true)}
         />
       )}
+      {cat && !editing ? (
+        <Card>
+          <StockEditor
+            value={data.fluidStock?.[cat.id]}
+            unitPlaceholder="袋・本など"
+            onChange={(st?: Stock) =>
+              update((x) => {
+                const fs = { ...(x.fluidStock ?? {}) };
+                if (st) fs[cat.id] = st;
+                else delete fs[cat.id];
+                return { ...x, fluidStock: fs };
+              })
+            }
+          />
+          {data.fluidStock?.[cat.id] ? (
+            <T small sub>
+              手元の残り（目安）：{data.fluidStock[cat.id].remaining} {data.fluidStock[cat.id].unit}
+              {stockLow(data.fluidStock[cat.id]) ? '　輸液の残りが少なくなっています。次の受診や受け取りのときにどうぞ。' : ''}
+            </T>
+          ) : null}
+        </Card>
+      ) : null}
       <Note>{TEXT.vetFirst}</Note>
     </Screen>
   );

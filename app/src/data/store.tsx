@@ -76,7 +76,23 @@ export type Medication = {
   /** 自宅で与える薬か、病院での処置（注射など）か */
   kind: 'home' | 'hospital';
   reminder: Reminder;
+  /** 手元の残り（F-32。任意・目安） */
+  stock?: Stock;
 };
+
+/** 手元の残り（F-32）。飼い主さんが入れたときだけ使う。アプリは数の候補を出さない */
+export type Stock = { remaining: number; perUse: number; unit: string; notifyBelow?: number; notified?: boolean };
+
+/** 記録1回ぶん残りを減らす（目安。0 より下にはしない） */
+export function consumeStock(s: Stock | undefined): Stock | undefined {
+  if (!s) return s;
+  const remaining = Math.max(0, Math.round((s.remaining - s.perUse) * 100) / 100);
+  return { ...s, remaining };
+}
+
+export function stockLow(s: Stock | undefined) {
+  return !!s && s.notifyBelow !== undefined && s.remaining < s.notifyBelow;
+}
 
 export type MedResult = 'ok' | 'partial' | 'no' | 'spit';
 
@@ -103,6 +119,8 @@ export type Data = {
   meds: Medication[];
   medRecords: MedRecord[];
   fluidReminders: Record<string, Reminder>; // catId → 補液のリマインダー
+  /** catId → 輸液の手元の残り（F-32） */
+  fluidStock?: Record<string, Stock>;
   customFluidNames: string[];
   customMedNames: string[];
   settings: Settings;
@@ -371,4 +389,17 @@ export function sampleData(): Data {
     medRecords,
     fluidReminders: { c1: { enabled: true, times: ['20:30'], freq: { kind: 'everyN', n: 2, start: toDateStr(today) } } },
   };
+}
+
+/** お薬を記録したとき、手元の残りを減らす（「飲めなかった」は減らさない。仮） */
+export function applyMedUse(x: Data, medId: string, result?: MedResult): Data {
+  if (result === 'no') return x;
+  return { ...x, meds: x.meds.map((m) => (m.id === medId && m.stock ? { ...m, stock: consumeStock(m.stock) } : m)) };
+}
+
+/** 補液を記録したとき、手元の残りを減らす */
+export function applyFluidUse(x: Data, catId: string): Data {
+  const s = x.fluidStock?.[catId];
+  if (!s) return x;
+  return { ...x, fluidStock: { ...x.fluidStock, [catId]: consumeStock(s)! } };
 }

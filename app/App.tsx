@@ -17,7 +17,7 @@ import { SettingsScreen } from './src/screens/SettingsScreen';
 import { OnboardingScreen } from './src/screens/OnboardingScreen';
 import { RecordReaction } from './src/components/RecordReaction';
 import { useCurrentCat } from './src/components/ui';
-import { useNotificationActions, useReminderSync } from './src/notifications';
+import { useNotificationActions, useReminderSync, useStockNotices } from './src/notifications';
 import { ArchivedCatsScreen, CatProfileScreen } from './src/screens/CatProfileScreen';
 import { ExportScreen } from './src/screens/ExportScreen';
 import { NoticesScreen } from './src/screens/NoticesScreen';
@@ -63,6 +63,7 @@ function Main() {
   const quiet = useQuiet();
   const currentCat = useCurrentCat();
   useReminderSync(data);
+  useStockNotices();
   const c = useColors();
   const sizes = useSizes();
   const scheme = useScheme();

@@ -1,7 +1,7 @@
 // iPhone・Android：端末の中だけで予約するローカル通知（外部のプッシュ配信サービスは使わない）
 import * as Notifications from 'expo-notifications';
 import { useEffect, useRef } from 'react';
-import { Data, newId, nowParts, useStore } from '../data/store';
+import { applyFluidUse, applyMedUse, Data, newId, nowParts, useStore } from '../data/store';
 import { SNOOZE_MINUTES } from '../config/vetValues';
 import { notificationText, planNotifications } from './plan';
 
@@ -109,11 +109,11 @@ export function useNotificationActions(onNavigate?: (r: { name: 'meds' | 'fluid'
       if (res.actionIdentifier === 'done') {
         const { date, time } = nowParts();
         if (kind === 'fluid') {
-          update((x) => ({ ...x, fluids: [...x.fluids, { id: newId(), catId: cat.id, date, time, viaNotification: true }] }));
+          update((x) => applyFluidUse({ ...x, fluids: [...x.fluids, { id: newId(), catId: cat.id, date, time, viaNotification: true }] }, cat.id));
         } else {
           const med = cur.meds.find((m) => m.id === d.medId);
           if (!med) return;
-          update((x) => ({ ...x, medRecords: [...x.medRecords, { id: newId(), catId: cat.id, medId: med.id, medName: med.name, date, time, kind: 'home', result: 'ok', viaNotification: true }] }));
+          update((x) => applyMedUse({ ...x, medRecords: [...x.medRecords, { id: newId(), catId: cat.id, medId: med.id, medName: med.name, date, time, kind: 'home', result: 'ok', viaNotification: true }] }, med.id, 'ok'));
         }
       } else if (res.actionIdentifier === 'pause') {
         // F-10 のお休みの画面へ（その場では止めない。飼い主さんが画面で選ぶ）
@@ -141,4 +141,51 @@ export function useNotificationActions(onNavigate?: (r: { name: 'meds' | 'fluid'
       .catch(() => undefined);
     return () => sub.remove();
   }, [update]);
+}
+
+/** 手元の残り（F-32）が、飼い主さんの決めた数を下回ったら1回だけ知らせる。残りを直して上回ったら、また知らせられるようにする */
+export function useStockNotices() {
+  const { data, update } = useStore();
+  useEffect(() => {
+    const cats = new Map(data.cats.map((c) => [c.id, c]));
+    const active = (catId: string) => {
+      const c = cats.get(catId);
+      return !!c && !c.archived && !c.paused;
+    };
+    const hide = data.settings.hideNotificationContent;
+    const toNotify: { title: string }[] = [];
+    let changed = false;
+    const meds = data.meds.map((m) => {
+      if (!m.stock || m.stock.notifyBelow === undefined) return m;
+      const low = m.stock.remaining < m.stock.notifyBelow;
+      if (low && !m.stock.notified && active(m.catId)) {
+        toNotify.push({ title: hide ? '手元の残りのお知らせがあります' : `${m.name}の残りが少なくなっています。次の受診や受け取りのときにどうぞ。` });
+        changed = true;
+        return { ...m, stock: { ...m.stock, notified: true } };
+      }
+      if (!low && m.stock.notified) {
+        changed = true;
+        return { ...m, stock: { ...m.stock, notified: false } };
+      }
+      return m;
+    });
+    const fluidStock = { ...(data.fluidStock ?? {}) };
+    for (const [catId, s] of Object.entries(fluidStock)) {
+      if (s.notifyBelow === undefined) continue;
+      const low = s.remaining < s.notifyBelow;
+      if (low && !s.notified && active(catId)) {
+        toNotify.push({ title: hide ? '手元の残りのお知らせがあります' : '輸液の残りが少なくなっています。次の受診や受け取りのときにどうぞ。' });
+        fluidStock[catId] = { ...s, notified: true };
+        changed = true;
+      } else if (!low && s.notified) {
+        fluidStock[catId] = { ...s, notified: false };
+        changed = true;
+      }
+    }
+    if (!changed) return;
+    update((x) => ({ ...x, meds, fluidStock }));
+    for (const n of toNotify) {
+      Notifications.scheduleNotificationAsync({ content: { title: n.title }, trigger: null }).catch(() => undefined);
+    }
+  }, [data.meds, data.fluidStock, data.cats, data.settings.hideNotificationContent, update]);
 }

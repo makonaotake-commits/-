@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import { ConfirmBox, DateStepper, Screen } from '../components/Screen';
 import { Button, Card, CatBadge, H, Input, Note, T, useCurrentCat } from '../components/ui';
 import { labelOf, MED_RESULT, TEXT } from '../config/labels';
-import { MedRecord, MedResult, Medication, newId, nowParts, shortDate, useStore } from '../data/store';
+import { applyMedUse, MedRecord, MedResult, Medication, newId, nowParts, shortDate, stockLow, useStore } from '../data/store';
 import type { Route } from '../../App';
 
 function slotOf(time: string) {
@@ -30,7 +30,7 @@ export function MedsScreen({ back, go }: { back: (msg?: string) => void; go: (r:
     if (!cat) return;
     const { date, time } = nowParts();
     const r: MedRecord = { id: newId(), catId: cat.id, medId: med.id, medName: med.name, date, time, kind: 'home', result, memo: memo[med.id]?.trim() || undefined };
-    update((x) => ({ ...x, medRecords: [...x.medRecords, r] }));
+    update((x) => applyMedUse({ ...x, medRecords: [...x.medRecords, r] }, med.id, result));
     setMemo({ ...memo, [med.id]: '' });
     setPending(undefined);
     setMsg(`${med.name}：${time} に「${labelOf(MED_RESULT, result)}」と記録しました`);
@@ -71,6 +71,12 @@ export function MedsScreen({ back, go }: { back: (msg?: string) => void; go: (r:
             <Card key={m.id}>
               <T bold style={{ fontSize: 20 }}>{m.name}</T>
               <T small sub>{[m.form, m.dose].filter(Boolean).join('／') || '　'}</T>
+              {m.stock ? (
+                <T small sub>
+                  手元の残り（目安）：{m.stock.remaining} {m.stock.unit}
+                  {stockLow(m.stock) ? `　${m.name}の残りが少なくなっています。次の受診や受け取りのときにどうぞ。` : ''}
+                </T>
+              ) : null}
               {recs.length > 0 ? (
                 <T small sub style={{ marginTop: 4 }}>
                   今日の記録：{recs.map((r) => `${r.time} ${labelOf(MED_RESULT, r.result)}`).join('、')}

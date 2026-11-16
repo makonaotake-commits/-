@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View } from 'react-native';
 import { Autocomplete } from '../components/Autocomplete';
 import { defaultReminder, ReminderEditor } from '../components/ReminderEditor';
+import { StockEditor } from '../components/StockEditor';
 import { ConfirmBox, Screen } from '../components/Screen';
 import { Button, Card, CatBadge, Choice, Field, H, Input, Note, T, useCurrentCat } from '../components/ui';
 import { TEXT } from '../config/labels';
@@ -99,6 +100,7 @@ export function MedSettingsScreen({ back }: { back: (msg?: string) => void }) {
             <Input value={draft.memo ?? ''} onChangeText={(t) => setDraft({ ...draft, memo: t })} multiline />
           </Field>
           {draft.kind === 'home' ? <ReminderEditor value={draft.reminder} onChange={(r) => setDraft({ ...draft, reminder: r })} /> : null}
+          {draft.kind === 'home' ? <StockEditor value={draft.stock} onChange={(s) => setDraft({ ...draft, stock: s })} unitPlaceholder="錠・包など" /> : null}
         </Card>
         <Button label="保存する" onPress={save} disabled={!draft.name.trim()} />
         <T small sub style={{ marginTop: 12 }}>候補リスト：{DRUG_LIST_VERSION}</T>
