@@ -46,6 +46,20 @@ const ICON={
  icon_b:["アプリアイコン案B（縁からのぞく猫・淡いはちみつ地）",c=>`<rect width="1024" height="1024" fill="${c.primaryTint}"/><g transform="translate(-568 -532) scale(18)">${POSES.peek[1](c)}</g>`],
  icon_c:["アプリアイコン案C（丸まる猫・はちみつ地）",c=>{const w={...c,ink:c===PAL.light?"#FFFFFF":c.bg,surface:c.primary,primary:c===PAL.light?"#F3E3C8":c.surface};return `<rect width="1024" height="1024" fill="${c.primary}"/><g transform="translate(0 96) scale(8)">${curl(w)}</g>`}],
 };
+// アイコン A の耳ちがい（ユーザー補足「もう少し耳を立てて猫っぽく」2026-11-15）
+// e1：丸みのある三角耳／e2：とがった三角耳＋内側の線／e3：三角耳をベタにして、しっぽは細い線（ベタは耳の1か所）
+const earsUp=(c,cx,cy,v)=>{
+ const L=`M${cx-14} ${cy-5} Q${cx-16} ${cy-22} ${cx-12} ${cy-25} Q${cx-8} ${cy-21} ${cx-3} ${cy-14}`, R=`M${cx+3} ${cy-14} Q${cx+8} ${cy-21} ${cx+12} ${cy-25} Q${cx+16} ${cy-22} ${cx+14} ${cy-5}`;
+ const Ls=`M${cx-14} ${cy-5} L${cx-13} ${cy-26} L${cx-3} ${cy-14}`, Rs=`M${cx+3} ${cy-14} L${cx+13} ${cy-26} L${cx+14} ${cy-5}`;
+ if(v==="e1") return `<path d="${L}" fill="${c.surface}" ${A(c)}/><path d="${R}" fill="${c.surface}" ${A(c)}/>`;
+ if(v==="e2") return `<path d="${Ls}" fill="${c.surface}" ${A(c)}/><path d="${Rs}" fill="${c.surface}" ${A(c)}/><path d="M${cx-11} ${cy-20} L${cx-8} ${cy-15} M${cx+11} ${cy-20} L${cx+8} ${cy-15}" ${A(c)}/>`;
+ return `<path d="${Ls} Z" fill="${c.ink}" stroke="${c.ink}" stroke-width="${SW}" stroke-linejoin="round"/><path d="${Rs} Z" fill="${c.ink}" stroke="${c.ink}" stroke-width="${SW}" stroke-linejoin="round"/>`;
+};
+const curlUp=(c,v,{sun=true}={})=>`${sun?`<circle cx="100" cy="20" r="7" fill="${c.primary}"/>`:''}
+ <path d="M28 76 C24 56 44 44 66 46 C90 48 104 62 100 78 C97 88 84 90 70 88" ${A(c,G("62 6 32"))}/>
+ <g id="tail">${v==="e3"?`<path d="M70 88 C56 90 44 88 38 84" ${A(c)}/>`:`<path d="M70 88 C56 90 44 88 38 84" fill="none" stroke="${c.ink}" stroke-width="${SW*3}" stroke-linecap="round"/>`}</g>
+ <g id="head">${earsUp(c,38,66,v)}<circle cx="38" cy="66" r="15" fill="${c.surface}" ${A(c,G("70 7 23"))}/>${eyes(c,38,67)}</g>`;
+const ICON_DRAFTS=Object.fromEntries(["e1","e2","e3"].map(v=>[`icon_a_${v}`,[`アプリアイコン案A・耳の案 ${v}`,c=>`<rect width="1024" height="1024" fill="${c.bg}"/><g transform="translate(0 112) scale(8)">${curlUp(c,v)}</g>`]]));
 const GUIDE=c=>`<path d="M2 40 H20 M26 40 H62" ${A(c)}/>${tail(c,"M44 39 C54 38 56 30 52 26")}<g id="head"><path d="M16 40 A14 14 0 0 1 44 40" fill="${c.surface}" ${A(c,G("58 8 34"))}/>${ears(c,30,34)}${eyes(c,30,31)}</g><path d="M19 40 q3 -4 6 0 M35 40 q3 -4 6 0" ${A(c)}/>`;
 (async()=>{
  const b=await chromium.launch();const p=await b.newPage();
@@ -58,6 +72,7 @@ const GUIDE=c=>`<path d="M2 40 H20 M26 40 H62" ${A(c)}/>${tail(c,"M44 39 C54 38 
   for(const [k,[l,vb,f]] of Object.entries(LOGO)) files.push([`${mode}/logo/${k}.svg`,wrap(vb,l,f(c))]);
  }
  for(const [k,[l,f]] of Object.entries(ICON)) files.push([`light/icon/${k}.svg`,wrap("0 0 1024 1024",l,f(PAL.light))]);
+ for(const [k,[l,f]] of Object.entries(ICON_DRAFTS)) files.push([`light/icon/${k}.svg`,wrap("0 0 1024 1024",l,f(PAL.light))]);
  // pathLength 基準のすきまを、実寸のダッシュに直す（react-native-svg で pathLength に頼らないため）
  for(const f of files){
   f[1]=await p.evaluate(src=>{document.body.innerHTML=src;const s=document.body.firstElementChild;
