@@ -104,6 +104,7 @@ export function ReminderEditor({ value, onChange }: { value: Reminder; onChange:
               </View>
             ) : null}
           </Field>
+          <T small sub>ロック画面に猫の名前やお薬の名前を出したくないときは、設定の「通知の内容を隠す」を使えます。</T>
           <Note>{TEXT.webReminderNote}</Note>
         </>
       ) : null}

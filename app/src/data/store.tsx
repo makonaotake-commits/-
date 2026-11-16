@@ -53,6 +53,8 @@ export type FluidRecord = {
   fluidName?: string;
   state?: 'smooth' | 'bitReluctant' | 'stopped';
   memo?: string;
+  /** 通知のボタンから記録した（内部の項目。レポートの集計は変えない） */
+  viaNotification?: boolean;
 };
 
 export type Frequency = { kind: 'daily' } | { kind: 'everyN'; n: number; start: string } | { kind: 'weekdays'; days: number[] };
@@ -87,6 +89,8 @@ export type MedRecord = {
   /** 病院での処置には付けない */
   result?: MedResult;
   memo?: string;
+  /** 通知のボタンから記録した（内部の項目。レポートの集計は変えない） */
+  viaNotification?: boolean;
 };
 
 export type Data = {

@@ -113,6 +113,7 @@ export function CatProfileScreen({ catId, back }: { catId?: string; back: (msg?:
         ) : (
           <>
             <T sub small>この子の通知を、すべてすぐに止めます。記録はこれまでどおりできます。</T>
+            <T sub small>季節の絵や動きは、設定の「演出を控えめにする」で止められます。</T>
             <Button kind="secondary" label="通知をお休みする" onPress={() => setPauseMode('until-resume')} />
           </>
         )}
@@ -121,13 +122,13 @@ export function CatProfileScreen({ catId, back }: { catId?: string; back: (msg?:
       <H>一覧から外す</H>
       <Card>
         <T sub small>ホームの一覧から外します。通知もすべて止まります。記録は消えず、設定の「一覧から外した猫」から、見る・レポートを作る・一覧に戻すができます。</T>
+        <T sub small>季節の絵や動きは、設定の「演出を控えめにする」で止められます。</T>
         {confirmArchive ? (
           <ConfirmBox message={`${cat.name}ちゃんを一覧から外しますか？`} yes="外す" no="外さない" onYes={archive} onNo={() => setConfirmArchive(false)} />
         ) : (
           <Button kind="secondary" label="一覧から外す" onPress={() => setConfirmArchive(true)} />
         )}
       </Card>
-      <Note>ホームの絵の動きを止めたいときは、設定の「演出を控えめにする」をオンにできます。</Note>
     </Screen>
   );
 }

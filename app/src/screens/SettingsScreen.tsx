@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
-import { CalendarLeaf, FUR_OPTIONS, GuideCat, NoticeMark } from '../components/Marks';
+import { Art } from '../art/Art';
+import { CalendarLeaf, FUR_OPTIONS, NoticeMark } from '../components/Marks';
 import { ConfirmBox, Screen } from '../components/Screen';
 import { Button, Card, Choice, Field, H, Input, Note, T } from '../components/ui';
 import { TEXT } from '../config/labels';
@@ -75,7 +76,7 @@ export function SettingsScreen({ go }: { go: (r: Route) => void }) {
         </Field>
         <Field label="案内役の猫の毛色" hint="いつでも変えられます。初期値は「しろ」です。">
           <View style={{ flexDirection: 'row', marginBottom: 8 }}>
-            <GuideCat fur={st.guideFur} size={72} />
+            <Art name="guide_peek" width={96} fur={st.guideFur} />
           </View>
           <Choice options={FUR_OPTIONS} value={st.guideFur} onChange={(v) => v && set({ guideFur: v })} />
           {st.guideFur !== 'white' ? <Button kind="quiet" label="初期値（しろ）に戻す" onPress={() => set({ guideFur: 'white' })} style={{ alignSelf: 'flex-start' }} /> : null}
@@ -155,7 +156,7 @@ export function SettingsScreen({ go }: { go: (r: Route) => void }) {
             onNo={() => setConfirmClear(false)}
           />
         ) : null}
-        <Field label="使われ方の集計を送る（仮）" hint="アプリの使われ方と件数だけを送ります。記録の中身（値・お薬の名前・メモ・猫の名前）や記録の種類は送りません。いつでもオフにできます。※ 試作では、送る仕組みはまだ入っていません。">
+        <Field label="使われ方の集計を送る（仮）" hint="アプリを開いた回数、記録を保存した件数、レポートを作った回数などの集計だけを送ります。記録の中身（値・お薬の名前・メモ・猫の名前）や記録の種類は送りません。いつでもオフにできます。※ 試作では、送る仕組みはまだ入っていません。">
           <Choice
             options={[
               { v: 'on', label: 'オン' },
@@ -173,7 +174,7 @@ export function SettingsScreen({ go }: { go: (r: Route) => void }) {
         <T>記録した日：{recordDays}日</T>
         <T>補液の記録：{fluidCount}回</T>
         <T>お薬の記録（自宅）：{medCount}回</T>
-        <T>レポートを開いた回数：{reportCount}回</T>
+        <T>レポートを作った回数：{reportCount}回</T>
       </Card>
 
       <H>目印の見本（試作用）</H>

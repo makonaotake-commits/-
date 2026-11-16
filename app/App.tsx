@@ -58,16 +58,20 @@ function useWebSetup() {
 }
 
 function Main() {
-  const { loaded, data } = useStore();
+  const { loaded, data, selectCat } = useStore();
   const quiet = useQuiet();
   const currentCat = useCurrentCat();
   useReminderSync(data);
-  useNotificationActions();
   const c = useColors();
   const sizes = useSizes();
   const scheme = useScheme();
   useWebSetup();
   const [stack, setStack] = useState<Route[]>([{ name: 'home' }]);
+  // 通知から開いたとき：その猫を選んで、記録またはお休みの画面へ
+  useNotificationActions((r) => {
+    if (r.id) selectCat(r.id);
+    setStack([{ name: 'home' }, r.name === 'catProfile' ? { name: 'catProfile', id: r.id } : { name: r.name }]);
+  });
   const [toast, setToast] = useState<string>();
   const route = stack[stack.length - 1];
   const tab = stack[0].name as Tab;

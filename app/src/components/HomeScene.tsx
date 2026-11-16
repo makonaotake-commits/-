@@ -1,49 +1,55 @@
-// ホームの上の小さな絵（演出の仮の入れ物）。線画・ロゴがラフのため、試作では切りかえの仕組みと置き場所だけ。
-// 記録の内容や体調とは関係させない。静かな表示（F-30。設定のスイッチまたは OS の動きを減らす設定）のときは、
-// 日だまりも含めて演出をすべて止め、静かな絵1枚だけにする。
+// ホームの上の小さな絵（F-29）。ペルシャの線画：しぐさ1つ＋季節1つ＋時間帯1つまで、高さ 120 くらいまで。
+// 記録の内容や体調とは関係させない（しぐさは日付で順番に）。
+// 静かな表示（F-30。設定のスイッチまたは OS の動きを減らす設定）と、お休み中・一覧から外した猫のときは、
+// 季節・時間帯・しぐさの切りかえを止めて、静かな絵1枚だけにする。
 import React from 'react';
 import { View } from 'react-native';
-import Svg, { Circle } from 'react-native-svg';
+import { Art } from '../art/Art';
+import type { ArtName } from '../art/artData';
 import { useColors, useQuiet } from '../config/useTheme';
 import { useStore } from '../data/store';
-import { GuideCat } from './Marks';
-import { T } from './ui';
 
-const SEASONS = ['冬（ちらつく雪）', '冬（ちらつく雪）', '春（若葉）', '春（若葉）', '春（若葉）', '夏（風鈴）', '夏（風鈴）', '夏（風鈴）', '秋（色づいた葉・どんぐり）', '秋（色づいた葉・どんぐり）', '秋（色づいた葉・どんぐり）', '冬（ちらつく雪）'];
-const POSES = ['すわる', '香箱', '窓の外を見る'];
+const POSES: ArtName[] = ['pose_sit', 'pose_loaf', 'pose_window', 'pose_peek', 'pose_stretch'];
 
-function timeOfDay(h: number) {
-  if (h >= 5 && h < 10) return '朝';
-  if (h >= 10 && h < 17) return '昼';
-  return '夜';
+function season(month: number): ArtName {
+  if (month >= 3 && month <= 5) return 'season_spring';
+  if (month >= 6 && month <= 8) return 'season_summer';
+  if (month >= 9 && month <= 11) return 'season_autumn';
+  return 'season_winter';
+}
+
+function daypart(h: number): ArtName {
+  if (h >= 5 && h < 10) return 'daypart_morning';
+  if (h >= 10 && h < 17) return 'daypart_noon';
+  return 'daypart_night';
 }
 
 export function HomeScene({ paused }: { paused?: boolean }) {
   const c = useColors();
   const { data } = useStore();
-  const quiet = useQuiet();
-  // お休み中・一覧から外した猫の画面では、演出を止める（F-29）
-  const calm = quiet || !!paused;
+  const quiet = useQuiet() || !!paused;
   const now = new Date();
-  const dayIndex = Math.floor(now.getTime() / 86400000);
-  const label = calm ? '静かな絵（演出を止めています）' : `${SEASONS[now.getMonth()]}・${timeOfDay(now.getHours())}・${POSES[dayIndex % POSES.length]}`;
+  const dayIndex = Math.floor((now.getTime() - now.getTimezoneOffset() * 60000) / 86400000);
+  const pose = quiet ? 'pose_loaf' : POSES[dayIndex % POSES.length];
+  const fur = data.settings.guideFur;
 
   return (
     <View
       accessibilityElementsHidden
       importantForAccessibility="no-hide-descendants"
-      style={{ height: 112, borderRadius: 16, backgroundColor: calm ? c.surface : c.primaryTint, borderWidth: calm ? 1 : 0, borderColor: c.border, marginBottom: 12, flexDirection: 'row', alignItems: 'flex-end', paddingHorizontal: 16, paddingBottom: 8, overflow: 'hidden' }}
+      style={{ height: 116, borderRadius: 16, backgroundColor: quiet ? c.surface : c.primaryTint, borderWidth: quiet ? 1 : 0, borderColor: c.border, marginBottom: 12, flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'center', overflow: 'hidden', paddingBottom: 4 }}
     >
-      {calm ? null : (
-        <Svg width={40} height={40} style={{ position: 'absolute', right: 16, top: 12 }}>
-          <Circle cx={20} cy={20} r={12} fill={c.primary} opacity={0.5} />
-        </Svg>
+      {quiet ? null : (
+        <View style={{ position: 'absolute', left: 12, top: 8 }}>
+          <Art name={daypart(now.getHours())} width={64} />
+        </View>
       )}
-      <GuideCat fur={data.settings.guideFur} size={72} />
-      <View style={{ flex: 1, marginLeft: 12, marginBottom: 6 }}>
-        <T small sub>演出の仮の入れ物</T>
-        <T small sub>{label}</T>
-      </View>
+      <Art name={pose} width={150} fur={fur} />
+      {quiet ? null : (
+        <View style={{ position: 'absolute', right: 12, bottom: 8 }}>
+          <Art name={season(now.getMonth() + 1)} width={56} />
+        </View>
+      )}
     </View>
   );
 }

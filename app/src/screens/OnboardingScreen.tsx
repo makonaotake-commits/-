@@ -1,7 +1,7 @@
 // はじめに（F-01・S-01）：短い3画面。文言は仮（ロシアンのレビュー対象）。
 import React, { useState } from 'react';
 import { View } from 'react-native';
-import { GuideCat } from '../components/Marks';
+import { Art } from '../art/Art';
 import { Screen } from '../components/Screen';
 import { Button, Card, Note, T } from '../components/ui';
 import { TEXT } from '../config/labels';
@@ -27,9 +27,9 @@ const PAGES = [
   {
     title: '記録の扱い',
     body: [
-      '記録は、この端末の中だけに保存します。アカウントの登録はいりません。',
+      '記録そのものは、この端末の中だけに保存します。アカウントの登録はいりません。',
       '記録の内容を、広告に使うことはありません。',
-      '使われ方の集計（アプリの使われ方と件数）だけを送ります。記録の中身（値・お薬の名前・メモ・猫の名前）や記録の種類は送りません。設定で、いつでもオフにできます。',
+      'アプリを開いた回数、記録を保存した件数、レポートを作った回数などの集計だけを送ります。記録の中身（値・お薬の名前・メモ・猫の名前）や記録の種類は送りません。設定で、いつでもオフにできます。',
     ],
   },
 ];
@@ -44,7 +44,7 @@ export function OnboardingScreen() {
   return (
     <Screen title={p.title} onBack={page > 0 ? () => setPage(page - 1) : undefined}>
       <View style={{ alignItems: 'center', marginBottom: 12 }}>
-        <GuideCat fur={data.settings.guideFur} size={88} />
+        <Art name="guide_peek" width={112} fur={data.settings.guideFur} />
       </View>
       <T small sub style={{ textAlign: 'center', marginBottom: 12 }}>
         {page + 1} / {PAGES.length}
