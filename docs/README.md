@@ -38,3 +38,4 @@
 - [開発者アカウント登録の手順](ops/dev_account_guide.md)
 - [開発者アカウントの名義 確認シート](dev_account.html)（[公開ページ](https://claude.ai/artifact/N1TLraXzKsHQgwj2AELbeC)）
 - [アイコンの新しい方向 確認シート](icon_v2.html)（[公開ページ](https://claude.ai/artifact/HVGNUJEM56HkHWhX6MQSBh)）
+- [段階の丸の番号（Q-40） 確認シート](q40_number.html)（[公開ページ](https://claude.ai/artifact/BrzKi2rQMEJYcS9rsi4NYJ)）
