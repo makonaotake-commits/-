@@ -32,3 +32,4 @@
 - `/review <ファイル>` … コンプライアンスレビュー
 - 個別に頼む場合：「ブリショーで食事記録機能のユーザーストーリーを書いて」など
 - [通知「やった」の記録 確認シート](notify_done.html)（[公開ページ](https://claude.ai/artifact/T8oaw54gtfXfae4swPazmK)）
+- [アイコンの耳選び 確認シート](icon_ear.html)（[公開ページ](https://claude.ai/artifact/Q8nQDVgjoZFhPzcrC9A65W)）
