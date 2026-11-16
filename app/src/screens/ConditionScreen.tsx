@@ -141,7 +141,7 @@ export function ConditionScreen({ back, initialDate }: { back: (msg?: string) =>
       ) : null}
       {copied.size > 0 ? <T small sub>「（前回の内容）」の付いた項目は、前回の内容をそのまま入れたものです。選び直すと印は消えます。</T> : null}
 
-      {/* 3枚のカード（心理テストのように、まとまった数問ずつ）。上のタブでどのカードにも移れる */}
+      {/* 3枚のカード（まとまった数問ずつ）。上のタブでどのカードにも移れる */}
       <View style={{ flexDirection: 'row', gap: 8, marginTop: 12, marginBottom: 12 }}>
         {CARDS.map((title, i) => {
           const on = card === i;

@@ -1,4 +1,4 @@
-// 心理テストのように、丸を1つ押して答える入力（体調の記録のカードで使う）。
+// 丸を1つ押して答える入力（体調の記録のカードで使う）。
 // 評価の色は使わない。選んだ丸だけを塗る。もう一度押すと未入力に戻る。
 import React from 'react';
 import { Pressable, Text, View } from 'react-native';
@@ -30,7 +30,7 @@ function Bubble({ label, selected, copied, onPress, a11y, size, flex }: { label:
   );
 }
 
-/** 段階の質問：番号つきの丸を横に並べ、下にそれぞれの言葉を出す */
+/** 段階の質問：丸を横に並べ、下にそれぞれの言葉を出す。番号は付けない（点数・評価に見えないように。ロシアン 2026-11-16） */
 export function ScaleQuestion<V extends string>({
   question,
   options,
@@ -53,9 +53,9 @@ export function ScaleQuestion<V extends string>({
         {value !== undefined && copied ? '（前回の内容）' : ''}
       </T>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-        {options.map((o, i) => (
+        {options.map((o) => (
           <View key={o.v} style={{ flex: 1, alignItems: 'center' }}>
-            <Bubble label={String(i + 1)} selected={value === o.v} copied={copied} size={size} a11y={o.label} onPress={() => onChange(value === o.v ? undefined : o.v)} />
+            <Bubble label={value === o.v ? '●' : ''} selected={value === o.v} copied={copied} size={size} a11y={o.label} onPress={() => onChange(value === o.v ? undefined : o.v)} />
             <T small style={{ textAlign: 'center', marginTop: 6 }}>
               {o.label}
             </T>
