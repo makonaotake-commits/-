@@ -83,6 +83,20 @@ export function SettingsScreen({ go }: { go: (r: Route) => void }) {
         </Field>
       </Card>
 
+      <H>記録</H>
+      <Card>
+        <Field label="体調の記録を、前回の内容から始める" hint="体調の記録を開いたときに、前回の内容（体重を除く）を下書きとして入れます。点線の項目が前回の内容で、保存するまで記録されません。直さずに保存した項目は、レポートで ※ が付きます。">
+          <Choice
+            options={[
+              { v: 'on', label: 'オン' },
+              { v: 'off', label: 'オフ' },
+            ]}
+            value={st.draftFromPrevious ? 'on' : 'off'}
+            onChange={(v) => v && set({ draftFromPrevious: v === 'on' })}
+          />
+        </Field>
+      </Card>
+
       <H>通知</H>
       <Card>
         <Note>ブラウザの試作では、通知は鳴りません。ここで決めた内容は、iPhone 版の通知で使います。</Note>

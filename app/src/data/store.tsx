@@ -130,6 +130,8 @@ export type Settings = {
   analytics: boolean;
   /** はじめに（F-01）を見て同意したか */
   onboarded: boolean;
+  /** 体調の記録を前回の内容の下書きから始める（F-33。初期値オン） */
+  draftFromPrevious: boolean;
 };
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -141,6 +143,7 @@ export const DEFAULT_SETTINGS: Settings = {
   hideNotificationContent: false,
   analytics: true,
   onboarded: false,
+  draftFromPrevious: true,
 };
 
 /** 利用のまとめ（F-28）用に、端末内で数える件数 */

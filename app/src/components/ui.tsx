@@ -185,12 +185,12 @@ export function Choice<V extends string>({
             accessibilityRole="radio"
             accessibilityState={{ selected: on }}
             onPress={() => onChange(on ? undefined : o.v)}
-            style={[s.chip, on && s.chipOn]}
+            style={[s.chip, on && s.chipOn, on && copied && { borderStyle: 'dashed' }]}
           >
             <Text style={[s.chipText, on && s.chipTextOn]}>
               {on ? '● ' : ''}
               {o.label}
-              {on && copied ? '（コピー）' : ''}
+              {on && copied ? '（前回の内容）' : ''}
             </Text>
           </Pressable>
         );

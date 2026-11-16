@@ -22,14 +22,32 @@ export function ConditionScreen({ back, initialDate }: { back: (msg?: string) =>
   const [date, setDate] = useState(initialDate ?? today);
 
   const existing = data.conditions.find((c) => c.catId === cat?.id && c.date === date);
-  const [rec, setRec] = useState<Partial<ConditionRecord>>(existing ?? {});
+  const useDraft = data.settings.draftFromPrevious;
+  // 前回のパターンを下書きにする（F-33）：その日の記録がないときだけ、前回の内容（体重・メモを除く）を入れて始める。
+  // 自動では保存しない。直さずに保存した項目には、コピーの印（レポートの ※）が付く。
+  const draftFor = (d: string): Partial<ConditionRecord> => {
+    if (!useDraft) return {};
+    const p = data.conditions.filter((c) => c.catId === cat?.id && c.date < d).sort((a, b) => (a.date < b.date ? 1 : -1))[0];
+    if (!p) return {};
+    const next: Partial<ConditionRecord> = {};
+    const cf: string[] = [];
+    COPY_FIELDS.forEach((f) => {
+      if (f !== 'weightKg' && p[f] !== undefined) {
+        (next as Record<string, unknown>)[f] = p[f];
+        cf.push(f);
+      }
+    });
+    next.copiedFields = cf;
+    return next;
+  };
+  const [rec, setRec] = useState<Partial<ConditionRecord>>(() => existing ?? draftFor(date));
   const [weightText, setWeightText] = useState(existing?.weightKg !== undefined ? existing.weightKg.toFixed(2) : '');
   const [loadedFor, setLoadedFor] = useState(date);
 
   // 日付を変えたら、その日の記録を読み込む
   if (loadedFor !== date) {
     const ex = data.conditions.find((c) => c.catId === cat?.id && c.date === date);
-    setRec(ex ?? {});
+    setRec(ex ?? draftFor(date));
     setWeightText(ex?.weightKg !== undefined ? ex.weightKg.toFixed(2) : '');
     setLoadedFor(date);
   }
@@ -92,12 +110,16 @@ export function ConditionScreen({ back, initialDate }: { back: (msg?: string) =>
       <CatBadge cat={cat} />
       <DateStepper date={date} onChange={setDate} max={today} />
       <T small sub style={{ marginVertical: 8 }}>
-        {existing ? 'この日の記録を開いています。直して保存できます。' : '1つの項目だけでも保存できます。'}
+        {existing
+          ? 'この日の記録を開いています。直して保存できます。'
+          : (rec.copiedFields?.length ?? 0) > 0
+            ? '前回の内容を下書きとして入れています。点線の項目が前回の内容です。保存するまで記録されません。体重は入れていません。'
+            : '1つの項目だけでも保存できます。'}
       </T>
       {prev ? (
         <Button kind="secondary" label={`前回（${shortDate(prev.date)}）と同じ内容を入れる`} onPress={copyPrev} />
       ) : null}
-      {copied.size > 0 ? <T small sub>「（コピー）」の付いた項目は、前回の内容をそのまま入れたものです。選び直すと印は消えます。</T> : null}
+      {copied.size > 0 ? <T small sub>「（前回の内容）」の付いた項目は、前回の内容をそのまま入れたものです。選び直すと印は消えます。</T> : null}
 
       <Card style={{ marginTop: 12 }}>
         <Field label="食欲">
@@ -116,18 +138,18 @@ export function ConditionScreen({ back, initialDate }: { back: (msg?: string) =>
               placeholder="量（任意）"
               style={{ width: 160 }}
             />
-            <T>mL{copied.has('waterMl') ? '（コピー）' : ''}</T>
+            <T>mL{copied.has('waterMl') ? '（前回の内容）' : ''}</T>
           </View>
         </Field>
-        <Field label={`尿の回数${copied.has('urineCount') ? '（コピー）' : ''}`}>
+        <Field label={`尿の回数${copied.has('urineCount') ? '（前回の内容）' : ''}`}>
           <Counter value={rec.urineCount} onChange={(v) => set('urineCount', v)} />
           <T small sub style={{ marginTop: 4 }}>塊の大きさ（任意）</T>
           <Choice options={URINE_CLUMP} value={rec.urineClump} onChange={(v) => set('urineClump', v)} copied={copied.has('urineClump')} />
         </Field>
-        <Field label={`嘔吐の回数${copied.has('vomitCount') ? '（コピー）' : ''}`}>
+        <Field label={`嘔吐の回数${copied.has('vomitCount') ? '（前回の内容）' : ''}`}>
           <Counter value={rec.vomitCount} onChange={(v) => set('vomitCount', v)} />
         </Field>
-        <Field label={`便の回数${copied.has('stoolCount') ? '（コピー）' : ''}`}>
+        <Field label={`便の回数${copied.has('stoolCount') ? '（前回の内容）' : ''}`}>
           <Counter value={rec.stoolCount} onChange={(v) => set('stoolCount', v)} />
           <T small sub style={{ marginTop: 4 }}>状態（任意）</T>
           <Choice options={STOOL_STATE} value={rec.stoolState} onChange={(v) => set('stoolState', v)} copied={copied.has('stoolState')} />
@@ -135,7 +157,7 @@ export function ConditionScreen({ back, initialDate }: { back: (msg?: string) =>
         <Field label="元気さ">
           <Choice options={ENERGY} value={rec.energy} onChange={(v) => set('energy', v)} copied={copied.has('energy')} />
         </Field>
-        <Field label={`体重${copied.has('weightKg') ? '（コピー）' : ''}`} hint={prevWeight ? `前回 ${prevWeight.weightKg!.toFixed(2)} kg（${shortDate(prevWeight.date)}）` : undefined}>
+        <Field label={`体重${copied.has('weightKg') ? '（前回の内容）' : ''}`} hint={prevWeight ? `前回 ${prevWeight.weightKg!.toFixed(2)} kg（${shortDate(prevWeight.date)}）` : undefined}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
             <Input
               value={weightText}
