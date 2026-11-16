@@ -87,7 +87,14 @@ const Q = [
  ["ios_first","iPhone 版を先に出し、Android は後から","Android の公開が遅れる。",0]]},
 {id:"apple_id", title:"登録に使うアカウントは？", why:"Apple ID と Google アカウント。あとで共同運営や譲渡があるなら、運営用に分けておくと楽です。", cats:["マンチカン"], opts:[
  ["new","運営用に新しく作る","個人の買い物・写真と分けられる。",1],
- ["mine","ふだん使っているものを使う","手間が少ない。",0]]}
+ ["mine","ふだん使っているものを使う","手間が少ない。",0]]},
+{id:"bundle", title:"アプリの識別名（Bundle ID）は？", why:"ストアの裏側でアプリを見分ける名前で、公開後は変えられません（画面には出ません）。持っているドメインがあれば、それを逆にした形が一般的です。", cats:["マンチカン"], opts:[
+ ["default","jp.nekotoyukkuri.app（マンチカン案）","ドメインがなくても使える。",1],
+ ["own","持っているドメインを使う（メモに書く）","例：example.jp → jp.example.nekotoyukkuri",0],
+ ["later","運営者名が決まってから","アカウント登録は先に進められる。",0]]},
+{id:"expo", title:"Expo アカウント（無料）も作る？", why:"iPhone に入れる開発用の版（EAS ビルド）を作るのに必要です。作ればマンチカンがビルドの設定を用意します。", cats:["マンチカン"], opts:[
+ ["yes","Apple・Google と一緒に作る","運営用のメールで作ると管理しやすい。",1],
+ ["later","Expo Go で通知のボタンが出なかったら作る","",0]]}
 ];
 const state = {answers:{}, notes:{}, free:""};
 const $ = s=>document.querySelector(s);
