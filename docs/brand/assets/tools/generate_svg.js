@@ -127,6 +127,26 @@ const ICON_V2={
   <path d="M20 76 Q31 72 42 76 M58 76 Q69 72 80 76" ${AI(c)} stroke-opacity=".45"/>
   <path d="M35 70 q4 -5 8 0 M57 70 q4 -5 8 0" fill="${c.surface}" ${AI(c)}/>`],
 };
+// ---- アイコン B「縁から見上げる」の仕上げ（2026-11-18、ユーザー補足「もう少し猫っぽく、ひげなど」）----
+// 鼻を小さな逆三角に、口を「ω」に。ひげは3案：w2s 2本・短め／w3 3本／w2l 2本・長め
+const WHISK={
+ w2s:[[35,67,24,64.5],[35,70.5,24,71.5]],
+ w3:[[35,66.5,22,63.5],[35,69.5,21.5,69.5],[35,72.5,22.5,75]],
+ w2l:[[35,67,16,63],[35,70.5,16,72]],
+};
+const peekB=(c,v,{bg=true,line=SWI}={})=>{
+ const L=(extra="")=>`fill="none" stroke="${c.ink}" stroke-width="${line}" stroke-linecap="round" stroke-linejoin="round" ${extra}`;
+ const wl=WHISK[v].map(([x1,y1,x2,y2])=>`M${x1} ${y1} L${x2} ${y2} M${100-x1} ${y1} L${100-x2} ${y2}`).join(" ");
+ return `${bg?`<rect width="100" height="100" fill="${c.bg}"/>`:""}
+  <g id="tail"><path d="M83 77 C96 76 97 60 89 55" fill="none" stroke="${c.ink}" stroke-width="${line*2.6}" stroke-linecap="round"/></g>
+  <g id="head"><path d="M30 62 Q26 40 33 36 Q41 41 45 53" fill="${c.surface}" ${L()}/><path d="M55 53 Q59 41 67 36 Q74 40 70 62" fill="${c.surface}" ${L()}/>
+  <path d="M24 78 A26 26 0 0 1 76 78 Z" fill="${c.surface}"/><path d="M24 78 A26 26 0 0 1 76 78" ${L(G("60 7 33"))}/>
+  <circle cx="41" cy="62" r="3" fill="${c.ink}"/><circle cx="59" cy="62" r="3" fill="${c.ink}"/>
+  <path d="M47.6 66.4 H52.4 L50 69.2 Z" fill="${c.ink}" stroke="${c.ink}" stroke-width="1.1" stroke-linejoin="round"/>
+  <path d="M50 69.2 v1.4 M44.8 70.6 q2.6 2.6 5.2 0 q2.6 2.6 5.2 0" ${L()}/>
+  <path d="${wl}" ${L(`stroke-width="${line*0.62}"`)}/></g>
+  <path d="M6 78 H94" ${L()}/><path d="M33 78 q5 -6 10 0 M57 78 q5 -6 10 0" fill="${c.surface}" ${L()}/>`;
+};
 const GUIDE=c=>`<path d="M2 40 H20 M26 40 H62" ${A(c)}/>${tail(c,"M44 39 C54 38 56 30 52 26")}${furHead(c,{cx:30,cy:40,r:14,half:true,dash:"58 8 34",earsSvg:ears(c,30,34),eyesSvg:eyesF(c,30,31)})}<path d="M19 40 q3 -4 6 0 M35 40 q3 -4 6 0" ${A(c)}/>`;
 (async()=>{
  const b=await chromium.launch();const p=await b.newPage();
@@ -144,6 +164,9 @@ const GUIDE=c=>`<path d="M2 40 H20 M26 40 H62" ${A(c)}/>${tail(c,"M44 39 C54 38 
  for(const [k,[l,f]] of Object.entries(ICON)) files.push([`light/icon/${k}.svg`,wrap("0 0 1024 1024",l,f(PAL.light))]);
  for(const [k,[l,f]] of Object.entries(ICON_DRAFTS)) files.push([`light/icon/${k}.svg`,wrap("0 0 1024 1024",l,f(PAL.light))]);
  for(const [k,[l,f]] of Object.entries(ICON_V2)) files.push([`light/icon/icon_${k}.svg`,wrap("0 0 100 100",l,f(PAL.light))]);
+ for(const v of Object.keys(WHISK)) files.push([`light/icon/icon_peek_${v}.svg`,wrap("0 0 100 100",`アイコン B（縁から見上げる・ひげ ${v}）`,peekB(PAL.light,v))]);
+ // ロゴ（水平線つき）を B の顔・耳・ひげにそろえた版。ひげは w2s（小さくしてもつぶれにくい）
+ for(const mode of ["light","dark"]) files.push([`${mode}/logo/logo_mark_horizon_v2.svg`,wrap("2 30 96 52","ねこと、ゆっくり ロゴマーク（水平線つき・見上げる猫）",peekB(PAL[mode],"w2s",{bg:false}))]);
  // pathLength 基準のすきまを、実寸のダッシュに直す（react-native-svg で pathLength に頼らないため）
  for(const f of files){
   f[1]=await p.evaluate(src=>{document.body.innerHTML=src;const s=document.body.firstElementChild;
