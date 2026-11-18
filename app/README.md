@@ -1,6 +1,6 @@
 # ねこと、ゆっくり（アプリ・試作）— マンチカン担当
 
-iPhone で開く手順：[EXPO_GO.md](EXPO_GO.md)
+iPhone で開く手順：[EXPO_GO.md](EXPO_GO.md)／アカウントができたあとの手順：[EAS_SETUP.md](EAS_SETUP.md)
 
 React Native ＋ Expo（TypeScript）。今は「タップできる試作」の段階です。
 
@@ -38,6 +38,7 @@ React Native ＋ Expo（TypeScript）。今は「タップできる試作」の�
 |---|---|---|
 | expo / react-native / react-native-web | アプリの土台 | なし |
 | @react-native-async-storage/async-storage | 端末内への保存 | なし |
+| expo-dev-client | 開発用ビルド（実機の確認用。製品版の動きには関わらない） | なし |
 | expo-notifications | リマインダーのローカル通知（端末の中だけで予約。プッシュ配信サービスは使わない） | なし |
 | react-native-svg | 体重グラフ | なし |
 | react-native-safe-area-context / expo-status-bar | 画面の端の調整 | なし |
