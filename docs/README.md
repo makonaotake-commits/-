@@ -40,3 +40,4 @@
 - [アイコンの新しい方向 確認シート](icon_v2.html)（[公開ページ](https://claude.ai/artifact/HVGNUJEM56HkHWhX6MQSBh)）
 - [段階の丸の番号（Q-40） 確認シート](q40_number.html)（[公開ページ](https://claude.ai/artifact/BrzKi2rQMEJYcS9rsi4NYJ)）
 - [アイコンのひげ 確認シート](icon_whisker.html)（[公開ページ](https://claude.ai/artifact/LJy6iaoV3jMbkYCgVxtnMk)）
+- [猫らしい顔 確認シート](icon_cat_face.html)（[公開ページ](https://claude.ai/artifact/J4834Vi9X13V3zAhi6qDZh)）
