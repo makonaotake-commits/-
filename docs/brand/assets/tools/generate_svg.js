@@ -147,6 +147,32 @@ const peekB=(c,v,{bg=true,line=SWI}={})=>{
   <path d="${wl}" ${L(`stroke-width="${line*0.62}"`)}/></g>
   <path d="M6 78 H94" ${L()}/><path d="M33 78 q5 -6 10 0 M57 78 q5 -6 10 0" fill="${c.surface}" ${L()}/>`;
 };
+// ---- B の「ネズミっぽさ」を直す案（2026-11-20、ユーザー補足「なんかネズミっぽくない？」）----
+// ネズミに見えた要因：半円の頭（横長で低い）＋離れた耳＋「ω」の口＋顔の端から水平に出るひげ。
+// f1：耳を内寄せ＋耳の内側の線、口を「人」の字、ひげを少し下向きに
+// f2：f1＋頭をほおの張った猫の形に（上が平ら気味・下が広い）、耳を頭の角に、目を縦長に
+// f3：f2＋ひげを口元（マズル）から出す、目に小さな光
+const peekCat=(c,v,{bg=true,line=SWI}={})=>{
+ const L=(extra="")=>`fill="none" stroke="${c.ink}" stroke-width="${line}" stroke-linecap="round" stroke-linejoin="round" ${extra}`;
+ const f1=v==="f1";
+ const ears=f1
+  ?`<path d="M32 60 Q30 42 35 37 Q41 42 46 53" fill="${c.surface}" ${L()}/><path d="M68 60 Q70 42 65 37 Q59 42 54 53" fill="${c.surface}" ${L()}/><path d="M35.5 51 Q35.5 46 36.5 43 M64.5 51 Q64.5 46 63.5 43" ${L(`stroke-width="${line*0.6}"`)}/>`
+  :`<path d="M26 64 Q25 49 28 41 Q36 46 42 56" fill="${c.surface}" ${L()}/><path d="M74 64 Q75 49 72 41 Q64 46 58 56" fill="${c.surface}" ${L()}/><path d="M29.5 56 Q29.5 50 30.5 47 M70.5 56 Q70.5 50 69.5 47" ${L(`stroke-width="${line*0.6}"`)}/>`;
+ const headD=f1?"M24 78 A26 26 0 0 1 76 78":"M22 78 C22 62 32 54 50 54 C68 54 78 62 78 78";
+ const eyes=f1
+  ?`<circle cx="41" cy="62" r="3" fill="${c.ink}"/><circle cx="59" cy="62" r="3" fill="${c.ink}"/>`
+  :`<ellipse cx="41" cy="64" rx="2.7" ry="3.4" fill="${c.ink}"/><ellipse cx="59" cy="64" rx="2.7" ry="3.4" fill="${c.ink}"/>`+(v==="f3"?`<circle cx="42" cy="62.6" r="0.95" fill="${c.surface}"/><circle cx="60" cy="62.6" r="0.95" fill="${c.surface}"/>`:"");
+ const ny=f1?67:69; // 鼻の上の位置
+ const nose=`<path d="M47.6 ${ny} H52.4 L50 ${ny+2.6} Z" fill="${c.ink}" stroke="${c.ink}" stroke-width="1.1" stroke-linejoin="round"/>`;
+ const mouth=`<path d="M50 ${ny+2.6} v1.4 M50 ${ny+4} q-1.7 2.3 -4.2 1.5 M50 ${ny+4} q1.7 2.3 4.2 1.5" ${L()}/>`;
+ const W=v==="f3"?[[43,ny+3,24,ny+0.5],[43,ny+5,24.5,ny+7.5]]:f1?[[35,ny+0.5,24.5,ny-1],[35,ny+3.5,25,ny+5]]:[[34,ny+1,23,ny-0.5],[34,ny+4,23.5,ny+5.5]];
+ const wl=W.map(([x1,y1,x2,y2])=>`M${x1} ${y1} L${x2} ${y2} M${100-x1} ${y1} L${100-x2} ${y2}`).join(" ");
+ return `${bg?`<rect width="100" height="100" fill="${c.bg}"/>`:""}
+  <g id="tail"><path d="M83 77 C96 76 97 60 89 55" fill="none" stroke="${c.ink}" stroke-width="${line*2.6}" stroke-linecap="round"/></g>
+  <g id="head">${ears}<path d="${headD} Z" fill="${c.surface}"/><path d="${headD}" ${L(G("60 7 33"))}/>${eyes}${nose}${mouth}
+  <path d="${wl}" ${L(`stroke-width="${line*0.62}"`)}/></g>
+  <path d="M6 78 H94" ${L()}/><path d="M33 78 q5 -6 10 0 M57 78 q5 -6 10 0" fill="${c.surface}" ${L()}/>`;
+};
 const GUIDE=c=>`<path d="M2 40 H20 M26 40 H62" ${A(c)}/>${tail(c,"M44 39 C54 38 56 30 52 26")}${furHead(c,{cx:30,cy:40,r:14,half:true,dash:"58 8 34",earsSvg:ears(c,30,34),eyesSvg:eyesF(c,30,31)})}<path d="M19 40 q3 -4 6 0 M35 40 q3 -4 6 0" ${A(c)}/>`;
 (async()=>{
  const b=await chromium.launch();const p=await b.newPage();
@@ -165,6 +191,7 @@ const GUIDE=c=>`<path d="M2 40 H20 M26 40 H62" ${A(c)}/>${tail(c,"M44 39 C54 38 
  for(const [k,[l,f]] of Object.entries(ICON_DRAFTS)) files.push([`light/icon/${k}.svg`,wrap("0 0 1024 1024",l,f(PAL.light))]);
  for(const [k,[l,f]] of Object.entries(ICON_V2)) files.push([`light/icon/icon_${k}.svg`,wrap("0 0 100 100",l,f(PAL.light))]);
  for(const v of Object.keys(WHISK)) files.push([`light/icon/icon_peek_${v}.svg`,wrap("0 0 100 100",`アイコン B（縁から見上げる・ひげ ${v}）`,peekB(PAL.light,v))]);
+ for(const v of ["f1","f2","f3"]) files.push([`light/icon/icon_peek_${v}.svg`,wrap("0 0 100 100",`アイコン B（縁から見上げる・猫らしさ修正 ${v}）`,peekCat(PAL.light,v))]);
  // ロゴ（水平線つき）を B の顔・耳・ひげにそろえた版。ひげは w2s（小さくしてもつぶれにくい）
  for(const mode of ["light","dark"]) files.push([`${mode}/logo/logo_mark_horizon_v2.svg`,wrap("2 30 96 52","ねこと、ゆっくり ロゴマーク（水平線つき・見上げる猫）",peekB(PAL[mode],"w2s",{bg:false}))]);
  // pathLength 基準のすきまを、実寸のダッシュに直す（react-native-svg で pathLength に頼らないため）
