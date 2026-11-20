@@ -13,6 +13,7 @@ Apple・Google・Expo のアカウントを作ったあとに、1回だけやる
 | Google Play Console（個人） | play.google.com/console | 登録料がかかります。公開の前に、テスター（12人を予定）によるテスト期間が必要です |
 | Expo のアカウント | expo.dev | 無料。運営用のメールアドレスで作ります |
 | アプリの名前など | 決定済み | アプリ名「ねこと、ゆっくり」、Bundle ID／パッケージ名 `jp.nekotoyukkuri.app`（あとから変えられません） |
+| 配信地域・連絡先 | 決定済み | 第1弾の配信地域は **日本だけ**。ストアに出す連絡先は **運営用のメールアドレスだけ**（電話番号・住所は出さない） |
 
 ## 1. Expo にログインする（パソコン）
 1. いつものように、`app` フォルダで黒い画面（PowerShell）を開きます（`EXPO_GO.md` の「3」と同じ）。
@@ -55,8 +56,8 @@ Apple・Google・Expo のアカウントを作ったあとに、1回だけやる
   npx eas-cli build --profile production --platform ios
   npx eas-cli submit --platform ios
   ```
-  その前に、App Store Connect でアプリの登録（名前・Bundle ID の選択）が必要です。手順は、その時に1枚にまとめます。
-- **Android**：`--platform android` で同じように作れます。テスター12人には、Google Play の「クローズドテスト」で配ります（その時に手順を作ります）。
+  その前に、App Store Connect でアプリの登録（名前・Bundle ID の選択）が必要です。配信地域（「価格と配信状況」）は **日本だけ** を選びます。手順は、その時に1枚にまとめます。
+- **Android**：`--platform android` で同じように作れます。テスター12人には、Google Play の「クローズドテスト」で配ります（その時に手順を作ります）。配信する国は **日本だけ** にします。
 
 ## 困ったとき
 | こんなとき | ためすこと |
