@@ -48,9 +48,9 @@ export function MedSettingsScreen({ back }: { back: (msg?: string) => void }) {
     return (
       <Screen title={draft.id ? 'お薬を編集する' : 'お薬を登録する'} onBack={() => setDraft(undefined)}>
         <CatBadge cat={cat} />
-        <Note>{TEXT.medListNote}</Note>
+        <T small style={{ marginBottom: 12 }}>{TEXT.medListNote}</T>
         <Card>
-          <Field label="お薬の名前" hint="2文字以上入力すると候補が出ます。候補にない名前や「白い錠剤（朝）」のような呼び方でも登録できます。">
+          <Field label="お薬の名前" hint="2文字から候補が出ます。自由に書くこともできます。">
             <Autocomplete
               value={draft.name}
               onChangeText={(t) => setDraft({ ...draft, name: t, candidateId: undefined, maker: undefined })}
@@ -63,7 +63,6 @@ export function MedSettingsScreen({ back }: { back: (msg?: string) => void }) {
               }
               placeholder="例：ラプロス"
             />
-            <T small sub style={{ marginTop: 6 }}>{TEXT.candidateNote}</T>
             <T small style={{ marginTop: 4 }}>{TEXT.candidateListNote}</T>
           </Field>
           {draft.candidateId ? (
@@ -80,7 +79,7 @@ export function MedSettingsScreen({ back }: { back: (msg?: string) => void }) {
               <Choice options={FORMS.map((f) => ({ v: f, label: f }))} value={draft.form} onChange={(v) => setDraft({ ...draft, form: v })} />
             </Field>
           )}
-          <Field label="記録の種類" hint="注射などを選ぶと「病院での処置」になります。変えることもできます。">
+          <Field label="記録の種類">
             <Choice
               options={[
                 { v: 'home', label: '自宅で与える' },

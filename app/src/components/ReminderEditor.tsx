@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View } from 'react-native';
 import { TEXT, WEEKDAYS } from '../config/labels';
 import { Frequency, Reminder, toDateStr } from '../data/store';
-import { Button, Choice, Field, Input, Note, T } from './ui';
+import { Button, Choice, Field, Input, More, Note, T } from './ui';
 
 export const defaultReminder = (): Reminder => ({ enabled: false, times: [], freq: { kind: 'daily' } });
 
@@ -44,7 +44,7 @@ export function ReminderEditor({ value, onChange }: { value: Reminder; onChange:
       </Field>
       {value.enabled ? (
         <>
-          <Field label="時刻" hint="例：8:00、20:30">
+          <Field label="時刻">
             {value.times.map((t) => (
               <View key={t} style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
                 <T bold>{t}</T>
@@ -104,8 +104,7 @@ export function ReminderEditor({ value, onChange }: { value: Reminder; onChange:
               </View>
             ) : null}
           </Field>
-          <T small sub>ロック画面に猫の名前やお薬の名前を出したくないときは、設定の「通知の内容を隠す」を使えます。</T>
-          <Note>{TEXT.webReminderNote}</Note>
+          <More text={`ロック画面に猫の名前やお薬の名前を出したくないときは、設定の「通知の内容を隠す」を使えます。${TEXT.webReminderNote}`} label="通知について" />
         </>
       ) : null}
     </View>

@@ -52,10 +52,11 @@ export const fonts = {
 };
 
 export const sizes = {
-  title: 24,
-  heading: 20,
-  body: 18,
-  label: 17,
+  // 大きさに強弱をつける：画面の題 30 ＞ 見出し 22 ＞ 質問・項目名 19 ＞ 本文 17 ＞ 補足 15（2026-11-22 ユーザーの指摘）
+  title: 30,
+  heading: 22,
+  body: 17,
+  label: 19,
   small: 15, // これより小さくしない
   number: 28,
   gap: 16,

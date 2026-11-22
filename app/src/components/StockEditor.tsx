@@ -24,13 +24,13 @@ export function StockEditor({ value, onChange, unitPlaceholder }: { value?: Stoc
 
   if (!open) {
     return (
-      <Field label="手元の残り（任意）" hint="入れておくと、記録するたびに残りを減らして、目安として表示します。">
+      <Field label="手元の残り（任意）" more="入れておくと、記録するたびに残りを減らして、目安として表示します。">
         <Button kind="secondary" label="手元の残りを入れる" onPress={() => setOpen(true)} />
       </Field>
     );
   }
   return (
-    <Field label="手元の残り（任意）" hint="目安です。実際の数と違ってきたら、いつでも直せます。">
+    <Field label="手元の残り（任意）" hint="目安です。いつでも直せます。">
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
         <T>いまの残り</T>
         <Input value={remaining} onChangeText={setRemaining} keyboardType="decimal-pad" style={{ width: 100 }} accessibilityLabel="いまの残り" />

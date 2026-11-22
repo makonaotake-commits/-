@@ -105,7 +105,6 @@ export function MedsScreen({ back, go }: { back: (msg?: string) => void; go: (r:
       {hospitalMeds.length > 0 ? (
         <>
           <H>病院での処置</H>
-          <T small sub style={{ marginBottom: 8 }}>日付・名前・メモだけを記録します。</T>
           {hospitalMeds.map((m) => (
             <Card key={m.id}>
               <T bold style={{ fontSize: 20 }}>{m.name}</T>
@@ -117,9 +116,8 @@ export function MedsScreen({ back, go }: { back: (msg?: string) => void; go: (r:
         </>
       ) : null}
 
-      <H>お薬リスト・時刻の設定</H>
-      <Button kind="secondary" label="お薬の登録・リマインダーを設定する" onPress={() => go({ name: 'medSettings' })} />
-      <Note>{TEXT.vetFirst}</Note>
+      <Button kind="quiet" label="お薬の登録・時刻の設定 ›" onPress={() => go({ name: 'medSettings' })} />
+      <T small sub style={{ marginTop: 16 }}>{TEXT.vetFirst}</T>
     </Screen>
   );
 }

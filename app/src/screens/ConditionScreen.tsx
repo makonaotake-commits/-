@@ -129,17 +129,14 @@ export function ConditionScreen({ back, initialDate }: { back: (msg?: string) =>
     <Screen title="体調を記録する" onBack={() => back()}>
       <CatBadge cat={cat} />
       <DateStepper date={date} onChange={setDate} max={today} />
-      <T small sub style={{ marginVertical: 8 }}>
-        {existing
-          ? 'この日の記録を開いています。直して保存できます。'
-          : (rec.copiedFields?.length ?? 0) > 0
-            ? '前回の内容を下書きとして入れています。点線の項目が前回の内容です。保存するまで記録されません。体重は入れていません。'
-            : '1つの項目だけでも保存できます。'}
-      </T>
-      {prev ? (
-        <Button kind="secondary" label={`前回（${shortDate(prev.date)}）と同じ内容を入れる`} onPress={copyPrev} />
+      {existing ? (
+        <T small sub style={{ marginVertical: 8 }}>この日の記録を直せます。</T>
+      ) : copied.size > 0 ? (
+        <T small sub style={{ marginVertical: 8 }}>点線は前回の内容です（保存するまで記録されません）。</T>
       ) : null}
-      {copied.size > 0 ? <T small sub>「（前回の内容）」の付いた項目は、前回の内容をそのまま入れたものです。選び直すと印は消えます。</T> : null}
+      {prev && copied.size === 0 && !existing ? (
+        <Button kind="quiet" label={`前回（${shortDate(prev.date)}）と同じ内容を入れる`} onPress={copyPrev} style={{ alignSelf: 'flex-start' }} />
+      ) : null}
 
       {/* 3枚のカード（まとまった数問ずつ）。上のタブでどのカードにも移れる */}
       <View style={{ flexDirection: 'row', gap: 8, marginTop: 12, marginBottom: 12 }}>
@@ -248,8 +245,7 @@ export function ConditionScreen({ back, initialDate }: { back: (msg?: string) =>
         {card < CARDS.length - 1 ? <Button kind="secondary" label="次のカード ›" onPress={() => setCard(card + 1)} style={{ flex: 1 }} /> : null}
       </View>
       <Button label="保存する" onPress={save} disabled={!hasAny} />
-      {!hasAny ? <T small sub>どれか1つ入力すると保存できます。</T> : null}
-      <Note>{TEXT.emergency}</Note>
+      {!hasAny ? <T small sub>1つ入力すると保存できます。</T> : null}
     </Screen>
   );
 }

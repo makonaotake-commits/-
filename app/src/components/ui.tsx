@@ -25,7 +25,7 @@ function makeStyles(c: Colors, sizes: Sizes) {
     btnPrimary: { backgroundColor: c.primary },
     btnSecondary: { backgroundColor: c.surface, borderWidth: 2, borderColor: c.borderStrong },
     btnQuiet: { minHeight: 44, paddingHorizontal: 4 },
-    btnText: { fontFamily: fonts.bodyBold, color: c.text, fontSize: sizes.label },
+    btnText: { fontFamily: fonts.bodyBold, color: c.text, fontSize: sizes.body },
     choiceWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
     chip: {
       minHeight: 52,
@@ -37,7 +37,7 @@ function makeStyles(c: Colors, sizes: Sizes) {
       justifyContent: 'center',
     },
     chipOn: { borderColor: c.text, backgroundColor: c.primaryTint },
-    chipText: { fontFamily: fonts.body, color: c.text, fontSize: sizes.label },
+    chipText: { fontFamily: fonts.body, color: c.text, fontSize: sizes.body },
     chipTextOn: { fontFamily: fonts.bodyBold },
     catTab: {
       flexDirection: 'row',
@@ -50,7 +50,7 @@ function makeStyles(c: Colors, sizes: Sizes) {
       borderColor: c.borderStrong,
       backgroundColor: c.surface,
     },
-    label: { fontFamily: fonts.heading, color: c.text, fontSize: sizes.label, marginBottom: 8 },
+    label: { fontFamily: fonts.heading, color: c.text, fontSize: sizes.label, lineHeight: sizes.label * 1.4, marginBottom: 8 },
     input: {
       fontFamily: fonts.body,
       fontSize: sizes.body,
@@ -116,7 +116,7 @@ export function H({ children, level = 2 }: { children: React.ReactNode; level?: 
   return (
     <Text
       accessibilityRole="header"
-      style={{ fontFamily: fonts.heading, color: c.text, fontSize: size, lineHeight: size * 1.45, marginTop: level === 1 ? 0 : 8, marginBottom: 8 }}
+      style={{ fontFamily: fonts.heading, color: c.text, fontSize: size, lineHeight: size * 1.45, marginTop: level === 1 ? 0 : 20, marginBottom: 10 }}
     >
       {children}
     </Text>
@@ -222,17 +222,32 @@ export function Counter({ value, onChange, unit = '回' }: { value?: number; onC
   );
 }
 
-export function Field({ label, children, hint }: { label: string; children: React.ReactNode; hint?: string }) {
+/** 項目。hint は1行の補足、more は「くわしく」を押したときだけ出す説明 */
+export function Field({ label, children, hint, more }: { label: string; children: React.ReactNode; hint?: string; more?: string }) {
   const { s } = useStyles();
   return (
-    <View style={{ marginBottom: 20 }}>
+    <View style={{ marginBottom: 24 }}>
       <Text style={s.label}>{label}</Text>
       {hint ? (
         <T small sub style={{ marginBottom: 6 }}>
           {hint}
         </T>
       ) : null}
+      {more ? <More text={more} /> : null}
       {children}
+    </View>
+  );
+}
+
+/** 「くわしく」を押すと説明が出る（文字を減らすため、説明はふだん隠しておく） */
+export function More({ text, label = 'くわしく' }: { text: string; label?: string }) {
+  const [open, setOpen] = React.useState(false);
+  return (
+    <View style={{ marginBottom: 6 }}>
+      <Pressable accessibilityRole="button" accessibilityState={{ expanded: open }} onPress={() => setOpen(!open)} style={{ minHeight: 40, justifyContent: 'center', alignSelf: 'flex-start' }}>
+        <T small sub>{open ? `${label} ▴` : `${label} ▾`}</T>
+      </Pressable>
+      {open ? <T small sub>{text}</T> : null}
     </View>
   );
 }

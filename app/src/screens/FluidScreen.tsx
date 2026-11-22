@@ -26,6 +26,7 @@ export function FluidScreen({ back, editId }: { back: (msg?: string) => void; ed
   const [memo, setMemo] = useState(editing?.memo ?? '');
   const [confirmBig, setConfirmBig] = useState(false);
   const [showReminder, setShowReminder] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
   const past = useMemo(
     () => data.fluids.filter((f) => f.catId === cat?.id && f.id !== editId && (!editing || f.date + f.time < editing.date + editing.time)).sort((a, b) => (a.date + a.time < b.date + b.time ? 1 : -1)),
@@ -86,9 +87,8 @@ export function FluidScreen({ back, editId }: { back: (msg?: string) => void; ed
             <T>mL</T>
           </View>
           {prevMl ? (
-            <Button kind="quiet" label={`前回と同じ量（${prevMl.ml} mL）を入れる`} style={{ alignSelf: 'flex-start' }} onPress={() => setMlText(String(prevMl.ml))} />
+            <Button kind="quiet" label="前回と同じ量を入れる" style={{ alignSelf: 'flex-start' }} onPress={() => setMlText(String(prevMl.ml))} />
           ) : null}
-          <T small sub>{TEXT.fluidUpdateHint}</T>
         </Field>
 
         <Field label="部位（任意）" hint={prevSite ? `前回：${prevSite.site}${prevSite.side ? '・' + prevSite.side : ''}（${shortDate(prevSite.date)}）` : undefined}>
@@ -97,11 +97,11 @@ export function FluidScreen({ back, editId }: { back: (msg?: string) => void; ed
           <Choice options={FLUID_SIDES.map((x) => ({ v: x, label: x }))} value={side} onChange={setSide} />
         </Field>
 
-        <Field label="輸液の名前（任意）" hint={prevName ? `前回：${prevName.fluidName}（${shortDate(prevName.date)}）` : '自由に入力できます。2文字以上入力すると候補が出ます。'}>
+        <Field label="輸液の名前（任意）" hint={prevName ? `前回：${prevName.fluidName}（${shortDate(prevName.date)}）` : undefined}>
           <Autocomplete value={fluidName} onChangeText={setFluidName} suggestions={suggestions} render={(x) => ({ title: x, sub: FLUID_NAME_CANDIDATES.includes(x) ? '試作用の仮データ' : '前に入力した名前' })} onPick={setFluidName} placeholder="例：乳酸リンゲル液" />
           <T small sub style={{ marginTop: 6 }}>{TEXT.candidateListNote}</T>
           {prevName && !fluidName ? (
-            <Button kind="quiet" label={`前回と同じ（${prevName.fluidName}）を入れる`} style={{ alignSelf: 'flex-start' }} onPress={() => setFluidName(prevName.fluidName!)} />
+            <Button kind="quiet" label="前回と同じ名前を入れる" style={{ alignSelf: 'flex-start' }} onPress={() => setFluidName(prevName.fluidName!)} />
           ) : null}
         </Field>
 
@@ -125,11 +125,21 @@ export function FluidScreen({ back, editId }: { back: (msg?: string) => void; ed
       ) : (
         <>
           <Button label="保存する" onPress={save} disabled={!hasAny} />
-          {!hasAny ? <T small sub>どれか1つ入力すると保存できます。</T> : null}
+          {!hasAny ? <T small sub>1つ入力すると保存できます。</T> : null}
         </>
       )}
 
-      <H>補液のリマインダー</H>
+      {/* あまり変えない設定（リマインダー・手元の残り）は、たたんでおく */}
+      {!editing ? (
+        <Button
+          kind="quiet"
+          label={`${showSettings ? '▴' : '▾'} リマインダー・手元の残り${reminder.enabled && reminder.times.length ? `（${reminder.times.join('・')}）` : ''}`}
+          onPress={() => setShowSettings(!showSettings)}
+          style={{ alignSelf: 'flex-start', marginTop: 12 }}
+        />
+      ) : null}
+      {showSettings && !editing ? (
+        <>
       {showReminder ? (
         <Card>
           <ReminderEditor value={reminder} onChange={(r) => cat && update((x) => ({ ...x, fluidReminders: { ...x.fluidReminders, [cat.id]: r } }))} />
@@ -142,7 +152,7 @@ export function FluidScreen({ back, editId }: { back: (msg?: string) => void; ed
           onPress={() => setShowReminder(true)}
         />
       )}
-      {cat && !editing ? (
+      {cat ? (
         <Card>
           <StockEditor
             value={data.fluidStock?.[cat.id]}
@@ -164,7 +174,15 @@ export function FluidScreen({ back, editId }: { back: (msg?: string) => void; ed
           ) : null}
         </Card>
       ) : null}
-      <Note>{TEXT.vetFirst}</Note>
+        </>
+      ) : null}
+      {cat && !editing && data.fluidStock?.[cat.id] && !showSettings ? (
+        <T small sub>
+          手元の残り（目安）：{data.fluidStock[cat.id].remaining} {data.fluidStock[cat.id].unit}
+          {stockLow(data.fluidStock[cat.id]) ? '　輸液の残りが少なくなっています。次の受診や受け取りのときにどうぞ。' : ''}
+        </T>
+      ) : null}
+      <T small sub style={{ marginTop: 16 }}>{TEXT.vetFirst}</T>
     </Screen>
   );
 }

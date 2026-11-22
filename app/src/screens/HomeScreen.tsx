@@ -100,7 +100,7 @@ export function HomeScreen({ go }: { go: (r: Route) => void }) {
 
   return (
     <Screen>
-      <T sub>{today}</T>
+      <T small sub>{today}</T>
       <HomeScene paused={!!cat?.paused} />
       <H level={1}>今日の記録</H>
       <CatSwitcher />
@@ -127,7 +127,7 @@ export function HomeScreen({ go }: { go: (r: Route) => void }) {
           <H>今日のケア予定</H>
           <Card>
             {plans.length === 0 ? (
-              <T sub>予定はありません。補液・お薬の画面から時刻を設定できます。</T>
+              <T sub>予定はありません。</T>
             ) : (
               plans.map((p, i) => (
                 <View key={i} style={{ flexDirection: 'row', gap: 12, paddingVertical: 6 }}>
@@ -144,7 +144,7 @@ export function HomeScreen({ go }: { go: (r: Route) => void }) {
           <H>今日つけた記録</H>
           <Card>
             {items.length === 0 ? (
-              <T sub>まだ記録はありません。記録はいつでも、できるときにどうぞ。</T>
+              <T sub>まだ記録はありません。</T>
             ) : (
               items.map((it) => (
                 <View key={it.id}>
@@ -166,11 +166,10 @@ export function HomeScreen({ go }: { go: (r: Route) => void }) {
 
       {!data.settings.dailyNoticeIntroShown && !data.settings.dailyNotice.enabled ? (
         <Card>
-          <T small>設定すると、その日の体調の記録がないときに、決めた時刻にお知らせします（初めはオフ）。設定の「今日の記録のお知らせ」で使えます。</T>
+          <T small>設定すると、その日の体調の記録がないときに、決めた時刻にお知らせします（初めはオフ）。</T>
           <Button kind="quiet" label="閉じる" onPress={() => update((x) => ({ ...x, settings: { ...x.settings, dailyNoticeIntroShown: true } }))} style={{ alignSelf: 'flex-start' }} />
         </Card>
       ) : null}
-      <Note>{TEXT.emergency}</Note>
 
     </Screen>
   );
