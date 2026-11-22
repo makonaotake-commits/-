@@ -7,6 +7,7 @@ import { CalendarLeaf, FUR_OPTIONS, NoticeMark } from '../components/Marks';
 import { ConfirmBox, Screen } from '../components/Screen';
 import { Button, Card, Choice, Field, H, Input, Note, T } from '../components/ui';
 import { TEXT } from '../config/labels';
+import { DRUG_LIST_VERSION } from '../data/drugs';
 import { LICENSES } from '../data/licenses';
 import { dailyNoticeStopped } from '../notifications/plan';
 import { emptyData, nowParts, sampleData, Settings, toDateStr, useStore } from '../data/store';
@@ -239,6 +240,7 @@ export function SettingsScreen({ go }: { go: (r: Route) => void }) {
           <T bold style={{ marginTop: 8 }}>ねこと、ゆっくり</T>
         </View>
         <T small sub>監修者・運営者・収益源の開示、利用規約、プライバシーポリシー、お問い合わせ先は準備中です。</T>
+        <T small sub style={{ marginTop: 8 }}>お薬の名前の候補について：{TEXT.candidateListNote}候補は名前・剤形・メーカー名だけを、五十音順に並べています。リストにないお薬は、自由に入力して記録できます。（候補リスト：{DRUG_LIST_VERSION}）</T>
         <T small>{TEXT.vetFirst}</T>
       </Section>
 

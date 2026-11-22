@@ -85,7 +85,7 @@ export function FluidScreen({ back, editId }: { back: (msg?: string) => void; ed
       </View>
 
       <Card style={{ marginTop: 16 }}>
-        <Field label="量（mL）" hint={prevMl ? `前回 ${prevMl.ml} mL（${shortDate(prevMl.date)}）` : TEXT.fluidAmountHint}>
+        <Field label="量（mL）" hint={prevMl ? `前回 ${prevMl.ml} mL（${shortDate(prevMl.date)}）・量が変わったら、ここで直せます` : TEXT.fluidAmountHint}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
             <Input value={mlText} onChangeText={setMlText} keyboardType="number-pad" placeholder="量" style={{ width: 160 }} />
             <T>mL</T>
@@ -158,6 +158,8 @@ export function FluidScreen({ back, editId }: { back: (msg?: string) => void; ed
       ) : null}
       {showSettings && !editing ? (
         <>
+          {/* F-04：指示された量が変わったときの導線（ロシアン T-1） */}
+          <T small sub style={{ marginBottom: 8 }}>量が変わったら、記録のときに直せます。リマインダーの時刻もここで変えられます。</T>
       {showReminder ? (
         <Card>
           <ReminderEditor value={reminder} onChange={(r) => cat && update((x) => ({ ...x, fluidReminders: { ...x.fluidReminders, [cat.id]: r } }))} />
