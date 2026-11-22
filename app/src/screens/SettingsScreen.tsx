@@ -251,6 +251,10 @@ export function SettingsScreen({ go }: { go: (r: Route) => void }) {
 
       <H>このアプリについて</H>
       <Card>
+        <View style={{ alignItems: 'center', marginBottom: 12 }}>
+          <Art name="logo_mark" width={120} />
+          <T bold style={{ marginTop: 8 }}>ねこと、ゆっくり</T>
+        </View>
         <T small sub>監修者・運営者・収益源の開示、利用規約、プライバシーポリシー、お問い合わせ先は準備中です。</T>
         <T small>{TEXT.vetFirst}</T>
       </Card>

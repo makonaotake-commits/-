@@ -14,6 +14,10 @@ for (const scheme of ['light', 'dark']) {
     }
   }
 }
+// ロゴ（確定データ。docs/brand/assets/final/logo/）。設定の「このアプリについて」で使う
+for (const scheme of ['light', 'dark']) {
+  out[scheme].logo_mark = fs.readFileSync(path.join(SRC, '..', 'final', 'logo', `logo_mark_${scheme}.svg`), 'utf8').trim();
+}
 const body = `// 自動生成：scripts/embed-art.js（元：docs/brand/assets/svg/）。手で編集しない。\nexport const ART = ${JSON.stringify(out, null, 2)} as const;\n\nexport type ArtName = keyof (typeof ART)['light'];\n`;
 fs.writeFileSync(path.join(__dirname, '..', 'src', 'art', 'artData.ts'), body);
 console.log('src/art/artData.ts', Object.keys(out.light).join(', '));
