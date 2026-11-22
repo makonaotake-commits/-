@@ -71,14 +71,27 @@ export function DateStepper({ date, onChange, max }: { date: string; onChange: (
   const wd = ['日', '月', '火', '水', '木', '金', '土'][d.getDay()];
   const isMax = max !== undefined && date >= max;
   return (
-    <View>
-      <T bold style={{ textAlign: 'center' }}>
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginVertical: 4 }}>
+      <Arrow label="‹" a11y="前の日" onPress={() => move(-1)} />
+      <T bold style={{ flex: 1, textAlign: 'center' }}>
         {d.getMonth() + 1}月{d.getDate()}日（{wd}）
       </T>
-      <View style={{ flexDirection: 'row', gap: 12 }}>
-        <Button kind="secondary" label="‹ 前の日" onPress={() => move(-1)} style={{ flex: 1 }} />
-        <Button kind="secondary" label="次の日 ›" onPress={() => move(1)} disabled={isMax} style={{ flex: 1 }} />
-      </View>
+      <Arrow label="›" a11y="次の日" onPress={() => move(1)} disabled={isMax} />
     </View>
+  );
+}
+
+function Arrow({ label, a11y, onPress, disabled }: { label: string; a11y: string; onPress: () => void; disabled?: boolean }) {
+  const colors = useColors();
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={a11y}
+      disabled={disabled}
+      onPress={onPress}
+      style={({ pressed }) => ({ width: 48, height: 48, borderRadius: 24, borderWidth: 2, borderColor: colors.borderStrong, backgroundColor: pressed ? colors.primaryTint : colors.surface, alignItems: 'center', justifyContent: 'center', opacity: disabled ? 0.35 : 1 })}
+    >
+      <Text style={{ fontSize: 24, color: colors.text, marginTop: -2 }}>{label}</Text>
+    </Pressable>
   );
 }

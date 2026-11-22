@@ -1,14 +1,50 @@
 import React, { useMemo, useState } from 'react';
 import { Pressable, View } from 'react-native';
 import { CountQuestion, ScaleQuestion } from '../components/QuizInputs';
+import { AmountPicture, Icon, IconName } from '../components/Icons';
+import { Art } from '../art/Art';
+import Svg, { Circle } from 'react-native-svg';
 import { DateStepper, Screen } from '../components/Screen';
 import { useColors } from '../config/useTheme';
 import { Button, Card, CatBadge, Choice, Counter, Field, Input, Note, T, useCurrentCat } from '../components/ui';
 import { APPETITE, ENERGY, STOOL_STATE, TEXT, URINE_CLUMP, WATER } from '../config/labels';
 import { evaluateNotices } from '../data/notices';
+import { FurColor } from '../data/store';
 import { ConditionRecord, newId, nowParts, shortDate, useStore } from '../data/store';
 
-const CARDS = ['ごはん・お水・元気', 'トイレ', '体重・メモ'];
+const CARDS = ['ごはん・元気', 'トイレ', '体重・メモ'];
+const CARD_ICONS: IconName[] = ['bowl', 'pee', 'scale'];
+
+// 選択肢の絵（量・しぐさを形で見せる。良し悪しの色は付けない）
+const PIC_APPETITE = {
+  none: <AmountPicture kind="bowl" level={0} size={48} />,
+  less: <AmountPicture kind="bowl" level={1} size={48} />,
+  usual: <AmountPicture kind="bowl" level={2} size={48} />,
+  more: <AmountPicture kind="bowl" level={3} size={48} />,
+};
+const PIC_WATER = {
+  less: <AmountPicture kind="drop" level={1} size={48} />,
+  usual: <AmountPicture kind="drop" level={2} size={48} />,
+  more: <AmountPicture kind="drop" level={3} size={48} />,
+};
+const picEnergy = (fur: FurColor) => ({
+  less: <Art name="pose_loaf" width={84} fur={fur} />,
+  usual: <Art name="pose_sit" width={84} fur={fur} />,
+  more: <Art name="pose_stretch" width={84} fur={fur} />,
+});
+const PIC_CLUMP = {
+  small: <ClumpDot r={4} />,
+  usual: <ClumpDot r={7} />,
+  large: <ClumpDot r={10} />,
+};
+function ClumpDot({ r }: { r: number }) {
+  const c = useColors();
+  return (
+    <Svg width={40} height={40} viewBox="0 0 24 24">
+      <Circle cx={12} cy={12} r={r} fill={c.primaryTint} stroke={c.text} strokeWidth={1.8} />
+    </Svg>
+  );
+}
 
 // 丸の下に出す短い言葉（質問に「いつもとくらべて」を入れたので短くできる。記録とレポートの言葉は変えない）
 const SHORT_APPETITE: Record<string, string> = { none: '食べなかった', less: '少ない', usual: 'いつもくらい', more: '多い' };
@@ -74,6 +110,7 @@ export function ConditionScreen({ back, initialDate }: { back: (msg?: string) =>
 
   const copied = new Set(rec.copiedFields ?? []);
   const c = useColors();
+  const fur = data.settings.guideFur;
   const [card, setCard] = useState(0);
   const [showWaterMl, setShowWaterMl] = useState(false);
   // どのカードに入力があるか（タブに ● を付けるだけ。数や良し悪しは出さない）
@@ -131,8 +168,6 @@ export function ConditionScreen({ back, initialDate }: { back: (msg?: string) =>
       <DateStepper date={date} onChange={setDate} max={today} />
       {existing ? (
         <T small sub style={{ marginVertical: 8 }}>この日の記録を直せます。</T>
-      ) : copied.size > 0 ? (
-        <T small sub style={{ marginVertical: 8 }}>点線は前回の内容です（保存するまで記録されません）。</T>
       ) : null}
       {prev && copied.size === 0 && !existing ? (
         <Button kind="quiet" label={`前回（${shortDate(prev.date)}）と同じ内容を入れる`} onPress={copyPrev} style={{ alignSelf: 'flex-start' }} />
@@ -148,10 +183,11 @@ export function ConditionScreen({ back, initialDate }: { back: (msg?: string) =>
               accessibilityRole="tab"
               accessibilityState={{ selected: on }}
               onPress={() => setCard(i)}
-              style={{ flex: 1, minHeight: 56, borderRadius: 12, borderWidth: 2, borderColor: on ? c.text : c.borderStrong, backgroundColor: on ? c.primaryTint : c.surface, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 4 }}
+              style={{ flex: 1, minHeight: 64, borderRadius: 12, borderWidth: 2, borderColor: on ? c.text : c.borderStrong, backgroundColor: on ? c.primaryTint : c.surface, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 4, paddingVertical: 6 }}
             >
+              <Icon name={CARD_ICONS[i]} size={24} />
               <T small bold={on} style={{ textAlign: 'center' }}>
-                {i + 1}. {title}
+                {title}
                 {cardFilled[i] ? ' ●' : ''}
               </T>
             </Pressable>
@@ -162,8 +198,9 @@ export function ConditionScreen({ back, initialDate }: { back: (msg?: string) =>
       <Card>
         {card === 0 ? (
           <>
-            <ScaleQuestion question="食欲は？（いつもとくらべて）" options={short(APPETITE, SHORT_APPETITE)} value={rec.appetite} onChange={(v) => set('appetite', v)} copied={copied.has('appetite')} />
-            <ScaleQuestion question="お水を飲む量は？（いつもとくらべて）" options={WATER} value={rec.water} onChange={(v) => set('water', v)} copied={copied.has('water')} />
+            <T small sub style={{ marginBottom: 12 }}>いつもとくらべて</T>
+            <ScaleQuestion icon="bowl" question="食欲" pictures={PIC_APPETITE} options={short(APPETITE, SHORT_APPETITE)} value={rec.appetite} onChange={(v) => set('appetite', v)} copied={copied.has('appetite')} />
+            <ScaleQuestion icon="drop" question="お水" pictures={PIC_WATER} options={WATER} value={rec.water} onChange={(v) => set('water', v)} copied={copied.has('water')} />
             {showWaterMl || rec.waterMl !== undefined ? (
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: -12, marginBottom: 20 }}>
                 <Input
@@ -181,27 +218,27 @@ export function ConditionScreen({ back, initialDate }: { back: (msg?: string) =>
             ) : (
               <Button kind="quiet" label="飲んだ量（mL）も入れる" onPress={() => setShowWaterMl(true)} style={{ alignSelf: 'flex-start', marginTop: -16, marginBottom: 12 }} />
             )}
-            <ScaleQuestion question="元気さは？（いつもとくらべて）" options={short(ENERGY, SHORT_ENERGY)} value={rec.energy} onChange={(v) => set('energy', v)} copied={copied.has('energy')} />
+            <ScaleQuestion icon="energy" question="元気さ" pictures={picEnergy(fur)} options={short(ENERGY, SHORT_ENERGY)} value={rec.energy} onChange={(v) => set('energy', v)} copied={copied.has('energy')} />
           </>
         ) : null}
 
         {card === 1 ? (
           <>
-            <CountQuestion question="おしっこの回数は？" value={rec.urineCount} onChange={(v) => set('urineCount', v)} copied={copied.has('urineCount')}>
+            <CountQuestion icon="pee" question="おしっこ（回）" value={rec.urineCount} onChange={(v) => set('urineCount', v)} copied={copied.has('urineCount')}>
               {(rec.urineCount ?? 0) >= 1 ? (
                 <View style={{ marginTop: 12 }}>
-                  <ScaleQuestion question="塊の大きさは？（任意）" options={URINE_CLUMP} value={rec.urineClump} onChange={(v) => set('urineClump', v)} copied={copied.has('urineClump')} />
+                  <ScaleQuestion question="塊の大きさ" pictures={PIC_CLUMP} options={URINE_CLUMP} value={rec.urineClump} onChange={(v) => set('urineClump', v)} copied={copied.has('urineClump')} />
                 </View>
               ) : null}
             </CountQuestion>
-            <CountQuestion question="うんちの回数は？" value={rec.stoolCount} onChange={(v) => set('stoolCount', v)} copied={copied.has('stoolCount')}>
+            <CountQuestion icon="poop" question="うんち（回）" value={rec.stoolCount} onChange={(v) => set('stoolCount', v)} copied={copied.has('stoolCount')}>
               {(rec.stoolCount ?? 0) >= 1 ? (
                 <View style={{ marginTop: 12 }}>
-                  <ScaleQuestion question="かたさは？（任意）" options={STOOL_STATE} value={rec.stoolState} onChange={(v) => set('stoolState', v)} copied={copied.has('stoolState')} />
+                  <ScaleQuestion question="かたさ" options={STOOL_STATE} value={rec.stoolState} onChange={(v) => set('stoolState', v)} copied={copied.has('stoolState')} />
                 </View>
               ) : null}
             </CountQuestion>
-            <CountQuestion question="吐いた回数は？" value={rec.vomitCount} onChange={(v) => set('vomitCount', v)} copied={copied.has('vomitCount')} />
+            <CountQuestion icon="vomit" question="吐いた（回）" value={rec.vomitCount} onChange={(v) => set('vomitCount', v)} copied={copied.has('vomitCount')} />
           </>
         ) : null}
 

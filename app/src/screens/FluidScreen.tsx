@@ -1,6 +1,8 @@
 import React, { useMemo, useState } from 'react';
-import { View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { Autocomplete } from '../components/Autocomplete';
+import { Icon } from '../components/Icons';
+import { useColors } from '../config/useTheme';
 import { defaultReminder, ReminderEditor } from '../components/ReminderEditor';
 import { ConfirmBox, DateStepper, Screen } from '../components/Screen';
 import { Button, Card, CatBadge, Choice, Field, H, Input, Note, T, useCurrentCat } from '../components/ui';
@@ -12,6 +14,7 @@ import { StockEditor } from '../components/StockEditor';
 
 export function FluidScreen({ back, editId }: { back: (msg?: string) => void; editId?: string }) {
   const { data, update } = useStore();
+  const c = useColors();
   const editing = editId ? data.fluids.find((f) => f.id === editId) : undefined;
   const current = useCurrentCat();
   const cat = editing ? data.cats.find((c) => c.id === editing.catId) : current;
@@ -27,6 +30,7 @@ export function FluidScreen({ back, editId }: { back: (msg?: string) => void; ed
   const [confirmBig, setConfirmBig] = useState(false);
   const [showReminder, setShowReminder] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showMore, setShowMore] = useState(!!editing);
 
   const past = useMemo(
     () => data.fluids.filter((f) => f.catId === cat?.id && f.id !== editId && (!editing || f.date + f.time < editing.date + editing.time)).sort((a, b) => (a.date + a.time < b.date + b.time ? 1 : -1)),
@@ -81,13 +85,21 @@ export function FluidScreen({ back, editId }: { back: (msg?: string) => void; ed
       </View>
 
       <Card style={{ marginTop: 16 }}>
-        <Field label="量" hint={prevMl ? `前回 ${prevMl.ml} mL（${shortDate(prevMl.date)}）` : TEXT.fluidAmountHint}>
+        <Field label="量（mL）" hint={prevMl ? `前回 ${prevMl.ml} mL（${shortDate(prevMl.date)}）` : TEXT.fluidAmountHint}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
             <Input value={mlText} onChangeText={setMlText} keyboardType="number-pad" placeholder="量" style={{ width: 160 }} />
             <T>mL</T>
           </View>
           {prevMl ? (
-            <Button kind="quiet" label="前回と同じ量を入れる" style={{ alignSelf: 'flex-start' }} onPress={() => setMlText(String(prevMl.ml))} />
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={`前回と同じ ${prevMl.ml} mL を入れる`}
+              onPress={() => setMlText(String(prevMl.ml))}
+              style={({ pressed }) => ({ alignSelf: 'flex-start', marginTop: 10, flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, minHeight: 44, borderRadius: 22, borderWidth: 2, borderStyle: 'dashed', borderColor: c.borderStrong, backgroundColor: pressed ? c.primaryTint : c.surface })}
+            >
+              <Icon name="fluid" size={20} />
+              <T bold>{prevMl.ml}</T>
+            </Pressable>
           ) : null}
         </Field>
 
@@ -97,6 +109,9 @@ export function FluidScreen({ back, editId }: { back: (msg?: string) => void; ed
           <Choice options={FLUID_SIDES.map((x) => ({ v: x, label: x }))} value={side} onChange={setSide} />
         </Field>
 
+        {/* よく使う「量」「部位」以外は、たたんでおく */}
+        {showMore || fluidName || state || memo ? (
+          <>
         <Field label="輸液の名前（任意）" hint={prevName ? `前回：${prevName.fluidName}（${shortDate(prevName.date)}）` : undefined}>
           <Autocomplete value={fluidName} onChangeText={setFluidName} suggestions={suggestions} render={(x) => ({ title: x, sub: FLUID_NAME_CANDIDATES.includes(x) ? '試作用の仮データ' : '前に入力した名前' })} onPick={setFluidName} placeholder="例：乳酸リンゲル液" />
           <T small sub style={{ marginTop: 6 }}>{TEXT.candidateListNote}</T>
@@ -112,6 +127,10 @@ export function FluidScreen({ back, editId }: { back: (msg?: string) => void; ed
         <Field label="メモ">
           <Input value={memo} onChangeText={setMemo} multiline />
         </Field>
+          </>
+        ) : (
+          <Button kind="quiet" label="＋ 輸液の名前・様子・メモ" onPress={() => setShowMore(true)} style={{ alignSelf: 'flex-start' }} />
+        )}
       </Card>
 
       {confirmBig ? (
@@ -125,7 +144,6 @@ export function FluidScreen({ back, editId }: { back: (msg?: string) => void; ed
       ) : (
         <>
           <Button label="保存する" onPress={save} disabled={!hasAny} />
-          {!hasAny ? <T small sub>1つ入力すると保存できます。</T> : null}
         </>
       )}
 

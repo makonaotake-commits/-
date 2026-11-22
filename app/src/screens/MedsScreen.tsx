@@ -22,6 +22,7 @@ export function MedsScreen({ back, go }: { back: (msg?: string) => void; go: (r:
   const hospitalMeds = data.meds.filter((m) => m.catId === cat?.id && m.kind === 'hospital');
   const [pending, setPending] = useState<{ med: Medication; result: MedResult; existing: MedRecord }>();
   const [memo, setMemo] = useState<Record<string, string>>({});
+  const [memoOpen, setMemoOpen] = useState<Record<string, boolean>>({});
   const [msg, setMsg] = useState<string>();
   const today = nowParts().date;
   const [hospDate, setHospDate] = useState<Record<string, string>>({});
@@ -87,7 +88,11 @@ export function MedsScreen({ back, go }: { back: (msg?: string) => void; go: (r:
                   <Button key={o.v} kind="secondary" label={o.label} onPress={() => tap(m, o.v)} style={{ flexGrow: 1, flexBasis: '45%' }} />
                 ))}
               </View>
-              <Input value={memo[m.id] ?? ''} onChangeText={(t) => setMemo({ ...memo, [m.id]: t })} placeholder="メモ（任意）" style={{ marginTop: 8 }} />
+              {memoOpen[m.id] || memo[m.id] ? (
+                <Input value={memo[m.id] ?? ''} onChangeText={(t) => setMemo({ ...memo, [m.id]: t })} placeholder="メモ" style={{ marginTop: 8 }} />
+              ) : (
+                <Button kind="quiet" label="＋ メモ" onPress={() => setMemoOpen({ ...memoOpen, [m.id]: true })} style={{ alignSelf: 'flex-start' }} />
+              )}
               {pending?.med.id === m.id && pending.existing.time ? (
                 <ConfirmBox
                   message={`${slotWord[slotOf(pending.existing.time)]} ${pending.existing.time} に「飲めた」と記録済みです。`}
@@ -109,7 +114,11 @@ export function MedsScreen({ back, go }: { back: (msg?: string) => void; go: (r:
             <Card key={m.id}>
               <T bold style={{ fontSize: 20 }}>{m.name}</T>
               <DateStepper date={hospDate[m.id] ?? today} onChange={(d) => setHospDate({ ...hospDate, [m.id]: d })} max={today} />
-              <Input value={memo[m.id] ?? ''} onChangeText={(t) => setMemo({ ...memo, [m.id]: t })} placeholder="メモ（任意）" style={{ marginTop: 8 }} />
+              {memoOpen[m.id] || memo[m.id] ? (
+                <Input value={memo[m.id] ?? ''} onChangeText={(t) => setMemo({ ...memo, [m.id]: t })} placeholder="メモ" style={{ marginTop: 8 }} />
+              ) : (
+                <Button kind="quiet" label="＋ メモ" onPress={() => setMemoOpen({ ...memoOpen, [m.id]: true })} style={{ alignSelf: 'flex-start' }} />
+              )}
               <Button kind="secondary" label="この日の処置として記録する" onPress={() => recordHospital(m)} />
             </Card>
           ))}

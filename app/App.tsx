@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, Text, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { T } from './src/components/ui';
+import { Icon, IconName } from './src/components/Icons';
 import { useAppFonts } from './src/config/loadFonts';
 import { fonts } from './src/config/theme';
 import { useColors, useQuiet, useScheme, useSizes } from './src/config/useTheme';
@@ -31,6 +32,8 @@ export type Route = {
   /** 日付（YYYY-MM-DD） */
   date?: string;
 };
+
+const TAB_ICON: Record<Tab, IconName> = { home: 'home', review: 'review', report: 'report', settings: 'settings' };
 
 const TABS: [Tab, string][] = [
   ['home', 'ホーム'],
@@ -192,9 +195,10 @@ function Main() {
               accessibilityRole="tab"
               accessibilityState={{ selected: on }}
               onPress={() => switchTab(k)}
-              style={{ flex: 1, minHeight: 64, alignItems: 'center', justifyContent: 'center', borderTopWidth: 4, borderTopColor: on ? c.primary : 'transparent' }}
+              style={{ flex: 1, minHeight: 64, alignItems: 'center', justifyContent: 'center', gap: 2, borderTopWidth: 4, borderTopColor: on ? c.primary : 'transparent' }}
             >
-              <Text style={{ fontFamily: on ? fonts.heading : fonts.headingMedium, fontSize: sizes.label, color: c.text }}>{label}</Text>
+              <Icon name={TAB_ICON[k]} size={26} />
+            <Text style={{ fontFamily: on ? fonts.heading : fonts.headingMedium, fontSize: sizes.small, color: c.text }}>{label}</Text>
             </Pressable>
           );
         })}

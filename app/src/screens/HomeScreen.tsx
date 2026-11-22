@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
-import { View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
+import { Icon, IconName } from '../components/Icons';
+import { fonts } from '../config/theme';
+import { useColors, useSizes } from '../config/useTheme';
 import { HomeScene } from '../components/HomeScene';
 import { NoticeLine } from '../components/NoticeLine';
 import { ConfirmBox, Screen } from '../components/Screen';
@@ -22,6 +25,8 @@ export function HomeScreen({ go }: { go: (r: Route) => void }) {
 
   const d = new Date();
   const today = `${d.getMonth() + 1}月${d.getDate()}日（${['日', '月', '火', '水', '木', '金', '土'][d.getDay()]}）`;
+  const c = useColors();
+  const z = useSizes();
 
   const addCat = () => {
     const n = name.trim();
@@ -83,9 +88,9 @@ export function HomeScreen({ go }: { go: (r: Route) => void }) {
 
   type Item = { id: string; kind: 'cond' | 'fluid' | 'med'; time: string; text: string };
   const items: Item[] = [
-    ...conds.map((c) => ({ id: c.id, kind: 'cond' as const, time: c.time, text: '体調の記録' + (c.weightKg !== undefined ? `（体重 ${c.weightKg.toFixed(2)} kg）` : '') })),
-    ...fluids.map((f) => ({ id: f.id, kind: 'fluid' as const, time: f.time, text: `補液 ${f.ml !== undefined ? f.ml + ' mL' : '（量の記録なし）'}${f.state ? '・' + labelOf(FLUID_STATE, f.state) : ''}` })),
-    ...medRecs.map((m) => ({ id: m.id, kind: 'med' as const, time: m.time ?? '', text: m.kind === 'hospital' ? `${m.medName}：病院での処置` : `${m.medName}：${labelOf(MED_RESULT, m.result)}` })),
+    ...conds.map((c) => ({ id: c.id, kind: 'cond' as const, time: c.time, text: '体調' + (c.weightKg !== undefined ? `　${c.weightKg.toFixed(2)} kg` : '') })),
+    ...fluids.map((f) => ({ id: f.id, kind: 'fluid' as const, time: f.time, text: `補液${f.ml !== undefined ? `　${f.ml} mL` : ''}` })),
+    ...medRecs.map((m) => ({ id: m.id, kind: 'med' as const, time: m.time ?? '', text: m.kind === 'hospital' ? `${m.medName}（病院）` : `${m.medName}　${labelOf(MED_RESULT, m.result)}` })),
   ].sort((a, b) => a.time.localeCompare(b.time));
 
   const remove = (it: Item) => {
@@ -98,80 +103,139 @@ export function HomeScreen({ go }: { go: (r: Route) => void }) {
     setDeleting(undefined);
   };
 
+  // 今日の一覧：予定（時刻）と記録をひとつにまとめ、アイコンと時刻で見せる
+  type Row = { key: string; time: string; icon: IconName; name: string; done: boolean; recId?: string; kind?: 'cond' | 'fluid' | 'med' };
+  const rows: Row[] = [];
+  plans.forEach((p, i) => rows.push({ key: 'p' + i, time: p.time, icon: p.label === '補液' ? 'fluid' : 'med', name: p.label, done: !!p.done }));
+  items.forEach((it) => rows.push({ key: it.id, time: it.time, icon: it.kind === 'cond' ? 'condition' : it.kind === 'fluid' ? 'fluid' : 'med', name: it.text, done: true, recId: it.id, kind: it.kind }));
+  rows.sort((a, b) => a.time.localeCompare(b.time));
+
+  const tiles: { icon: IconName; label: string; route: Route; done: boolean }[] = [
+    { icon: 'condition', label: '体調', route: { name: 'condition' }, done: conds.length > 0 },
+    { icon: 'fluid', label: '補液', route: { name: 'fluid' }, done: fluids.length > 0 },
+    { icon: 'med', label: 'お薬', route: { name: 'meds' }, done: medRecs.length > 0 },
+  ];
+
   return (
     <Screen>
-      <T small sub>{today}</T>
-      <HomeScene paused={!!cat?.paused} />
-      <H level={1}>今日の記録</H>
-      <CatSwitcher />
-      {adding ? addForm : <Button kind="quiet" label="＋ 猫を追加する" onPress={() => setAdding(true)} style={{ alignSelf: 'flex-start' }} />}
-      {saveFailed ? <Note>このブラウザでは記録を保存できませんでした。画面を閉じると記録は消えます（試作のため）。</Note> : null}
+      {/* 猫を選ぶ（顔のアイコン）・プロフィール・追加 */}
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+        <View style={{ flex: 1 }}>
+          <CatSwitcher />
+        </View>
+        {cat ? <RoundButton icon="settings" a11y={`${cat.name}ちゃんのプロフィール・お休み`} onPress={() => go({ name: 'catProfile', id: cat.id })} /> : null}
+        <RoundButton icon="plus" a11y="猫を追加する" onPress={() => setAdding(!adding)} />
+      </View>
+      {adding ? addForm : null}
+      {saveFailed ? <Note>このブラウザでは記録を保存できませんでした。</Note> : null}
 
       {endedPauses.map((c) => (
         <ConfirmCard3 key={c.id} cat={c} onResume={() => patchCat(c.id, { paused: undefined })} onKeep={() => patchCat(c.id, { paused: { ...c.paused!, until: undefined, askedAfterEnd: true } })} onArchive={() => patchCat(c.id, { archived: true })} />
       ))}
 
+      <HomeScene paused={!!cat?.paused} />
+      {/* 何をするアプリかを1行で */}
+      <T sub style={{ textAlign: 'center', marginTop: -4, marginBottom: 16 }}>腎臓病の猫との毎日を、ゆっくり記録する。</T>
+
       {cat ? (
         <>
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', columnGap: 16 }}>
-            <Button kind="quiet" label={`${cat.name}ちゃんのプロフィール・お休み ›`} onPress={() => go({ name: 'catProfile', id: cat.id })} />
-          </View>
-          {cat.nextVisit && cat.nextVisit >= date ? <T>次の通院：{Number(cat.nextVisit.slice(5, 7))}月{Number(cat.nextVisit.slice(8, 10))}日</T> : null}
-          {cat.paused ? <Note>{cat.name}ちゃんの通知は、お休みしています。記録はこれまでどおりできます。</Note> : null}
-          <View style={{ marginTop: 8 }}>
-            <Button label={`${cat.name}ちゃんの体調を記録する${conds.length ? '（今日の記録を開く）' : ''}`} onPress={() => go({ name: 'condition' })} style={{ minHeight: 72 }} />
-            <Button kind="secondary" label="補液を記録する" onPress={() => go({ name: 'fluid' })} style={{ minHeight: 72 }} />
-            <Button kind="secondary" label="お薬を記録する" onPress={() => go({ name: 'meds' })} style={{ minHeight: 72 }} />
+          {/* 今日の記録：大きな3つのボタン（アイコン＋1語）。記録した日は小さな印 */}
+          <View style={{ flexDirection: 'row', gap: 12 }}>
+            {tiles.map((t) => (
+              <Pressable
+                key={t.label}
+                accessibilityRole="button"
+                accessibilityLabel={`${cat.name}ちゃんの${t.label}を記録する${t.done ? '（今日の記録あり）' : ''}`}
+                onPress={() => go(t.route)}
+                style={({ pressed }) => ({
+                  flex: 1,
+                  aspectRatio: 0.95,
+                  borderRadius: 20,
+                  borderWidth: 2,
+                  borderColor: t.label === '体調' ? c.primary : c.borderStrong,
+                  backgroundColor: pressed ? c.primaryTint : t.label === '体調' ? c.primary : c.surface,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 6,
+                })}
+              >
+                <Icon name={t.icon} size={44} color={t.label === '体調' ? c.onPrimary : c.text} />
+                <Text style={{ fontFamily: fonts.heading, fontSize: z.heading, color: t.label === '体調' ? c.onPrimary : c.text }}>{t.label}</Text>
+                {t.done ? (
+                  <View style={{ position: 'absolute', top: 8, right: 8, width: 24, height: 24, borderRadius: 12, backgroundColor: t.label === '体調' ? c.onPrimary : c.primaryTint, alignItems: 'center', justifyContent: 'center' }}>
+                    <Icon name="check" size={16} color={t.label === '体調' ? c.primary : c.text} />
+                  </View>
+                ) : null}
+              </Pressable>
+            ))}
           </View>
 
-          <H>今日のケア予定</H>
-          <Card>
-            {plans.length === 0 ? (
-              <T sub>予定はありません。</T>
-            ) : (
-              plans.map((p, i) => (
-                <View key={i} style={{ flexDirection: 'row', gap: 12, paddingVertical: 6 }}>
-                  <T bold style={{ width: 64 }}>{p.time}</T>
-                  <View style={{ flex: 1 }}>
-                    <T>{p.label}</T>
-                    {p.done ? <T small sub>{p.done}</T> : null}
-                  </View>
-                </View>
-              ))
-            )}
-          </Card>
+          {/* 通院日・お休み中：小さな印だけ */}
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 14 }}>
+            {cat.nextVisit && cat.nextVisit >= date ? (
+              <Chip icon="visit" label={`通院 ${Number(cat.nextVisit.slice(5, 7))}/${Number(cat.nextVisit.slice(8, 10))}`} />
+            ) : null}
+            {cat.paused ? <Chip label="通知はお休み中" /> : null}
+          </View>
 
-          <H>今日つけた記録</H>
-          <Card>
-            {items.length === 0 ? (
-              <T sub>まだ記録はありません。</T>
-            ) : (
-              items.map((it) => (
-                <View key={it.id}>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-                    <T bold style={{ width: 64 }}>{it.time}</T>
-                    <T style={{ flex: 1 }}>{it.text}</T>
-                    <Button kind="quiet" label="消す" onPress={() => setDeleting(it.id)} />
+          {/* 今日：予定と記録を時刻順に（アイコン・時刻・名前だけ） */}
+          {rows.length > 0 ? (
+            <View style={{ marginTop: 20 }}>
+              <Text style={{ fontFamily: fonts.heading, fontSize: z.heading, color: c.text, marginBottom: 6 }}>{today}</Text>
+              {rows.map((r) => (
+                <View key={r.key}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 52, borderBottomWidth: 1, borderColor: c.border }}>
+                    <T bold style={{ width: 64 }}>{r.time}</T>
+                    <Icon name={r.icon} size={24} />
+                    <T style={{ flex: 1 }} small={!r.recId}>
+                      {r.name}
+                    </T>
+                    {r.done && !r.recId ? <Icon name="check" size={20} /> : null}
+                    {r.recId ? (
+                      <Pressable accessibilityRole="button" accessibilityLabel="この記録を消す" onPress={() => setDeleting(r.recId)} style={{ width: 44, height: 44, alignItems: 'center', justifyContent: 'center' }}>
+                        <T sub>×</T>
+                      </Pressable>
+                    ) : null}
                   </View>
-                  {it.kind === 'cond' ? <NoticeLineFor id={it.id} /> : null}
-                  {deleting === it.id ? (
-                    <ConfirmBox message="この記録を消しますか？" yes="消す" no="消さない" onYes={() => remove(it)} onNo={() => setDeleting(undefined)} />
+                  {r.kind === 'cond' && r.recId ? <NoticeLineFor id={r.recId} /> : null}
+                  {deleting === r.recId && r.recId ? (
+                    <ConfirmBox message="この記録を消しますか？" yes="消す" no="消さない" onYes={() => remove(items.find((x) => x.id === r.recId)!)} onNo={() => setDeleting(undefined)} />
                   ) : null}
                 </View>
-              ))
-            )}
-          </Card>
+              ))}
+            </View>
+          ) : null}
         </>
       ) : null}
 
       {!data.settings.dailyNoticeIntroShown && !data.settings.dailyNotice.enabled ? (
-        <Card>
-          <T small>設定すると、その日の体調の記録がないときに、決めた時刻にお知らせします（初めはオフ）。</T>
-          <Button kind="quiet" label="閉じる" onPress={() => update((x) => ({ ...x, settings: { ...x.settings, dailyNoticeIntroShown: true } }))} style={{ alignSelf: 'flex-start' }} />
-        </Card>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 20 }}>
+          <T small sub style={{ flex: 1 }}>記録がない日に、決めた時刻にお知らせすることもできます（設定）。</T>
+          <Pressable accessibilityRole="button" accessibilityLabel="この案内を閉じる" onPress={() => update((x) => ({ ...x, settings: { ...x.settings, dailyNoticeIntroShown: true } }))} style={{ width: 44, height: 44, alignItems: 'center', justifyContent: 'center' }}>
+            <T sub>×</T>
+          </Pressable>
+        </View>
       ) : null}
-
     </Screen>
+  );
+}
+
+function RoundButton({ icon, a11y, onPress }: { icon: IconName; a11y: string; onPress: () => void }) {
+  const c = useColors();
+  return (
+    <Pressable accessibilityRole="button" accessibilityLabel={a11y} onPress={onPress} style={({ pressed }) => ({ width: 48, height: 48, borderRadius: 24, borderWidth: 2, borderColor: c.borderStrong, backgroundColor: pressed ? c.primaryTint : c.surface, alignItems: 'center', justifyContent: 'center' })}>
+      <Icon name={icon} size={24} />
+    </Pressable>
+  );
+}
+
+function Chip({ icon, label }: { icon?: IconName; label: string }) {
+  const c = useColors();
+  return (
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 12, minHeight: 36, borderRadius: 18, backgroundColor: c.accentTint }}>
+      {icon ? <Icon name={icon} size={18} /> : null}
+      <T small>{label}</T>
+    </View>
   );
 }
 
