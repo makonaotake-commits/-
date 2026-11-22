@@ -167,10 +167,29 @@ export function Icon({ name, size = 28, color, fill }: { name: IconName; size?: 
 }
 
 /** 量の絵（食欲＝器の中身、飲水＝しずくの大きさ）。良し悪しの色は付けず、量だけを形で見せる */
-export function AmountPicture({ kind, level, size = 40, color }: { kind: 'bowl' | 'drop'; level: 0 | 1 | 2 | 3; size?: number; color?: string }) {
+export function AmountPicture({ kind, level, size = 40, color }: { kind: 'bowl' | 'drop' | 'eaten'; level: 0 | 1 | 2 | 3; size?: number; color?: string }) {
   const c = useColors();
   const k = color ?? c.text;
   const p = { stroke: k, strokeWidth: 1.8, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const };
+  if (kind === 'eaten') {
+    // 食べた量＝ひと口の山の数（0〜3）。0 は点線の丸だけ（何も食べていない）。器の残りの絵にはしない（ロシアン T-3）
+    if (level === 0) {
+      return (
+        <Svg width={size} height={size} viewBox="0 0 24 24">
+          <Circle cx={12} cy={14} r={6} {...p} fill="none" strokeDasharray="2 2.6" />
+        </Svg>
+      );
+    }
+    const xs = level === 1 ? [12] : level === 2 ? [8, 16] : [5, 12, 19];
+    return (
+      <Svg width={size} height={size} viewBox="0 0 24 24">
+        {xs.map((x) => (
+          <Path key={x} d={`M${x - 3.6} 18 Q${x} 9.5 ${x + 3.6} 18 Z`} {...p} fill={c.textSub} fillOpacity={0.55} />
+        ))}
+        <Line x1={2.5} y1={18.5} x2={21.5} y2={18.5} {...p} />
+      </Svg>
+    );
+  }
   if (kind === 'bowl') {
     // 0=空っぽ 1=少し 2=いつもくらい 3=山盛り（中身の量だけを形で見せる）
     const fills = ['', 'M6.5 18 Q12 15.5 17.5 18 Q16 20 12 20 Q8 20 6.5 18 Z', 'M3.6 14.5 Q12 12.5 20.4 14.5 Q19.5 20 12 20 Q4.5 20 3.6 14.5 Z', 'M3 12 Q12 4.5 21 12 Q20 20 12 20 Q4 20 3 12 Z'];

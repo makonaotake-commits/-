@@ -16,11 +16,12 @@ const CARDS = ['ごはん・元気', 'トイレ', '体重・メモ'];
 const CARD_ICONS: IconName[] = ['bowl', 'pee', 'scale'];
 
 // 選択肢の絵（量・しぐさを形で見せる。良し悪しの色は付けない）
+// 食欲は「食べた量」＝ひと口の山の数。器の残りの絵にはしない（空の器が「全部食べた」と読まれるため。ロシアン T-3）
 const PIC_APPETITE = {
-  none: <AmountPicture kind="bowl" level={0} size={48} />,
-  less: <AmountPicture kind="bowl" level={1} size={48} />,
-  usual: <AmountPicture kind="bowl" level={2} size={48} />,
-  more: <AmountPicture kind="bowl" level={3} size={48} />,
+  none: <AmountPicture kind="eaten" level={0} size={48} />,
+  less: <AmountPicture kind="eaten" level={1} size={48} />,
+  usual: <AmountPicture kind="eaten" level={2} size={48} />,
+  more: <AmountPicture kind="eaten" level={3} size={48} />,
 };
 const PIC_WATER = {
   less: <AmountPicture kind="drop" level={1} size={48} />,
@@ -199,7 +200,7 @@ export function ConditionScreen({ back, initialDate }: { back: (msg?: string) =>
         {card === 0 ? (
           <>
             <T small sub style={{ marginBottom: 12 }}>いつもとくらべて</T>
-            <ScaleQuestion icon="bowl" question="食欲" pictures={PIC_APPETITE} options={short(APPETITE, SHORT_APPETITE)} value={rec.appetite} onChange={(v) => set('appetite', v)} copied={copied.has('appetite')} />
+            <ScaleQuestion icon="bowl" question="食べた量" pictures={PIC_APPETITE} options={short(APPETITE, SHORT_APPETITE)} value={rec.appetite} onChange={(v) => set('appetite', v)} copied={copied.has('appetite')} />
             <ScaleQuestion icon="drop" question="お水" pictures={PIC_WATER} options={WATER} value={rec.water} onChange={(v) => set('water', v)} copied={copied.has('water')} />
             {showWaterMl || rec.waterMl !== undefined ? (
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: -12, marginBottom: 20 }}>
