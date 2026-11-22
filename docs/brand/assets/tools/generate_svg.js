@@ -152,7 +152,7 @@ const peekB=(c,v,{bg=true,line=SWI}={})=>{
 // f1：耳を内寄せ＋耳の内側の線、口を「人」の字、ひげを少し下向きに
 // f2：f1＋頭をほおの張った猫の形に（上が平ら気味・下が広い）、耳を頭の角に、目を縦長に
 // f3：f2＋ひげを口元（マズル）から出す、目に小さな光
-const peekCat=(c,v,{bg=true,line=SWI}={})=>{
+const peekCat=(c,v,{bg=true,line=SWI,hz=[6,94]}={})=>{
  const L=(extra="")=>`fill="none" stroke="${c.ink}" stroke-width="${line}" stroke-linecap="round" stroke-linejoin="round" ${extra}`;
  const f1=v==="f1";
  const ears=f1
@@ -171,8 +171,31 @@ const peekCat=(c,v,{bg=true,line=SWI}={})=>{
   <g id="tail"><path d="M83 77 C96 76 97 60 89 55" fill="none" stroke="${c.ink}" stroke-width="${line*2.6}" stroke-linecap="round"/></g>
   <g id="head">${ears}<path d="${headD} Z" fill="${c.surface}"/><path d="${headD}" ${L(G("60 7 33"))}/>${eyes}${nose}${mouth}
   <path d="${wl}" ${L(`stroke-width="${line*0.62}"`)}/></g>
-  <path d="M6 78 H94" ${L()}/><path d="M33 78 q5 -6 10 0 M57 78 q5 -6 10 0" fill="${c.surface}" ${L()}/>`;
+  <path d="M${hz[0]} 78 H${hz[1]}" ${L()}/><path d="M33 78 q5 -6 10 0 M57 78 q5 -6 10 0" fill="${c.surface}" ${L()}/>`;
 };
+// ---- 確定版（2026-11-22）：アイコン f2「縁から見上げる」＋ロゴ（水平線つき・同じ顔）----
+const FINAL=[];
+{
+ const L=PAL.light, D=PAL.dark;
+ // iOS / Expo icon：1024 角・不透明・角丸なし（角丸は OS がかける）
+ FINAL.push(["icon/app_icon_1024.svg",wrap("0 0 100 100","ねこと、ゆっくり アプリアイコン",peekCat(L,"f2"))]);
+ // Android アダプティブ：108dp のキャンバス。見える範囲は中央 72dp、セーフゾーンは直径 66dp の円。
+ // 猫（耳〜前足・しっぽ）をセーフゾーンに収め、水平線だけはキャンバスの端まで伸ばす（マスクで切れてよい）
+ const fg=(c)=>`<g transform="translate(54 56) scale(0.66) translate(-56 -60)">${peekCat(c,"f2",{bg:false,hz:[-40,152]})}</g>`;
+ FINAL.push(["icon/android_adaptive_foreground.svg",wrap("0 0 108 108","アダプティブアイコン 前景",fg(L))]);
+ FINAL.push(["icon/android_adaptive_background.svg",wrap("0 0 108 108","アダプティブアイコン 背景",`<rect width="108" height="108" fill="${L.bg}"/>`)]);
+ // Android 13 以降のテーマアイコン用（単色）。同じ形を 1 色で
+ const mono={...L,ink:"#000000",surface:"#FFFFFF00"};
+ FINAL.push(["icon/android_adaptive_monochrome.svg",wrap("0 0 108 108","アダプティブアイコン 単色",fg(mono))]);
+ // 通知の小さなアイコン（Android）：白一色・透過。線では細すぎるので、頭と耳を塗りつぶし、目を抜く
+ FINAL.push(["icon/notification_icon.svg",wrap("0 0 96 96","通知アイコン",`<defs><mask id="eyes"><rect width="96" height="96" fill="#fff"/><ellipse cx="38" cy="52" rx="5" ry="6.4" fill="#000"/><ellipse cx="58" cy="52" rx="5" ry="6.4" fill="#000"/><path d="M44.5 61 H51.5 L48 65 Z" fill="#000"/></mask></defs>
+  <g mask="url(#eyes)" fill="#FFFFFF"><path d="M16 74 C16 52 28 40 48 40 C68 40 80 52 80 74 Z"/><path d="M18 58 Q16 34 22 22 Q34 28 40 41 Z"/><path d="M78 58 Q80 34 74 22 Q62 28 56 41 Z"/></g>
+  <path d="M8 80 H88" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round"/>`)]);
+ // ロゴマーク（水平線つき・f2 の顔）明・暗
+ for(const [m,c] of [["light",L],["dark",D]]) FINAL.push([`logo/logo_mark_${m}.svg`,wrap("2 30 96 52","ねこと、ゆっくり ロゴマーク",peekCat(c,"f2",{bg:false}))]);
+ // スプラッシュ：透過の画像を中央に置き、背景色は app.json で指定（明 #FBF5EA／暗 #1F1A14）
+ for(const [m,c] of [["light",L],["dark",D]]) FINAL.push([`splash/splash_${m}.svg`,wrap("-30 0 160 110","ねこと、ゆっくり スプラッシュ",peekCat(c,"f2",{bg:false}))]);
+}
 const GUIDE=c=>`<path d="M2 40 H20 M26 40 H62" ${A(c)}/>${tail(c,"M44 39 C54 38 56 30 52 26")}${furHead(c,{cx:30,cy:40,r:14,half:true,dash:"58 8 34",earsSvg:ears(c,30,34),eyesSvg:eyesF(c,30,31)})}<path d="M19 40 q3 -4 6 0 M35 40 q3 -4 6 0" ${A(c)}/>`;
 (async()=>{
  const b=await chromium.launch();const p=await b.newPage();
@@ -194,6 +217,7 @@ const GUIDE=c=>`<path d="M2 40 H20 M26 40 H62" ${A(c)}/>${tail(c,"M44 39 C54 38 
  for(const v of ["f1","f2","f3"]) files.push([`light/icon/icon_peek_${v}.svg`,wrap("0 0 100 100",`アイコン B（縁から見上げる・猫らしさ修正 ${v}）`,peekCat(PAL.light,v))]);
  // ロゴ（水平線つき）を B の顔・耳・ひげにそろえた版。ひげは w2s（小さくしてもつぶれにくい）
  for(const mode of ["light","dark"]) files.push([`${mode}/logo/logo_mark_horizon_v2.svg`,wrap("2 30 96 52","ねこと、ゆっくり ロゴマーク（水平線つき・見上げる猫）",peekB(PAL[mode],"w2s",{bg:false}))]);
+ for(const [f,x] of FINAL) files.push([`../final/${f}`,x]);
  // pathLength 基準のすきまを、実寸のダッシュに直す（react-native-svg で pathLength に頼らないため）
  for(const f of files){
   f[1]=await p.evaluate(src=>{document.body.innerHTML=src;const s=document.body.firstElementChild;
