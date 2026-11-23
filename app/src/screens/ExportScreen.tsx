@@ -20,7 +20,7 @@ export function buildCsv(data: Data, kind: 'condition' | 'fluid' | 'med', catId:
   const catName = (id: string) => data.cats.find((c) => c.id === id)?.name ?? '';
   const pick = <T extends { catId: string }>(xs: T[]) => xs.filter((x) => catId === 'all' || x.catId === catId);
   if (kind === 'condition') {
-    const head = ['猫', '日付', '時刻', '食欲', '飲水', '飲水(mL)', '尿(回)', '尿の塊', '嘔吐(回)', '便(回)', '便の状態', '元気さ', '体重(kg)', '前回からコピーした項目', 'メモ'];
+    const head = ['猫', '日付', '時刻', '食べた量', '飲水', '飲水(mL)', '尿(回)', '尿の塊', '嘔吐(回)', '便(回)', '便の状態', '元気さ', '体重(kg)', '前回からコピーした項目', 'メモ'];
     const body = pick(data.conditions)
       .sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time))
       .map((c) =>

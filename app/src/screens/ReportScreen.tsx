@@ -160,7 +160,7 @@ export function ReportScreen({ catId, onBack }: { catId?: string; onBack?: () =>
       <ScrollView horizontal style={{ marginVertical: 8 }}>
         <View style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 8, overflow: 'hidden' }}>
           <View style={{ flexDirection: 'row' }}>
-            {['日付', '食欲', '飲水', '尿', '嘔吐', '便', '元気さ', '体重'].map((h, i) => (
+            {['日付', '食べた量', '飲水', '尿', '嘔吐', '便', '元気さ', '体重'].map((h, i) => (
               <Cell key={h} head w={i === 0 ? 72 : i === 1 || i === 6 ? 128 : 104}>{h}</Cell>
             ))}
           </View>

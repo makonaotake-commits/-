@@ -16,7 +16,7 @@ const WD = ['日', '月', '火', '水', '木', '金', '土'];
 
 function conditionSummary(c: ConditionRecord) {
   const parts: string[] = [];
-  if (c.appetite) parts.push(`食欲：${labelOf(APPETITE, c.appetite)}`);
+  if (c.appetite) parts.push(`食べた量：${labelOf(APPETITE, c.appetite)}`);
   if (c.water || c.waterMl !== undefined) parts.push(`飲水：${labelOf(WATER, c.water) ?? ''}${c.waterMl !== undefined ? ` ${c.waterMl} mL` : ''}`);
   if (c.urineCount !== undefined) parts.push(`尿 ${c.urineCount}回`);
   if (c.vomitCount !== undefined) parts.push(`嘔吐 ${c.vomitCount}回`);

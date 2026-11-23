@@ -166,17 +166,18 @@ export function Icon({ name, size = 28, color, fill }: { name: IconName; size?: 
   );
 }
 
-/** 量の絵（食欲＝器の中身、飲水＝しずくの大きさ）。良し悪しの色は付けず、量だけを形で見せる */
+/** 量の絵（食べた量＝ひと口の山の数（eaten）、飲水＝しずくの大きさ）。良し悪しの色は付けず、量だけを形で見せる */
 export function AmountPicture({ kind, level, size = 40, color }: { kind: 'bowl' | 'drop' | 'eaten'; level: 0 | 1 | 2 | 3; size?: number; color?: string }) {
   const c = useColors();
   const k = color ?? c.text;
   const p = { stroke: k, strokeWidth: 1.8, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const };
   if (kind === 'eaten') {
-    // 食べた量＝ひと口の山の数（0〜3）。0 は点線の丸だけ（何も食べていない）。器の残りの絵にはしない（ロシアン T-3）
+    // 食べた量＝ひと口の山の数（0〜3）。0 は平らな線だけ（山がない）。器の残りの絵にはしない（ロシアン T-3）
+    // 点線は「前回の内容（下書き）」の印にだけ使うので、ここでは使わない（ロシアン T-5）
     if (level === 0) {
       return (
         <Svg width={size} height={size} viewBox="0 0 24 24">
-          <Circle cx={12} cy={14} r={6} {...p} fill="none" strokeDasharray="2 2.6" />
+          <Line x1={2.5} y1={18.5} x2={21.5} y2={18.5} {...p} />
         </Svg>
       );
     }

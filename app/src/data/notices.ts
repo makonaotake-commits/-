@@ -21,7 +21,7 @@ export type Notices = { enabled: boolean; conditions: NoticeCondition[] };
 
 /** 記録画面と同じ並び */
 export const NOTICE_ITEMS: { v: NoticeItem; label: string; kind: 'level' | 'count' | 'number'; options?: readonly { v: string; label: string }[] }[] = [
-  { v: 'appetite', label: '食欲', kind: 'level', options: APPETITE },
+  { v: 'appetite', label: '食べた量', kind: 'level', options: APPETITE },
   { v: 'water', label: '飲水', kind: 'level', options: WATER },
   { v: 'urineCount', label: '尿の回数', kind: 'count' },
   { v: 'urineClump', label: '尿の塊の大きさ', kind: 'level', options: URINE_CLUMP },
