@@ -44,3 +44,4 @@
 - [猫らしい顔 確認シート](icon_cat_face.html)（[公開ページ](https://claude.ai/artifact/J4834Vi9X13V3zAhi6qDZh)）
 - [案内役の顔 確認シート](guide_face.html)（[公開ページ](https://claude.ai/artifact/JxxKjb2reBhiB42VkTdaxK)）
 - [新しい体験の方向 確認シート](new_experience.html)（[公開ページ](https://claude.ai/artifact/XqTy5thagFjsL3RNxVixrC)）
+- [体験の見本から選ぶ 確認シート](exp_pick.html)（[公開ページ](https://claude.ai/artifact/C5sZiTxYaXSax4Q3k93B4G)）
