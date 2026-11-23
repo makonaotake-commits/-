@@ -121,6 +121,7 @@ export function buildReportHtml(data: Data, cat: Cat, from: string, to: string, 
 <h2>体調の一覧</h2>
 <p class="small">体調を記録した日：${conds.filter(Boolean).length}/${ds.length}日</p>
 <table><thead><tr><th>日付</th><th>食べた量</th><th>飲水</th><th>尿</th><th>嘔吐</th><th>便</th><th>元気さ</th><th>体重</th></tr></thead><tbody>${rows}</tbody></table>
+<p class="small">${esc(TEXT.reportRelativeNote)}</p>
 <p>尿：${sum('urineCount')}<br>嘔吐：${sum('vomitCount')}<br>便：${sum('stoolCount')}</p>
 <p class="small">「${NR}」は記録がないこと、「0回」は 0回と記録したことを表します。</p>
 

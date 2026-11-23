@@ -181,6 +181,7 @@ export function ReportScreen({ catId, onBack }: { catId?: string; onBack?: () =>
           })}
         </View>
       </ScrollView>
+      <T small sub>{TEXT.reportRelativeNote}</T>
       <Card>
         <T>尿：{sumWithDays(conds, 'urineCount', days.length)}</T>
         <T>嘔吐：{sumWithDays(conds, 'vomitCount', days.length)}</T>

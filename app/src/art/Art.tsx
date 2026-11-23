@@ -18,13 +18,16 @@ function transform(xml: string, opts: { squint: boolean; part: ArtPart }) {
   if (opts.squint) {
     // 目を細める：<g id="eyes"> の中の楕円（または以前の素材の r="2" の丸）を、同じ位置のゆるい弧にする
     // （#head の中に <g id="eyes"> が入れ子になったため、#head ではなく #eyes を直接置き換える。ペルシャ da0706e）
-    const toArc = (cx: string, cy: string, col: string) => {
+    // 弧の幅＝目の楕円の幅の約1.2倍（rx × 2.4）、高さ＝幅の約0.35倍、線の太さ 1.4（ペルシャ 2026-11-23）
+    const toArc = (cx: string, cy: string, col: string, rx = 2.08) => {
       const x = Number(cx);
       const y = Number(cy);
-      return `<path d="M${x - 2.5} ${y + 0.5} Q${x} ${y - 1.5} ${x + 2.5} ${y + 0.5}" fill="none" stroke="${col}" stroke-width="1.6" stroke-linecap="round"></path>`;
+      const half = (rx * 2.4) / 2;
+      const h = rx * 2.4 * 0.35;
+      return `<path d="M${x - half} ${y + h / 2} Q${x} ${y - h * 1.5} ${x + half} ${y + h / 2}" fill="none" stroke="${col}" stroke-width="1.4" stroke-linecap="round"></path>`;
     };
     s = s.replace(/<g id="eyes">([\s\S]*?)<\/g>/, (_m, inner: string) =>
-      `<g id="eyes">${inner.replace(/<ellipse cx="([\d.]+)" cy="([\d.]+)"[^>]*?fill="(#[0-9A-Fa-f]+)"[^>]*><\/ellipse>/g, (_x, cx: string, cy: string, col: string) => toArc(cx, cy, col))}</g>`,
+      `<g id="eyes">${inner.replace(/<ellipse cx="([\d.]+)" cy="([\d.]+)" rx="([\d.]+)"[^>]*?fill="(#[0-9A-Fa-f]+)"[^>]*><\/ellipse>/g, (_x, cx: string, cy: string, rx: string, col: string) => toArc(cx, cy, col, Number(rx)))}</g>`,
     );
     s = s.replace(/<circle cx="([\d.]+)" cy="([\d.]+)" r="2" fill="(#[0-9A-Fa-f]+)"><\/circle>/g, (_x, cx: string, cy: string, col: string) => toArc(cx, cy, col));
   }
