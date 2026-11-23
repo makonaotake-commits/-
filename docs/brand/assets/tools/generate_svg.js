@@ -263,8 +263,8 @@ const room={
 };
 // 猫を置く場所（部屋の座標）。猫のしぐさ SVG（120×80）の「地面の中央（60,80）」をこの点に合わせ、scale 倍で置く
 const ROOM_SPOTS={scale:1.0,
- bed:{x:72,y:196,pose:"bed"}, window:{x:72,y:192,pose:"window"}, food:{x:150,y:196,pose:"eat",front:"bowl_food"},
- water:{x:196,y:196,pose:"eat",front:"bowl_water"}, toilet:{x:292,y:194,pose:"sit",front:"toilet_front"}, walk:{x:240,y:200,pose:"walk"}};
+ bed:{x:72,y:196,pose:"bed"}, window:{x:72,y:192,pose:"window"}, food:{x:153,y:196,pose:"sit",front:"bowl_food"},
+ water:{x:199,y:196,pose:"sit",front:"bowl_water"}, toilet:{x:292,y:194,pose:"sit",front:"toilet_front"}, walk:{x:240,y:200,pose:"walk"}};
 // カード（160×120）：1問1枚の絵柄。良し悪しを示さない、ただの「もの」の絵
 const CARDS={
  food:c=>`<path d="M20 100 H140" ${A(c)} stroke-opacity=".6"/><g transform="translate(-164.8 -220) scale(1.6)">${room.bowl_food(c)}</g>`,
@@ -275,10 +275,19 @@ const CARDS={
 // 絵日記（200×140）の1コマ。枠（すきまのある角丸）＋場面
 const DIARY_FRAME=c=>`<rect x="4" y="4" width="192" height="132" rx="10" fill="${c.surface}"/><rect x="4" y="4" width="192" height="132" rx="10" ${A(c,G("40 4 56"))}/>`;
 const DIARY={
- meal:c=>`${DIARY_FRAME(c)}<path d="M16 116 H184" ${A(c)} stroke-opacity=".6"/><g transform="translate(-96 -84)">${room.bowl_food(c)}</g><g transform="translate(12 38) scale(0.95)">${CAT.sit(c)}</g>`,
- drink:c=>`${DIARY_FRAME(c)}<path d="M16 116 H184" ${A(c)} stroke-opacity=".6"/><g transform="translate(40 40) scale(0.95)">${CAT.eat(c)}</g><g transform="translate(-124 -84)">${room.bowl_water(c)}</g>`,
+ meal:c=>`${DIARY_FRAME(c)}<path d="M16 116 H184" ${A(c)} stroke-opacity=".6"/><g transform="translate(-14 -84)">${room.bowl_food(c)}</g><g transform="translate(20 38) scale(0.95)">${CAT.sit(c)}</g>`,
+ drink:c=>`${DIARY_FRAME(c)}<path d="M16 116 H184" ${A(c)} stroke-opacity=".6"/><g transform="translate(-60 -84)">${room.bowl_water(c)}</g><g transform="translate(20 38) scale(0.95)">${CAT.sit(c)}</g>`,
  rest:c=>`${DIARY_FRAME(c)}<g transform="translate(28 -82)">${room.bed(c)}</g><g transform="translate(41 34) scale(0.95)">${CAT.bed(c)}</g>`,
  window:c=>`${DIARY_FRAME(c)}<g transform="translate(15 -12)">${room.window(c,"noon")}</g><path d="M16 116 H184" ${A(c)} stroke-opacity=".6"/><g transform="translate(39 38) scale(0.95)">${CAT.window(c)}</g>`,
+};
+// 絵日記のコマの隅に置く、記録した項目の小さなアイコン（24×24）。場面の絵とは別に、事実として「記録した項目」だけを示す
+const ITEM={
+ food:c=>`<path d="M4 12 H20 L18 18 H6 Z" ${A(c)}/><circle cx="9" cy="10.4" r="1" fill="${c.ink}"/><circle cx="12" cy="10" r="1" fill="${c.ink}"/><circle cx="15" cy="10.4" r="1" fill="${c.ink}"/>`,
+ water:c=>`<path d="M12 4 C9 9 7.5 11.5 7.5 14 a4.5 4.5 0 0 0 9 0 C16.5 11.5 15 9 12 4 Z" ${A(c)}/>`,
+ toilet:c=>`<path d="M4 18 V11 H20 V18 Z" ${A(c)}/><path d="M7 14 h1 M11 15 h1 M15 14 h1" ${A(c)}/>`,
+ energy:c=>`<path d="M6 12 Q5.5 5 7.5 4 Q10 6 10.5 8.5 M13.5 8.5 Q14 6 16.5 4 Q18.5 5 18 12" ${A(c)}/><path d="M5.6 13 C5.6 9.6 8 8 12 8 C16 8 18.4 9.6 18.4 13 C18.4 17 15.5 19.5 12 19.5 C8.5 19.5 5.6 17 5.6 13 Z" ${A(c)}/><circle cx="9.6" cy="12.6" r="1" fill="${c.ink}"/><circle cx="14.4" cy="12.6" r="1" fill="${c.ink}"/>`,
+ fluid:c=>`<path d="M9 4 H15 M10 4 V12 L8 18 H16 L14 12 V4" ${A(c)}/>`,
+ med:c=>`<rect x="4" y="9" width="16" height="7" rx="3.5" ${A(c)}/><path d="M12 9 V16" ${A(c)}/>`,
 };
 // 話しかける猫（80×80）：どの質問でも同じおだやかな顔。ふきだしは別ファイル（文字はアプリ側で入れる）
 const TALK=c=>`${catHead(c,{cx:40,cy:46,r:22})}<path d="M22 76 q4 -6 8 0 M50 76 q4 -6 8 0" fill="${c.surface}" ${A(c)}/><path d="M6 77 H74" ${A(c)}/>`;
@@ -296,7 +305,7 @@ const PET={
   for(const fur of FURS){ FUR=fur; const sfx=fur==="white"?"":`_${fur}`;
    files.push([`${mode}/guide/guide_peek${sfx}.svg`,wrap("0 12 64 32","案内役（縁からのぞく）",GUIDE(c))]);
    for(const [k,[l,f]] of Object.entries(POSES)) files.push([`${mode}/poses/pose_${k}${sfx}.svg`,wrap("0 10 120 80",l,f(c))]);
-   for(const [k,f] of Object.entries(CAT)) if(!["sit","window"].includes(k)) files.push([`${mode}/room/cat_${k}${sfx}.svg`,wrap("0 10 120 80",`猫（${k}）`,f(c))]);
+   for(const [k,f] of Object.entries(CAT)) if(!["sit","window","eat"].includes(k)) files.push([`${mode}/room/cat_${k}${sfx}.svg`,wrap("0 10 120 80",`猫（${k}）`,f(c))]);
    files.push([`${mode}/cards/card_energy${sfx}.svg`,wrap("0 0 160 120","カード：元気さ",CARDS.energy(c))]);
    for(const [k,f] of Object.entries(DIARY)) files.push([`${mode}/diary/diary_${k}${sfx}.svg`,wrap("0 0 200 140",`絵日記：${k}`,f(c))]);
    files.push([`${mode}/talk/talk_face${sfx}.svg`,wrap("0 0 80 80","話しかける猫",TALK(c))]);
@@ -309,6 +318,7 @@ const PET={
   for(const k of ["floor","bed","bowl_food","bowl_water","toilet_back","toilet_front"]) files.push([`${mode}/room/${k}.svg`,wrap("0 0 360 240",k,room[k](c))]);
   for(const k of ["food","water","toilet"]) files.push([`${mode}/cards/card_${k}.svg`,wrap("0 0 160 120",`カード：${k}`,CARDS[k](c))]);
   files.push([`${mode}/talk/bubble.svg`,wrap("0 0 200 80","ふきだし",BUBBLE(c))]);
+  for(const [k,f] of Object.entries(ITEM)) files.push([`${mode}/diary/item_${k}.svg`,wrap("0 0 24 24",`記録した項目：${k}`,f(c))]);
   for(const [k,[l,f]] of Object.entries(SEASONS)) files.push([`${mode}/seasons/season_${k}.svg`,wrap("0 0 76 60",l,f(c))]);
   for(const [k,[l,f]] of Object.entries(DAY)) files.push([`${mode}/daypart/daypart_${k}.svg`,wrap("0 0 76 48",l,f(c))]);
   for(const [k,[l,vb,f]] of Object.entries(LOGO)) files.push([`${mode}/logo/${k}.svg`,wrap(vb,l,f(c))]);
