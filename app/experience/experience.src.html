@@ -491,7 +491,7 @@ function renderDeck() {
     pips.append(h(`<i class="${i < cardIdx ? 'on' : ''}"></i>`));
     if (i < cardIdx - 1 || i > cardIdx + 2) return;
     const CARD_ART = { appetite: 'card_food', water: 'card_water', pee: 'card_toilet', poop: 'card_toilet', energy: 'card_energy' };
-    const c = h(`<div class="card" style="z-index:${10 - i}"><div class="big"><div style="width:62%">${art(CARD_ART[q.k])}</div></div></div>`);
+    const c = h(`<div class="card" style="z-index:${10 - i}"><div class="big"><div style="width:92%">${art(CARD_ART[q.k])}</div></div></div>`);
     const qe = questionEl(q, { onPick: (k, v) => { setRec(k, v); bell(); flick(c, 'gone'); } });
     qe.querySelector('.qt').remove();
     const head = h(`<div class="qt">${q.title}</div>`);
