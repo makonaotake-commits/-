@@ -2,7 +2,7 @@
 // 案内役の毛色は、素材のファイル（毛色ごと）を読み分ける。
 import React from 'react';
 import { SvgXml } from 'react-native-svg';
-import { useScheme } from '../config/useTheme';
+import { useColors, useScheme } from '../config/useTheme';
 import type { FurColor } from '../data/store';
 import { ART, ArtName } from './artData';
 
@@ -49,4 +49,11 @@ export function Art({ name, width, fur = 'white', squint = false, part = 'all' }
 export function artSize(name: ArtName, width: number) {
   const vb = /viewBox="([\d.\s-]+)"/.exec(ART.light[name])?.[1].split(/\s+/).map(Number) ?? [0, 0, 1, 1];
   return { width, height: (width * vb[3]) / vb[2], viewBox: vb };
+}
+
+/** 答えの絵（ペルシャの清書。食べた量＝山の数 0〜3、お水＝しずくの数 1〜3）。線は文字の色で描く */
+export function AnswerArt({ kind, level, size = 48 }: { kind: 'food' | 'water'; level: 0 | 1 | 2 | 3; size?: number }) {
+  const c = useColors();
+  const xml = (ART.light as Record<string, string>)[`answer_${kind}_${level}`];
+  return <SvgXml xml={xml} width={size} height={size} color={c.text} />;
 }

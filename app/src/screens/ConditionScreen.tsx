@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { Pressable, View } from 'react-native';
 import { CountQuestion, ScaleQuestion } from '../components/QuizInputs';
 import { AmountPicture, Icon, IconName } from '../components/Icons';
-import { Art } from '../art/Art';
+import { AnswerArt, Art } from '../art/Art';
 import Svg, { Circle } from 'react-native-svg';
 import { DateStepper, Screen } from '../components/Screen';
 import { useColors } from '../config/useTheme';
@@ -16,17 +16,18 @@ const CARDS = ['ごはん・元気', 'トイレ', '体重・メモ'];
 const CARD_ICONS: IconName[] = ['bowl', 'pee', 'scale'];
 
 // 選択肢の絵（量・しぐさを形で見せる。良し悪しの色は付けない）
+// 答えの絵はペルシャの清書（ロシアン OK 4d7b192）。お水はしずくの「数」（大きさだと「大きいほどよい」と読まれやすい）。絵の下の言葉と「いつもとくらべて」は必ず残す。
 // 食欲は「食べた量」＝ひと口の山の数。器の残りの絵にはしない（空の器が「全部食べた」と読まれるため。ロシアン T-3）
 const PIC_APPETITE = {
-  none: <AmountPicture kind="eaten" level={0} size={48} />,
-  less: <AmountPicture kind="eaten" level={1} size={48} />,
-  usual: <AmountPicture kind="eaten" level={2} size={48} />,
-  more: <AmountPicture kind="eaten" level={3} size={48} />,
+  none: <AnswerArt kind="food" level={0} />,
+  less: <AnswerArt kind="food" level={1} />,
+  usual: <AnswerArt kind="food" level={2} />,
+  more: <AnswerArt kind="food" level={3} />,
 };
 const PIC_WATER = {
-  less: <AmountPicture kind="drop" level={1} size={48} />,
-  usual: <AmountPicture kind="drop" level={2} size={48} />,
-  more: <AmountPicture kind="drop" level={3} size={48} />,
+  less: <AnswerArt kind="water" level={1} />,
+  usual: <AnswerArt kind="water" level={2} />,
+  more: <AnswerArt kind="water" level={3} />,
 };
 const picEnergy = (fur: FurColor) => ({
   less: <Art name="pose_loaf" width={84} fur={fur} />,

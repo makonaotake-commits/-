@@ -14,6 +14,13 @@ for (const scheme of ['light', 'dark']) {
     }
   }
 }
+// 答えの絵（食べた量・お水。currentColor なので明・暗で同じファイル。docs/brand/assets/svg/answers/）
+for (const scheme of ['light', 'dark']) {
+  const dir = path.join(SRC, 'answers');
+  for (const f of fs.readdirSync(dir).filter((x) => x.endsWith('.svg')).sort()) {
+    out[scheme][f.replace(/\.svg$/, '')] = fs.readFileSync(path.join(dir, f), 'utf8').trim();
+  }
+}
 // ロゴ（確定データ。docs/brand/assets/final/logo/）。設定の「このアプリについて」で使う
 for (const scheme of ['light', 'dark']) {
   out[scheme].logo_mark = fs.readFileSync(path.join(SRC, '..', 'final', 'logo', `logo_mark_${scheme}.svg`), 'utf8').trim();
