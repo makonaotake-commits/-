@@ -234,9 +234,16 @@ const GUIDE=c=>`<path d="M2 40 H20 M26 40 H62" ${A(c)}/>${tail(c,"M44 39 C54 38 
 // 気持ち：落ち着く・安心する。静けさと余白を優先。答えの絵のルール（表情・色で良し悪しを付けない）を守る。
 // 「寝ている」場面は、横たわって目を閉じた姿にしない（brand_guide §5-2）。寝床で丸まって、目を開けてくつろぐ姿にする。
 const EXTRA_NIGHT={light:"#3A3229",dark:"#14110D"}, EXTRA_EVE={light:"#F0D2A8",dark:"#4A3826"};
+// 歩くしぐさ：体・頭・しっぽは同じで、脚だけ3コマで変える（0→1→2→1→0… の順に 0.25 秒ずつが目安）
+const WALK=(c,f)=>{const legs=[
+ "M44 70 L40 80 M52 71 L55 80 M76 71 L73 80 M84 69 L88 80",
+ "M44 70 L44 80 M52 71 L51 80 M76 71 L77 80 M84 69 L84 80",
+ "M44 70 L48 80 M52 71 L47 80 M76 71 L81 80 M84 69 L80 80"][f];
+ return `${tail(c,"M88 58 C98 52 100 40 94 34")}<path d="M38 58 C48 52 74 52 88 58 C90 64 88 68 84 70 C70 73 52 73 40 70" ${A(c)}/><path d="${legs}" ${A(c)}/>${catHead(c,{cx:34,cy:50,r:12})}`;};
 const CAT={ // 猫のしぐさ（120×80、地面 y=80。#head・#tail・#eyes の id は従来どおり）
- walk:c=>`${tail(c,"M88 58 C98 52 100 40 94 34")}<path d="M38 58 C48 52 74 52 88 58 C90 64 88 68 84 70 C70 73 52 73 40 70" fill="none" ${A(c).replace('fill="none" ','')}/>
-  <path d="M44 70 L40 80 M52 71 L55 80 M76 71 L73 80 M84 69 L88 80" ${A(c)}/>${catHead(c,{cx:34,cy:50,r:12})}`,
+walk:c=>WALK(c,0),
+ walk2:c=>WALK(c,1),
+ walk3:c=>WALK(c,2),
  eat:c=>`${tail(c,"M92 78 C100 78 102 70 97 66")}<path d="M34 80 C34 66 46 60 62 60 C80 60 92 68 92 80" ${A(c,G("48 6 46"))}/>${catHead(c,{cx:40,cy:62,r:12})}`,
  bed:c=>`${tail(c,"M94 78 C102 78 104 70 99 66")}<path d="M30 80 C30 62 44 54 62 54 C82 54 94 64 94 80" ${A(c,G("48 6 46"))}/>${catHead(c,{cx:42,cy:52,r:13})}`,
  sit:c=>POSES.sit[1](c), window:c=>POSES.window[1](c),
@@ -259,6 +266,8 @@ const room={
  bowl_food:c=>`<path d="M136 190 H170 L166 200 H140 Z" fill="${c.surface}" ${A(c)}/><path d="M139 197 H167" stroke="${c.ink}" stroke-width="${SW*2}" stroke-linecap="round"/><circle cx="146" cy="188" r="1.6" fill="${c.ink}"/><circle cx="152" cy="187" r="1.6" fill="${c.ink}"/><circle cx="158" cy="188" r="1.6" fill="${c.ink}"/><circle cx="163" cy="187.6" r="1.4" fill="${c.ink}"/>`,
  bowl_water:c=>`<path d="M182 190 H216 L212 200 H186 Z" fill="${c.surface}" ${A(c)}/><path d="M190 189 q4 -2 8 0 q4 2 8 0" ${A(c)} stroke-opacity=".6"/>`,
  toilet_back:c=>`<path d="M252 200 V178 H334 V200" fill="${c.surface}" ${A(c)}/>`,
+ shelf:c=>`<path d="M232 96 H322" ${A(c)}/><path d="M240 96 v6 M314 96 v6" ${A(c)}/><path d="M248 96 V82 H258 V96 M262 96 V78 H270 V96" fill="${c.surface}" ${A(c)}/><path d="M290 96 c0 -8 4 -12 8 -12 c4 0 8 4 8 12 Z" fill="${c.surface}" ${A(c)}/><path d="M298 84 c-2 -6 2 -10 6 -10" ${A(c)}/>`,
+ wall_picture:c=>`<rect x="252" y="34" width="52" height="38" rx="3" fill="${c.surface}" ${A(c)}/><path d="M258 64 Q270 50 280 60 Q288 52 298 64" ${A(c)}/><circle cx="288" cy="46" r="4" fill="${c.primary}"/>`,
  toilet_front:c=>`<path d="M246 200 V186 H340 V200" fill="${c.surface}" ${A(c)}/><circle cx="262" cy="182" r="1" fill="${c.ink}" fill-opacity=".5"/><circle cx="320" cy="183" r="1" fill="${c.ink}" fill-opacity=".5"/>`,
 };
 // 猫を置く場所（部屋の座標）。猫のしぐさ SVG（120×80）の「地面の中央（60,80）」をこの点に合わせ、scale 倍で置く
@@ -274,6 +283,11 @@ const CARDS={
 };
 // 絵日記（200×140）の1コマ。枠（すきまのある角丸）＋場面
 const DIARY_FRAME=c=>`<rect x="4" y="4" width="192" height="132" rx="10" fill="${c.surface}"/><rect x="4" y="4" width="192" height="132" rx="10" ${A(c,G("40 4 56"))}/>`;
+const DIARY_PAPER={
+ lines:c=>`<rect x="4" y="4" width="192" height="132" rx="10" fill="${c.surface}"/>${[30,52,74,96].map(y=>`<path d="M16 ${y} H184" stroke="${c.ink}" stroke-opacity=".12" stroke-width="1"/>`).join("")}<rect x="4" y="4" width="192" height="132" rx="10" ${A(c,G("40 4 56"))}/>`,
+ dots:c=>`<rect x="4" y="4" width="192" height="132" rx="10" fill="${c.surface}"/>${Array.from({length:6},(_,i)=>Array.from({length:10},(_,j)=>`<circle cx="${22+j*17.4}" cy="${20+i*18}" r=".9" fill="${c.ink}" fill-opacity=".18"/>`).join("")).join("")}<rect x="4" y="4" width="192" height="132" rx="10" ${A(c,G("40 4 56"))}/>`,
+ tape:c=>`<rect x="4" y="4" width="192" height="132" rx="10" fill="${c.surface}"/><rect x="4" y="4" width="192" height="132" rx="10" ${A(c,G("40 4 56"))}/><path d="M82 -2 h36 l-2 14 h-32 Z" fill="${c.primaryTint}" opacity=".9"/>`,
+};
 const DIARY={
  meal:c=>`${DIARY_FRAME(c)}<path d="M16 116 H184" ${A(c)} stroke-opacity=".6"/><g transform="translate(-14 -84)">${room.bowl_food(c)}</g><g transform="translate(20 38) scale(0.95)">${CAT.sit(c)}</g>`,
  drink:c=>`${DIARY_FRAME(c)}<path d="M16 116 H184" ${A(c)} stroke-opacity=".6"/><g transform="translate(-60 -84)">${room.bowl_water(c)}</g><g transform="translate(20 38) scale(0.95)">${CAT.sit(c)}</g>`,
@@ -315,8 +329,9 @@ const PET={
   // 毛色に関係のない部品
   for(const t of ["morning","noon","evening","night"]) files.push([`${mode}/room/window_${t}.svg`,wrap("0 0 360 240",`窓（${t}）`,room.window(c,t))]);
   for(const [k,f] of Object.entries(room.weather)) if(k!=="sunny") files.push([`${mode}/room/weather_${k}.svg`,wrap("0 0 360 240",`天気（${k}）`,f(c))]);
-  for(const k of ["floor","bed","bowl_food","bowl_water","toilet_back","toilet_front"]) files.push([`${mode}/room/${k}.svg`,wrap("0 0 360 240",k,room[k](c))]);
+  for(const k of ["floor","bed","bowl_food","bowl_water","toilet_back","toilet_front","shelf","wall_picture"]) files.push([`${mode}/room/${k}.svg`,wrap("0 0 360 240",k,room[k](c))]);
   for(const k of ["food","water","toilet"]) files.push([`${mode}/cards/card_${k}.svg`,wrap("0 0 160 120",`カード：${k}`,CARDS[k](c))]);
+  for(const [k,f] of Object.entries(DIARY_PAPER)) files.push([`${mode}/diary/paper_${k}.svg`,wrap("0 -4 200 144",`絵日記の地：${k}`,f(c))]);
   files.push([`${mode}/talk/bubble.svg`,wrap("0 0 200 80","ふきだし",BUBBLE(c))]);
   for(const [k,f] of Object.entries(ITEM)) files.push([`${mode}/diary/item_${k}.svg`,wrap("0 0 24 24",`記録した項目：${k}`,f(c))]);
   for(const [k,[l,f]] of Object.entries(SEASONS)) files.push([`${mode}/seasons/season_${k}.svg`,wrap("0 0 76 60",l,f(c))]);

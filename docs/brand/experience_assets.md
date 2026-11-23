@@ -14,7 +14,7 @@
 |---|---|---|
 | 1 | `window_morning`・`window_noon`・`window_evening`・`window_night` | 窓（左上、アーチ形。十字の桟は入れない）。時間帯で空の色と太陽・月が変わる |
 | 2 | `weather_cloudy`・`weather_rain`・`weather_snow` | 窓の中の天気（晴れは重ねない） |
-| 3 | `floor`・`bed`・`toilet_back` | 床、寝床、トイレの奥側 |
+| 3 | `floor`・`bed`・`toilet_back`・`shelf`・`wall_picture` | 床、寝床、トイレの奥側、棚（本と小さな鉢）、壁の絵（景色。猫の写真の額は遺影を思わせるので描かない） |
 | 4 | 猫（下の表） | 場所ごとに置く |
 | 5 | `bowl_food`・`bowl_water`・`toilet_front` | 手前の器とトイレの手前側（猫の前に重ねる） |
 
@@ -27,7 +27,7 @@
 | ごはん | (153, 196) | `pose_sit`（器の後ろにすわる。食べる姿にしない） | `bowl_food` |
 | お水 | (199, 196) | `pose_sit`（器の後ろにすわる。飲む姿にしない） | `bowl_water` |
 | トイレ | (292, 194) | `pose_sit` | `toilet_front` |
-| 歩く | (240, 200) | `cat_walk` | — |
+| 歩く | (240, 200) | `cat_walk`→`cat_walk2`→`cat_walk3`→`cat_walk2`…（脚だけ違う3コマ。0.25秒ずつが目安。F-30 オンなら `cat_walk` 1枚で移動させずに置く） | — |
 
 - 季節は、窓辺や床に `seasons/season_*` を小さく置く（窓の外の木などは描かない）。
 - 「寝ている」場面は、横たわって目を閉じた姿にしない（brand_guide §5-2）。寝床で丸まって、目を開けた姿で表す。
@@ -38,6 +38,9 @@
 ## ③ 絵日記（`svg/{light|dark}/diary/`、200×140）
 1コマの完成形：`diary_meal`（ごはんの器の横にすわる）・`diary_drink`（お水の器の横にすわる）・`diary_rest`（寝床でくつろぐ）・`diary_window`（窓辺）。枠つき。毛色ごと。食べる・飲む動作は描かない（ロシアン E-1）。
 記録した項目は、コマの隅に小さなアイコンで示す：`diary/item_food`・`item_water`・`item_toilet`・`item_energy`・`item_fluid`（補液）・`item_med`（お薬）。24×24、線だけ。
+
+## 絵日記の地（3案）
+`diary/paper_lines`（罫線のノート）・`paper_dots`（方眼の点）・`paper_tape`（マスキングテープで留めた紙）。200×140 の枠と同じ大きさで、場面の絵の下に敷く。記録の値では変えない。
 
 ## ④ 話しかける猫（`svg/{light|dark}/talk/`）
 `talk_face`（80×80。どの質問でも同じおだやかな顔）＋`bubble`（200×80 のふきだし。文字はアプリ側で入れる）。
