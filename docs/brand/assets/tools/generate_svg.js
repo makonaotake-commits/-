@@ -329,7 +329,9 @@ const PET={
   // 毛色に関係のない部品
   for(const t of ["morning","noon","evening","night"]) files.push([`${mode}/room/window_${t}.svg`,wrap("0 0 360 240",`窓（${t}）`,room.window(c,t))]);
   for(const [k,f] of Object.entries(room.weather)) if(k!=="sunny") files.push([`${mode}/room/weather_${k}.svg`,wrap("0 0 360 240",`天気（${k}）`,f(c))]);
-  for(const k of ["floor","bed","bowl_food","bowl_water","toilet_back","toilet_front","shelf","wall_picture"]) files.push([`${mode}/room/${k}.svg`,wrap("0 0 360 240",k,room[k](c))]);
+  // 部屋の器は、スマホ幅でも分かるよう 1.3 倍に（器の底の中央を軸に。カード・絵日記の器は元の大きさ）
+  const BIG={bowl_food:[153,200],bowl_water:[199,200]};
+  for(const k of ["floor","bed","bowl_food","bowl_water","toilet_back","toilet_front","shelf","wall_picture"]){const b=BIG[k];const body=b?`<g transform="translate(${b[0]} ${b[1]}) scale(1.3) translate(${-b[0]} ${-b[1]})">${room[k](c)}</g>`:room[k](c);files.push([`${mode}/room/${k}.svg`,wrap("0 0 360 240",k,body)]);}
   for(const k of ["food","water","toilet"]) files.push([`${mode}/cards/card_${k}.svg`,wrap("0 0 160 120",`カード：${k}`,CARDS[k](c))]);
   for(const [k,f] of Object.entries(DIARY_PAPER)) files.push([`${mode}/diary/paper_${k}.svg`,wrap("0 -4 200 144",`絵日記の地：${k}`,f(c))]);
   files.push([`${mode}/talk/bubble.svg`,wrap("0 0 200 80","ふきだし",BUBBLE(c))]);
