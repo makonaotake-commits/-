@@ -39,14 +39,47 @@ const furHead=(c,{cx,cy,r,half=false,dash="70 7 23",earsSvg="",eyesSvg=""})=>{
  return `<g id="head">${fillEl}${furPattern(c,cx,top,r,(eyeY!=null&&!half)?Number(eyeY):null)}${lineEl}${earsSvg}${eyesSvg}</g>`;
 };
 const eyesF=(c,cx,cy,nose=true)=>{const k=faceInk(c);return `<circle cx="${cx-5}" cy="${cy}" r="2" fill="${k}"/><circle cx="${cx+5}" cy="${cy}" r="2" fill="${k}"/>`+(nose?`<circle cx="${cx}" cy="${cy+4}" r="1.2" fill="${k}"/>`:"");};
-const head=(c,cx,cy,r=14)=>furHead(c,{cx,cy,r,earsSvg:ears(c,cx,cy),eyesSvg:eyesF(c,cx,cy+1)});
+// ---- 案内役・しぐさの頭を f2 の顔にそろえる（2026-11-23、ユーザー決定）----
+// 頭の形・耳・目・鼻・口・ひげは、アイコン f2（peekCat）を単位座標に直したもの。半径 r で拡大して置く。
+// half=true は縁からのぞく形（cy が縁の高さ）。back=true はうしろ姿（顔なし）。
+// アニメーション用 id：#head（頭全体）・#tail（しっぽ）はそのまま。目は <g id="eyes"> にまとめた（目を細める置き換え用）。
+const U={
+ headFull:"M-1.05 0.1 C-1.05 -0.55 -0.6 -0.9 0 -0.9 C0.6 -0.9 1.05 -0.55 1.05 0.1 C1.05 0.62 0.6 0.88 0 0.88 C-0.6 0.88 -1.05 0.62 -1.05 0.1 Z",
+ headHalf:"M-1.077 0 C-1.077 -0.615 -0.692 -0.923 0 -0.923 C0.692 -0.923 1.077 -0.615 1.077 0",
+ earL:[[-0.923,-0.538],[-0.962,-1.115],[-0.846,-1.423],[-0.538,-1.231],[-0.308,-0.846]],
+ innerL:[[-0.788,-0.846],[-0.788,-1.077],[-0.75,-1.192]],
+};
+const sc=(d,cx,cy,r)=>d.replace(/(-?\d*\.?\d+) (-?\d*\.?\d+)/g,(_,x,y)=>`${+(cx+Number(x)*r).toFixed(2)} ${+(cy+Number(y)*r).toFixed(2)}`);
+const P=(cx,cy,r,[x,y],m=1)=>`${+(cx+m*x*r).toFixed(2)} ${+(cy+y*r).toFixed(2)}`;
+const catHead=(c,{cx,cy,r,half=false,back=false,dash="60 7 33"})=>{
+ const fill=faceFill(c), k=faceInk(c);
+ const ear=m=>{const e=U.earL;return `<path d="M${P(cx,cy,r,e[0],m)} Q${P(cx,cy,r,e[1],m)} ${P(cx,cy,r,e[2],m)} Q${P(cx,cy,r,e[3],m)} ${P(cx,cy,r,e[4],m)}" fill="${fill}" ${A(c)}/>`;};
+ const inner=m=>{const e=U.innerL;return `M${P(cx,cy,r,e[0],m)} Q${P(cx,cy,r,e[1],m)} ${P(cx,cy,r,e[2],m)}`;};
+ const shape=half?sc(U.headHalf,cx,cy,r):sc(U.headFull,cx,cy,r);
+ const top=cy-0.92*r;
+ const dy=half?0:0.34; // 顔のパーツの縦位置（半円の頭は縁の上、まるい頭は少し下げる）
+ const y=v=>+(cy+(v+dy)*r).toFixed(2), x=v=>+(cx+v*r).toFixed(2);
+ const fs=Math.max(0.9,r*0.05); // 顔の細い線の太さ
+ let face="";
+ if(!back){
+  const erx=+(0.104*r*1.18).toFixed(2), ery=+(0.131*r*1.18).toFixed(2);
+  face=`<g id="eyes"><ellipse cx="${x(-0.346)}" cy="${y(-0.538)}" rx="${erx}" ry="${ery}" fill="${k}"/><ellipse cx="${x(0.346)}" cy="${y(-0.538)}" rx="${erx}" ry="${ery}" fill="${k}"/></g>`
+   +`<path d="M${x(-0.092)} ${y(-0.346)} H${x(0.092)} L${x(0)} ${y(-0.246)} Z" fill="${k}" stroke="${k}" stroke-width="${fs*0.8}" stroke-linejoin="round"/>`
+   +`<path d="M${x(0)} ${y(-0.246)} V${y(-0.192)} M${x(0)} ${y(-0.192)} q${+(-0.065*r).toFixed(2)} ${+(0.088*r).toFixed(2)} ${+(-0.162*r).toFixed(2)} ${+(0.058*r).toFixed(2)} M${x(0)} ${y(-0.192)} q${+(0.065*r).toFixed(2)} ${+(0.088*r).toFixed(2)} ${+(0.162*r).toFixed(2)} ${+(0.058*r).toFixed(2)}" fill="none" stroke="${k}" stroke-width="${fs}" stroke-linecap="round" stroke-linejoin="round"/>`
+   +`<path d="M${x(-0.615)} ${y(-0.308)} L${x(-1.038)} ${y(-0.365)} M${x(-0.615)} ${y(-0.192)} L${x(-1.019)} ${y(-0.135)} M${x(0.615)} ${y(-0.308)} L${x(1.038)} ${y(-0.365)} M${x(0.615)} ${y(-0.192)} L${x(1.019)} ${y(-0.135)}" fill="none" stroke="${k}" stroke-width="${fs*0.85}" stroke-linecap="round"/>`;
+ }
+ const pattern=furPattern(c,cx,top,r,null);
+ const innerEars=back?"":`<path d="${inner(1)} ${inner(-1)}" fill="none" stroke="${c.ink}" stroke-width="${fs}" stroke-linecap="round"/>`;
+ return `<g id="head">${ear(1)}${ear(-1)}${innerEars}<path d="${shape}${half?" Z":""}" fill="${fill}"/>${pattern}<path d="${shape}" ${A(c,G(dash))}/>${face}</g>`;
+};
+const head=(c,cx,cy,r=14)=>catHead(c,{cx,cy,r});
 const wrap=(vb,label,inner)=>`<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vb}" role="img" aria-label="${label}">${inner}</svg>`;
 const POSES={
  sit:["すわる",c=>`${ground(c,80,14,106)}<path d="M40 80 C40 58 48 48 60 48 C72 48 80 58 80 80" ${A(c,G("44 6 50"))}/><path d="M54 80 v-7 M66 80 v-7" ${A(c)}/>${tail(c,"M80 78 C94 78 98 66 90 60")}${head(c,60,36)}`],
- peek:["縁からのぞく",c=>`<path d="M14 64 H52 M58 64 H106" ${A(c)}/>${tail(c,"M74 63 C84 62 86 54 82 50")}${furHead(c,{cx:60,cy:64,r:14,half:true,dash:"58 8 34",earsSvg:ears(c,60,58),eyesSvg:eyesF(c,60,55)})}<path d="M49 64 q3 -4 6 0 M65 64 q3 -4 6 0" ${A(c)}/>`],
- stretch:["のびる",c=>`${ground(c,80,10,110)}<path d="M34 62 C50 62 66 52 84 48" ${A(c,G("60 8 32"))}/><path d="M38 76 C52 74 62 72 74 70" ${A(c)}/><path d="M84 48 C89 58 89 70 87 80 M76 68 L78 80" ${A(c)}/><path d="M18 79 H34 M22 75 H36" ${A(c)}/>${tail(c,"M86 48 C92 38 90 30 97 26")}${furHead(c,{cx:26,cy:64,r:10,dash:"72 8 20",earsSvg:`<path d="M18 58 Q17 50 23 54 M29 54 Q34 50 34 58" ${A(c)}/>`,eyesSvg:`<circle cx="23" cy="64" r="1.8" fill="${faceInk(c)}"/><circle cx="29" cy="64" r="1.8" fill="${faceInk(c)}"/>`})}`],
+ peek:["縁からのぞく",c=>`<path d="M14 64 H52 M58 64 H106" ${A(c)}/>${tail(c,"M74 63 C84 62 86 54 82 50")}${catHead(c,{cx:60,cy:64,r:14,half:true})}<path d="M49 64 q3 -4 6 0 M65 64 q3 -4 6 0" ${A(c)}/>`],
+ stretch:["のびる",c=>`${ground(c,80,10,110)}<path d="M34 62 C50 62 66 52 84 48" ${A(c,G("60 8 32"))}/><path d="M38 76 C52 74 62 72 74 70" ${A(c)}/><path d="M84 48 C89 58 89 70 87 80 M76 68 L78 80" ${A(c)}/><path d="M18 79 H34 M22 75 H36" ${A(c)}/>${tail(c,"M86 48 C92 38 90 30 97 26")}${catHead(c,{cx:26,cy:65,r:11})}`],
  loaf:["香箱すわり",c=>`${ground(c,80,14,108)}<path d="M30 80 C30 62 44 54 62 54 C82 54 94 64 94 80" ${A(c,G("48 6 46"))}/>${tail(c,"M94 78 C102 78 104 70 99 66")}${head(c,42,52,13)}`],
- window:["窓の外を見る（うしろ姿）",c=>`${ground(c,80,14,106)}<path d="M44 80 C42 62 50 52 60 52 C70 52 78 62 76 80" ${A(c,G("46 6 48"))}/>${tail(c,"M76 78 C90 80 96 70 90 62")}${furHead(c,{cx:60,cy:40,r:13,earsSvg:ears(c,60,40)})}`],
+ window:["窓の外を見る（うしろ姿）",c=>`${ground(c,80,14,106)}<path d="M44 80 C42 62 50 52 60 52 C70 52 78 62 76 80" ${A(c,G("46 6 48"))}/>${tail(c,"M76 78 C90 80 96 70 90 62")}${catHead(c,{cx:60,cy:40,r:13,back:true})}`],
 };
 const SEASONS={
  spring:["春：若葉",c=>`<path d="M38 50 V34" ${A(c)}/><path d="M38 38 C30 36 26 30 28 24 C34 26 38 30 38 38 Z" fill="${c.ink}"/><path d="M38 34 C44 30 50 30 52 34 C48 38 42 38 38 34 Z" ${A(c)}/>`],
@@ -196,7 +229,7 @@ const FINAL=[];
  // スプラッシュ：透過の画像を中央に置き、背景色は app.json で指定（明 #FBF5EA／暗 #1F1A14）
  for(const [m,c] of [["light",L],["dark",D]]) FINAL.push([`splash/splash_${m}.svg`,wrap("-30 0 160 110","ねこと、ゆっくり スプラッシュ",peekCat(c,"f2",{bg:false}))]);
 }
-const GUIDE=c=>`<path d="M2 40 H20 M26 40 H62" ${A(c)}/>${tail(c,"M44 39 C54 38 56 30 52 26")}${furHead(c,{cx:30,cy:40,r:14,half:true,dash:"58 8 34",earsSvg:ears(c,30,34),eyesSvg:eyesF(c,30,31)})}<path d="M19 40 q3 -4 6 0 M35 40 q3 -4 6 0" ${A(c)}/>`;
+const GUIDE=c=>`<path d="M2 40 H20 M26 40 H62" ${A(c)}/>${tail(c,"M44 39 C54 38 56 30 52 26")}${catHead(c,{cx:30,cy:40,r:14,half:true})}<path d="M19 40 q3 -4 6 0 M35 40 q3 -4 6 0" ${A(c)}/>`;
 (async()=>{
  const b=await chromium.launch();const p=await b.newPage();
  const files=[];
