@@ -247,14 +247,15 @@ const ICON = {
   camera: `<svg viewBox="0 0 24 24"><path d="M4 8 H8 L9.5 6 H14.5 L16 8 H20 V18 H4 Z" ${S}/><circle cx="12" cy="13" r="3" ${S}/></svg>`,
   hand: `<svg viewBox="0 0 24 24"><path d="M9 21 Q6 18 5 14 Q4.5 12 6 12 Q7 12 8 14 V5.5 Q8 4 9.3 4 Q10.6 4 10.6 5.5 V11 V9.5 Q10.6 8 11.9 8 Q13.2 8 13.2 9.5 V11 V10 Q13.2 8.6 14.5 8.6 Q15.8 8.6 15.8 10 V11.5 Q15.8 10.4 17 10.4 Q18.2 10.4 18.2 11.8 V15 Q18.2 19 15.5 21 Z" fill="var(--surface)" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>`,
 };
-// 食べた量：ひと口の山の数（0 は平らな線だけ）
-function mounds(level) {
+// 答えの絵はペルシャの清書（docs/brand/assets/svg/answers）。食べた量＝山の数、お水＝しずくの数（大きさで表すと「大きいほうがよい」と読まれやすいため）
+function mounds(level) { return ART['answer_food_' + level].l; }
+function drops(level) { return ART['answer_water_' + (level + 1)].l; }
+function moundsOld(level) {
   if (level === 0) return `<svg viewBox="0 0 24 24"><line x1="2.5" y1="18.5" x2="21.5" y2="18.5" ${S}/></svg>`;
   const xs = level === 1 ? [12] : level === 2 ? [8, 16] : [5, 12, 19];
   return `<svg viewBox="0 0 24 24">${xs.map((x) => `<path d="M${x - 3.6} 18 Q${x} 9.5 ${x + 3.6} 18 Z" ${S} ${SUBFILL}/>`).join('')}<line x1="2.5" y1="18.5" x2="21.5" y2="18.5" ${S}/></svg>`;
 }
-// お水：しずくの大きさ
-function drops(level) {
+function dropsOld(level) {
   const s = [0.55, 0.8, 1.05][level];
   return `<svg viewBox="0 0 24 24"><g transform="translate(12 13) scale(${s}) translate(-12 -13)"><path d="M12 3 Q18 11 18 14.5 A6 6 0 0 1 6 14.5 Q6 11 12 3 Z" ${S} ${SUBFILL}/></g></svg>`;
 }

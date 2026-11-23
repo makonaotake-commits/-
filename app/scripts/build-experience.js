@@ -20,6 +20,11 @@ for (const [n, dir] of Object.entries(names)) {
     d: clean(fs.readFileSync(path.join(brand, 'dark', dir, n + '.svg'), 'utf8')),
   };
 }
+// 答えの絵（currentColor なので明暗で同じファイル）
+for (const n of ['answer_food_0', 'answer_food_1', 'answer_food_2', 'answer_food_3', 'answer_water_1', 'answer_water_2', 'answer_water_3']) {
+  const x = clean(fs.readFileSync(path.join(brand, 'answers', n + '.svg'), 'utf8'));
+  art[n] = { l: x, d: x };
+}
 const src = fs.readFileSync(path.join(root, 'experience', 'experience.src.html'), 'utf8');
 const out = src.replace('/*ART_JSON*/null', JSON.stringify(art));
 fs.mkdirSync(path.join(root, 'dist'), { recursive: true });
