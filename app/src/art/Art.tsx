@@ -15,18 +15,19 @@ function transform(xml: string, opts: { squint: boolean; part: ArtPart }) {
     const tail = /<g id="tail">[\s\S]*?<\/g>/.exec(s)?.[0] ?? '';
     s = s.replace(/(<svg[^>]*>)[\s\S]*(<\/svg>)/, `$1${tail}$2`);
   }
-  s = s.replace(/<g id="head">([\s\S]*?)<\/g>/, (_m, inner: string) => {
-    let h = inner;
-    if (opts.squint) {
-      // 目を細める：目の丸（r="2"）を、ゆるい弧にする
-      h = h.replace(/<circle cx="([\d.]+)" cy="([\d.]+)" r="2" fill="(#[0-9A-Fa-f]+)"><\/circle>/g, (_x, cx: string, cy: string, col: string) => {
-        const x = Number(cx);
-        const y = Number(cy);
-        return `<path d="M${x - 2.5} ${y + 0.5} Q${x} ${y - 1.5} ${x + 2.5} ${y + 0.5}" fill="none" stroke="${col}" stroke-width="1.6" stroke-linecap="round"></path>`;
-      });
-    }
-    return `<g id="head">${h}</g>`;
-  });
+  if (opts.squint) {
+    // 目を細める：<g id="eyes"> の中の楕円（または以前の素材の r="2" の丸）を、同じ位置のゆるい弧にする
+    // （#head の中に <g id="eyes"> が入れ子になったため、#head ではなく #eyes を直接置き換える。ペルシャ da0706e）
+    const toArc = (cx: string, cy: string, col: string) => {
+      const x = Number(cx);
+      const y = Number(cy);
+      return `<path d="M${x - 2.5} ${y + 0.5} Q${x} ${y - 1.5} ${x + 2.5} ${y + 0.5}" fill="none" stroke="${col}" stroke-width="1.6" stroke-linecap="round"></path>`;
+    };
+    s = s.replace(/<g id="eyes">([\s\S]*?)<\/g>/, (_m, inner: string) =>
+      `<g id="eyes">${inner.replace(/<ellipse cx="([\d.]+)" cy="([\d.]+)"[^>]*?fill="(#[0-9A-Fa-f]+)"[^>]*><\/ellipse>/g, (_x, cx: string, cy: string, col: string) => toArc(cx, cy, col))}</g>`,
+    );
+    s = s.replace(/<circle cx="([\d.]+)" cy="([\d.]+)" r="2" fill="(#[0-9A-Fa-f]+)"><\/circle>/g, (_x, cx: string, cy: string, col: string) => toArc(cx, cy, col));
+  }
   return s;
 }
 
