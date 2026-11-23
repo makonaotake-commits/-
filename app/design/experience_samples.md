@@ -44,6 +44,15 @@
 - ブラウザ（Web 版）の音声入力は、ブラウザによっては外部のサーバーで聞き取るため、使わない。
 - 声のボタンを入れる場合、マイクの許可が必要になるので、`app.json` の `blockedPermissions` から RECORD_AUDIO を外すことになる。ロシアンの確認が必要。
 
+### 公式資料での確認（ロシアン V-1、2026-11-23。Web 検索の要約で確認。ページ本文の全文はまだ読んでいない）
+- iOS（Apple）：[requiresOnDeviceRecognition](https://developer.apple.com/documentation/speech/sfspeechrecognitionrequest/requiresondevicerecognition)（iOS 13 以降）を true にすると、音声を端末の外に出さずに聞き取る。ただし、この設定が効くのは、その言語の認識器の [supportsOnDeviceRecognition](https://developer.apple.com/documentation/speech/sfspeechrecognizer/supportsondevicerecognition) が true のときだけ。端末の中で聞き取る結果は、精度が下がる傾向があると書かれている。
+  - 開発者フォーラムの報告では、端末の音声データを更新するために、ときどき通信が必要になることがある。**記録の言葉が外に出るかどうかとは別の話と読めるが、未確認。**
+  - → アプリでは「supportsOnDeviceRecognition が false なら声のボタンを出さない」「requiresOnDeviceRecognition を必ず true にする」の2つを両方守る。
+- Android（Google）：[SpeechRecognizer](https://developer.android.com/reference/android/speech/SpeechRecognizer) の `isOnDeviceRecognitionAvailable()` と `createOnDeviceSpeechRecognizer()`（API 31＝Android 12 以降）。端末の中の認識サービスがなければ、後者は失敗する（例外）。
+  - → Android 11 以前と、端末の中の認識サービスがない機種では、声のボタンを出さない。外部の認識サービス（ふつうの `createSpeechRecognizer`）には切り替えない。
+  - 日本語のモデルが端末に入っているかは、別に確かめる必要がある（[RecognitionSupport](https://developer.android.com/reference/android/speech/RecognitionSupport)、API 33 以降）。
+- **まだ確かめていないこと**：日本語で端末の中の聞き取りが使える iPhone・Android の機種と OS の範囲。実機で確かめるまで、⑥ は「使える機種だけに出す」前提で考える。
+
 ## ロシアンに確認したいこと（見本の段階）
 - ④ 猫の質問の言葉（`ASK`）。質問だけで、意見・判定・ほめ言葉を言わない形になっているか。
 - ③ 絵日記の絵を、記録の値で変えない設計でよいか。
