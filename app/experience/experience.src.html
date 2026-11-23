@@ -624,19 +624,33 @@ function askNext() {
 /* =========================================================
    ⑥ 声で記録（見本：例の言葉を表示。実際は端末の中だけで文字にする）
    ========================================================= */
-const SAMPLE_SPEECH = 'ごはんは少し残した。お水はいつもくらい。おしっこ2回、うんち1回。';
-// 言葉の当てはめは決まった言い方だけ。症状や体調の意味は読み取らない
+const SAMPLE_SPEECH = 'ごはんはいつもより少なめ。お水はいつもくらい。おしっこ2回、うんち1回。';
+// 当てはめるのは、選択肢の言葉そのもの（いつもより多い／少ない、いつもくらい など）と回数だけ。
+// 「少し残した」「おかわり」などから段階を推し量らない。症状の言葉も読み取らない（ロシアン V-5・X-3）。
+// 「まだ」を含む文、「少なくない」「多くない」などの否定は当てはめず、空欄のままにする（X-2）。
+function level(seg) {
+  if (/まだ/.test(seg)) return undefined;
+  if (/(少な|多)(く|め)(ない|なかった|じゃな|ではな)/.test(seg)) return undefined;
+  // 「いつもより多い／少ない」を先に調べる（X-1）
+  if (/(いつもより)?(多い|多め|多かった)/.test(seg)) return 'more';
+  if (/(いつもより)?(少ない|少なめ|少なかった)/.test(seg)) return 'less';
+  if (/いつも(くらい|ぐらい|どおり|通り)/.test(seg) && !/より/.test(seg)) return 'usual';
+  return undefined;
+}
 function parseSpeech(t) {
   const r = {};
-  if (/食べなかった|食べてない/.test(t)) r.appetite = 'none';
-  else if (/少し残し|少なめ|少なかった|ちょっと残/.test(t)) r.appetite = 'less';
-  else if (/ごはん.*いつも(くらい|どおり)/.test(t)) r.appetite = 'usual';
-  else if (/おかわり|多め|たくさん食べ/.test(t)) r.appetite = 'more';
-  const w = /お水は?([^。、]*)/.exec(t)?.[1] ?? '';
-  if (/いつも/.test(w)) r.water = 'usual'; else if (/少な/.test(w)) r.water = 'less'; else if (/多/.test(w)) r.water = 'more';
-  const num = (s) => { const m = /(\d+|一|二|三|四|五|六)\s*回/.exec(s); if (!m) return undefined; const k = '一二三四五六'.indexOf(m[1]); return k >= 0 ? k + 1 : Math.min(+m[1], 6); };
-  const pe = /おしっこ[^。、]*/.exec(t)?.[0]; if (pe) r.pee = num(pe);
-  const po = /うんち[^。、]*/.exec(t)?.[0]; if (po) r.poop = num(po);
+  const sentences = t.split(/[。．\n]/);
+  const seg = (re) => sentences.flatMap((x) => x.split('、')).find((x) => re.test(x));
+  const food = seg(/ごはん|食べ/);
+  if (food !== undefined) {
+    if (/食べなかった/.test(food) && !/まだ/.test(food)) r.appetite = 'none';
+    else r.appetite = level(food);
+  }
+  const water = seg(/お水|水/);
+  if (water !== undefined) r.water = level(water);
+  const num = (x) => { if (!x || /まだ/.test(x)) return undefined; const m = /(\d+|一|二|三|四|五|六)\s*回/.exec(x); if (!m) return undefined; const k = '一二三四五六'.indexOf(m[1]); return k >= 0 ? k + 1 : Math.min(+m[1], 6); };
+  r.pee = num(seg(/おしっこ/));
+  r.poop = num(seg(/うんち/));
   Object.keys(r).forEach((k) => r[k] === undefined && delete r[k]);
   return r;
 }
