@@ -229,6 +229,20 @@ const FINAL=[];
  // スプラッシュ：透過の画像を中央に置き、背景色は app.json で指定（明 #FBF5EA／暗 #1F1A14）
  for(const [m,c] of [["light",L],["dark",D]]) FINAL.push([`splash/splash_${m}.svg`,wrap("-30 0 160 110","ねこと、ゆっくり スプラッシュ",peekCat(c,"f2",{bg:false}))]);
 }
+// ---- 答えの絵（2026-11-23、マンチカン依頼）：24×24、線は currentColor（明・暗どちらにも使える）----
+// どの段階も同じ形・同じ大きさの部品を「数」で表す。大きさ・色・表情で良し悪しを示さない。器の残りの絵にはしない（ロシアン T-3）
+const AL='fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"';
+const mound=x=>`M${x-2.8} 16 C${x-2.4} 9.6 ${x+2.4} 9.6 ${x+2.8} 16`;
+const drop=(x,y)=>`<path d="M${x} ${y-4.2} C${x-1.6} ${y-1.6} ${x-2.4} ${y-0.4} ${x-2.4} ${y+0.8} a2.4 2.4 0 0 0 4.8 0 C${x+2.4} ${y-0.4} ${x+1.6} ${y-1.6} ${x} ${y-4.2} Z" ${AL}/>`;
+const ANSWERS={
+ food_0:["食べた量：食べなかった",`<path d="M4 16 H20" ${AL}/>`],
+ food_1:["食べた量：少ない",`<path d="M4 16 H20 ${mound(12)}" ${AL}/>`],
+ food_2:["食べた量：いつもくらい",`<path d="M4 16 H20 ${mound(9)} ${mound(15)}" ${AL}/>`],
+ food_3:["食べた量：多い",`<path d="M4 16 H20 ${mound(6.4)} ${mound(12)} ${mound(17.6)}" ${AL}/>`],
+ water_1:["お水：少ない",drop(12,12)],
+ water_2:["お水：いつもくらい",drop(8.6,12)+drop(15.4,12)],
+ water_3:["お水：多い",drop(6,13)+drop(12,10)+drop(18,13)],
+};
 const GUIDE=c=>`<path d="M2 40 H20 M26 40 H62" ${A(c)}/>${tail(c,"M44 39 C54 38 56 30 52 26")}${catHead(c,{cx:30,cy:40,r:14,half:true})}<path d="M19 40 q3 -4 6 0 M35 40 q3 -4 6 0" ${A(c)}/>`;
 // ---- 体験の見本用の素材（2026-11-23、ユーザーの選択「猫の部屋／カード／絵日記／話しかける猫／なでると反応」）----
 // 気持ち：落ち着く・安心する。静けさと余白を優先。答えの絵のルール（表情・色で良し悪しを付けない）を守る。
@@ -347,6 +361,7 @@ const PET={
  for(const v of ["f1","f2","f3"]) files.push([`light/icon/icon_peek_${v}.svg`,wrap("0 0 100 100",`アイコン B（縁から見上げる・猫らしさ修正 ${v}）`,peekCat(PAL.light,v))]);
  // ロゴ（水平線つき）を B の顔・耳・ひげにそろえた版。ひげは w2s（小さくしてもつぶれにくい）
  for(const mode of ["light","dark"]) files.push([`${mode}/logo/logo_mark_horizon_v2.svg`,wrap("2 30 96 52","ねこと、ゆっくり ロゴマーク（水平線つき・見上げる猫）",peekB(PAL[mode],"w2s",{bg:false}))]);
+ for(const [k,[l,b]] of Object.entries(ANSWERS)) files.push([`answers/answer_${k}.svg`,wrap("0 0 24 24",l,b)]);
  for(const [f,x] of FINAL) files.push([`../final/${f}`,x]);
  // pathLength 基準のすきまを、実寸のダッシュに直す（react-native-svg で pathLength に頼らないため）
  for(const f of files){
