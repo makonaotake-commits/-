@@ -42,3 +42,4 @@
 - [アイコンのひげ 確認シート](icon_whisker.html)（[公開ページ](https://claude.ai/artifact/LJy6iaoV3jMbkYCgVxtnMk)）
 - [猫らしい顔 確認シート](icon_cat_face.html)（[公開ページ](https://claude.ai/artifact/J4834Vi9X13V3zAhi6qDZh)）
 - [案内役の顔 確認シート](guide_face.html)（[公開ページ](https://claude.ai/artifact/JxxKjb2reBhiB42VkTdaxK)）
+- [新しい体験の方向 確認シート](new_experience.html)（[公開ページ](https://claude.ai/artifact/XqTy5thagFjsL3RNxVixrC)）
