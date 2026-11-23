@@ -1,0 +1,678 @@
+<title>体験の見本</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root{
+  --bg:#FBF5EA; --surface:#FFFDF8; --text:#4D3F33; --sub:#6F5E4A; --border:#E6D7C0; --strong:#9A8468;
+  --primary:#87602F; --onp:#FFFFFF; --tint:#F3E3C8; --accent:#8FB5A8; --accentTint:#E2EDE8; --wall:#F6EEDF;
+  --font:"Zen Maru Gothic","Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic",sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#1F1A14; --surface:#2A231B; --text:#F3E8D8; --sub:#C2B19A; --border:#43382B; --strong:#8E7B62;
+    --primary:#E2B87F; --onp:#1F1A14; --tint:#3E3222; --accent:#9CC3B5; --accentTint:#263530; --wall:#262019;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1F1A14; --surface:#2A231B; --text:#F3E8D8; --sub:#C2B19A; --border:#43382B; --strong:#8E7B62;
+  --primary:#E2B87F; --onp:#1F1A14; --tint:#3E3222; --accent:#9CC3B5; --accentTint:#263530; --wall:#262019;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);-webkit-tap-highlight-color:transparent}
+body{padding:0 16px 64px}
+button{font:inherit;color:inherit}
+.wrap{max-width:520px;margin:0 auto}
+/* 明暗：素材は明・暗の2枚を持ち、CSS で出し分ける */
+.art .dk{display:none}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .art .lt{display:none}:root:not([data-theme="light"]) .art .dk{display:inline}}
+:root[data-theme="dark"] .art .lt{display:none}
+:root[data-theme="dark"] .art .dk{display:inline}
+.art svg{display:block;width:100%;height:auto}
+.dkn{display:none}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .ltn{display:none}:root:not([data-theme="light"]) .dkn{display:inline}}
+:root[data-theme="dark"] .ltn{display:none}
+:root[data-theme="dark"] .dkn{display:inline}
+
+header.top{display:flex;align-items:center;gap:12px;padding:18px 0 8px}
+header.top h1{font-size:22px;margin:0;flex:1;letter-spacing:.04em}
+.round{width:44px;height:44px;border-radius:22px;border:2px solid var(--strong);background:var(--surface);display:grid;place-items:center;cursor:pointer;padding:0}
+.round[aria-pressed="false"]{opacity:.55}
+.round svg{width:24px;height:24px}
+
+nav.tabs{display:flex;flex-wrap:wrap;gap:6px;padding:6px 0 14px}
+nav.tabs button{flex:0 0 auto;min-height:44px;padding:6px 12px;border-radius:22px;border:2px solid var(--border);background:var(--surface);cursor:pointer;font-size:15px;display:flex;align-items:center;gap:6px}
+nav.tabs button .n{font-weight:700;color:var(--primary)}
+nav.tabs button[aria-selected="true"]{border-color:var(--text);background:var(--tint)}
+.lead{font-size:15px;color:var(--sub);margin:0 0 12px;min-height:1.5em}
+section.pane{display:none}
+section.pane.on{display:block}
+.small{font-size:13px;color:var(--sub);line-height:1.6}
+.done{font-size:15px;text-align:center;color:var(--sub);min-height:24px;margin-top:10px}
+
+/* ① 部屋 */
+.room{position:relative;width:100%;aspect-ratio:3/2.15;border-radius:24px;background:var(--wall);border:2px solid var(--border);overflow:hidden;touch-action:manipulation}
+.room>svg.bg{position:absolute;inset:0;width:100%;height:100%}
+.obj{position:absolute;bottom:13%;background:none;border:none;padding:0;cursor:pointer;z-index:3;color:var(--text)}
+.obj svg{width:100%;height:auto;display:block;overflow:visible}
+.obj:focus-visible,.cat:focus-visible,.tile:focus-visible,.round:focus-visible,nav.tabs button:focus-visible,.btn:focus-visible{outline:3px solid var(--text);outline-offset:3px;border-radius:12px}
+.obj .stamp{position:absolute;right:-6px;top:-10px;width:22px;height:22px;opacity:0;transform:scale(.6);transition:opacity .4s,transform .4s}
+.obj.recorded .stamp{opacity:1;transform:scale(1)}
+.cat{position:absolute;bottom:13%;width:40%;z-index:2;cursor:grab;touch-action:none;transition:left 1.8s ease-in-out;background:none;border:none;padding:0}
+.cat .inner{transform:translateY(12.5%)}
+.cat.flip .inner{transform:translateY(12.5%) scaleX(-1)}
+.cat.walking .inner{animation:bob .45s ease-in-out infinite}
+@keyframes bob{50%{translate:0 -3%}}
+.cat svg #tail, .tailsway svg #tail{transform-box:fill-box;transform-origin:0% 100%;animation:sway 3.6s ease-in-out infinite}
+.cat.petting svg #tail{animation-duration:1.1s}
+@keyframes sway{0%,100%{rotate:0deg}50%{rotate:-9deg}}
+.hand{position:absolute;z-index:4;width:34px;pointer-events:none;opacity:0;animation:hint 3.2s ease-in-out 1.2s 2}
+@keyframes hint{0%{opacity:0;translate:0 0}20%{opacity:.85}60%{opacity:.85;translate:36px 0}100%{opacity:0;translate:36px 0}}
+.frame{position:absolute;left:47%;top:13%;width:17%;aspect-ratio:4/5;border:3px solid var(--strong);border-radius:6px;background:var(--surface) center/cover no-repeat;cursor:pointer;z-index:3;display:grid;place-items:center;padding:0}
+.frame svg{width:40%;opacity:.6}
+.frame.has svg{display:none}
+.heart{position:absolute;z-index:5;pointer-events:none;width:20px;opacity:0}
+/* 部屋の中の小さな目印（記録した物に付く足あと）。どの答えでも同じ */
+
+/* 下から出る答えのシート */
+.sheet-back{position:fixed;inset:0;background:rgba(40,30,20,.28);opacity:0;pointer-events:none;transition:opacity .25s;z-index:20}
+.sheet-back.on{opacity:1;pointer-events:auto}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:21;background:var(--surface);border-radius:24px 24px 0 0;border-top:2px solid var(--border);padding:16px 16px 28px;transform:translateY(105%);transition:transform .32s cubic-bezier(.2,.8,.2,1);max-width:560px;margin:0 auto}
+.sheet.on{transform:none}
+.grip{width:44px;height:5px;border-radius:3px;background:var(--border);margin:0 auto 12px}
+
+/* 質問と答えの絵（共通） */
+.q{margin-bottom:18px}
+.qt{display:flex;align-items:center;gap:8px;font-size:19px;font-weight:700;margin-bottom:4px}
+.qt svg{width:28px;height:28px}
+.qs{font-size:13px;color:var(--sub);margin:0 0 10px 36px}
+.tiles{display:flex;gap:8px}
+.tile{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;background:none;border:none;padding:0;cursor:pointer}
+.tile .pic{width:100%;max-width:88px;aspect-ratio:1;border-radius:18px;border:2px solid var(--border);background:var(--surface);display:grid;place-items:center;overflow:hidden;transition:transform .15s}
+.tile .pic>svg{width:62%}
+.tile .pic>.art{width:96%}
+.tile:active .pic{transform:scale(.96)}
+.tile[aria-checked="true"] .pic{border:3px solid var(--text);background:var(--tint)}
+.tile.draft[aria-checked="true"] .pic{border-style:dashed}
+.tile .w{font-size:14px;text-align:center;line-height:1.35}
+.counts{display:flex;gap:6px}
+.cnt{flex:1;aspect-ratio:1;max-width:52px;border-radius:50%;border:2px solid var(--strong);background:var(--surface);font-weight:700;font-size:18px;cursor:pointer;padding:0}
+.cnt[aria-checked="true"]{background:var(--primary);color:var(--onp);border-color:var(--text)}
+
+.btn{min-height:52px;border-radius:26px;border:2px solid var(--strong);background:var(--surface);padding:0 22px;font-size:17px;cursor:pointer}
+.btn.main{background:var(--primary);color:var(--onp);border-color:var(--primary);font-weight:700}
+.row{display:flex;gap:10px;justify-content:center;margin-top:14px;flex-wrap:wrap}
+
+/* ② カード */
+.deck{position:relative;height:430px;margin-top:4px}
+.card{position:absolute;inset:0 6px;background:var(--surface);border:2px solid var(--border);border-radius:28px;padding:22px 18px;display:flex;flex-direction:column;transition:transform .45s cubic-bezier(.2,.8,.2,1),opacity .45s;touch-action:pan-y}
+.card .big{flex:1;display:grid;place-items:center}
+.card .big>svg{width:96px;height:96px}
+.card .qt{font-size:24px;justify-content:center}
+.card .qs{margin:0;text-align:center}
+.card.behind1{transform:translateY(12px) scale(.96);opacity:.7}
+.card.behind2{transform:translateY(24px) scale(.92);opacity:.4}
+.card.gone{transform:translate(0,-120%) rotate(-6deg);opacity:0;pointer-events:none}
+.card.skip{transform:translate(-120%,0) rotate(-10deg);opacity:0;pointer-events:none}
+.card .skipbtn{align-self:center;margin-top:12px;background:none;border:none;color:var(--sub);font-size:15px;min-height:44px;cursor:pointer}
+.pips{display:flex;gap:8px;justify-content:center;margin-top:12px}
+.pips i{width:8px;height:8px;border-radius:50%;background:var(--border)}
+.pips i.on{background:var(--text)}
+
+/* ③ 絵日記 */
+.diary{perspective:1200px}
+.page{background:var(--surface);border:2px solid var(--border);border-radius:8px 24px 24px 8px;padding:18px 18px 20px;position:relative;transform-origin:left center;transition:transform .55s ease,opacity .55s;box-shadow:inset 10px 0 0 -6px var(--border)}
+.page.turn{transform:rotateY(-80deg);opacity:0}
+.page.turnback{transform:rotateY(30deg);opacity:0}
+.page .date{font-size:30px;font-weight:700;letter-spacing:.04em}
+.page .wd{font-size:17px;color:var(--sub);margin-left:6px}
+.page .scene{margin:10px 0 12px;border-radius:16px;background:var(--wall);border:2px solid var(--border);position:relative;overflow:hidden;aspect-ratio:2/1}
+.page .scene .art{position:absolute;bottom:4%;width:46%;left:27%}
+.page .scene .pol{position:absolute;right:5%;top:8%;width:22%;aspect-ratio:4/5;background:#fff center/cover;border:5px solid #fff;border-bottom-width:12px;rotate:4deg;box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.page .things{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;text-align:center}
+.page .things div{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:13px;line-height:1.3}
+.page .things svg{width:34px;height:34px}
+.page .things .v{font-size:15px;font-weight:700}
+.page .things .none{color:var(--sub);font-weight:400}
+.pager{display:flex;align-items:center;justify-content:space-between;margin-top:12px}
+.pager .count{font-size:13px;color:var(--sub)}
+
+/* ④ 会話 */
+.talk{background:var(--wall);border:2px solid var(--border);border-radius:24px;padding:16px;min-height:430px;display:flex;flex-direction:column}
+.talk .log{flex:1;display:flex;flex-direction:column;gap:8px;justify-content:flex-end;min-height:120px}
+.bub{max-width:80%;padding:12px 16px;border-radius:20px;font-size:19px;line-height:1.5;animation:pop .3s ease}
+.bub.from-cat{align-self:flex-start;background:var(--surface);border:2px solid var(--border);border-bottom-left-radius:6px}
+.bub.from-me{align-self:flex-end;background:var(--tint);border-bottom-right-radius:6px;font-size:17px}
+.bub.old{opacity:.5}
+@keyframes pop{from{opacity:0;translate:0 8px}}
+.talk .who{display:flex;align-items:flex-end;gap:10px;margin-top:8px}
+.talk .who .art{width:140px;flex:0 0 auto}
+.talk .ans{margin-top:10px}
+
+/* ⑥ 声 */
+.voice{text-align:center;padding-top:8px}
+.mic{width:128px;height:128px;border-radius:50%;border:none;background:var(--primary);color:var(--onp);cursor:pointer;position:relative;display:grid;place-items:center;margin:8px auto 14px}
+.mic svg{width:52px;height:52px}
+.mic::before,.mic::after{content:"";position:absolute;inset:-8px;border-radius:50%;border:2px solid var(--primary);opacity:0}
+.mic.on::before{animation:ring 1.6s ease-out infinite}
+.mic.on::after{animation:ring 1.6s ease-out .8s infinite}
+@keyframes ring{from{opacity:.6;transform:scale(1)}to{opacity:0;transform:scale(1.35)}}
+.heard{min-height:84px;font-size:19px;line-height:1.6;background:var(--surface);border:2px solid var(--border);border-radius:20px;padding:14px 16px;text-align:left}
+.heard .caret{display:inline-block;width:2px;height:1.1em;background:var(--text);vertical-align:-3px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:14px}
+.chip{display:flex;align-items:center;gap:6px;min-height:48px;padding:6px 14px 6px 8px;border-radius:24px;border:2px dashed var(--strong);background:var(--surface);font-size:15px;cursor:pointer}
+.chip svg{width:26px;height:26px}
+.chip b{font-size:17px}
+.chip.unheard{border-style:solid;border-color:var(--border);color:var(--sub)}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation:none!important;transition-duration:.01ms!important}
+}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <h1>体験の見本</h1>
+    <button class="round" id="soundBtn" aria-pressed="true" aria-label="音と振動"></button>
+  </header>
+  <nav class="tabs" role="tablist" id="tabs"></nav>
+  <p class="lead" id="lead"></p>
+
+  <section class="pane" id="p-room" role="tabpanel">
+    <div class="room" id="room"></div>
+    <p class="done" id="roomDone"></p>
+  </section>
+
+  <section class="pane" id="p-card" role="tabpanel">
+    <div class="deck" id="deck"></div>
+    <div class="pips" id="pips"></div>
+    <p class="done" id="cardDone"></p>
+  </section>
+
+  <section class="pane" id="p-diary" role="tabpanel">
+    <div class="diary"><div class="page" id="page"></div></div>
+    <div class="pager">
+      <button class="round" id="prevDay" aria-label="前のページ">‹</button>
+      <span class="count" id="pageCount"></span>
+      <button class="round" id="nextDay" aria-label="次のページ">›</button>
+    </div>
+  </section>
+
+  <section class="pane" id="p-talk" role="tabpanel">
+    <div class="talk">
+      <div class="log" id="log" aria-live="polite"></div>
+      <div class="who"><div id="talkCat"></div></div>
+      <div class="ans" id="ans"></div>
+    </div>
+    <p class="done" id="talkDone"></p>
+  </section>
+
+  <section class="pane" id="p-voice" role="tabpanel">
+    <div class="voice">
+      <button class="mic" id="mic" aria-label="話して記録する"></button>
+      <div class="heard" id="heard" aria-live="polite"></div>
+      <div class="chips" id="chips"></div>
+      <div class="row" id="voiceBtns" hidden>
+        <button class="btn" id="voiceRetry">やりなおす</button>
+        <button class="btn main" id="voiceSave">保存</button>
+      </div>
+      <p class="done" id="voiceDone"></p>
+      <p class="small">見本のため、マイクは使っていません。話した例の言葉を表示しています。</p>
+    </div>
+  </section>
+
+  <p class="small" style="margin-top:28px">どの見本も、記録はこのページの中だけで扱い、どこにも送りません。写真も、この端末の中だけで表示します。治療・補液・お薬は、かかりつけの獣医師の指示を優先してください。</p>
+</div>
+
+<div class="sheet-back" id="sheetBack"></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="記録する"><div class="grip"></div><div id="sheetBody"></div></div>
+<input type="file" id="photoInput" accept="image/*" hidden>
+
+<script>
+const ART = /*ART_JSON*/null;
+const $ = (s, r = document) => r.querySelector(s);
+const h = (html) => { const t = document.createElement('template'); t.innerHTML = html.trim(); return t.content.firstElementChild; };
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- 線の絵 ---------- */
+const S = 'fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"';
+const SUBFILL = 'fill="currentColor" fill-opacity=".38"';
+const ICON = {
+  bowl: `<svg viewBox="0 0 24 24"><path d="M3 11 H21 Q20 19 12 19 Q4 19 3 11 Z" ${S}/><path d="M8 19 L7.5 21 H16.5 L16 19" ${S}/></svg>`,
+  drop: `<svg viewBox="0 0 24 24"><path d="M12 3 Q18 11 18 14.5 A6 6 0 0 1 6 14.5 Q6 11 12 3 Z" ${S}/></svg>`,
+  pee: `<svg viewBox="0 0 24 24"><rect x="3" y="9" width="18" height="10" rx="2.5" ${S}/><path d="M6 9 Q8 6.5 10 9 Q12 6.5 14 9 Q16 6.5 18 9" ${S}/></svg>`,
+  poop: `<svg viewBox="0 0 24 24"><path d="M6 19 H18 Q20 19 19 16.5 Q17.5 14.5 15.5 15 Q16 11.5 12.5 11 Q13 8 10.5 7 Q10 10 8 11.5 Q6 12.5 7 15 Q4.5 16 6 19 Z" ${S}/></svg>`,
+  energy: `<svg viewBox="0 0 24 24"><path d="M6 20 Q4 12 10 10 Q16 8 15 4 M15 4 Q19 6 18 10" ${S}/></svg>`,
+  paw: `<svg viewBox="0 0 24 24"><ellipse cx="12" cy="15.5" rx="4.2" ry="3.6" fill="currentColor"/><circle cx="6.5" cy="10.5" r="1.9" fill="currentColor"/><circle cx="10" cy="7" r="1.9" fill="currentColor"/><circle cx="14" cy="7" r="1.9" fill="currentColor"/><circle cx="17.5" cy="10.5" r="1.9" fill="currentColor"/></svg>`,
+  bell: `<svg viewBox="0 0 24 24"><path d="M6 16 V11 A6 6 0 0 1 18 11 V16 L19.5 18 H4.5 Z" ${S}/><path d="M10 20.5 Q12 22 14 20.5" ${S}/></svg>`,
+  mic: `<svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3" ${S}/><path d="M5.5 11 A6.5 6.5 0 0 0 18.5 11 M12 17.5 V21" ${S}/></svg>`,
+  camera: `<svg viewBox="0 0 24 24"><path d="M4 8 H8 L9.5 6 H14.5 L16 8 H20 V18 H4 Z" ${S}/><circle cx="12" cy="13" r="3" ${S}/></svg>`,
+  hand: `<svg viewBox="0 0 24 24"><path d="M9 21 Q6 18 5 14 Q4.5 12 6 12 Q7 12 8 14 V5.5 Q8 4 9.3 4 Q10.6 4 10.6 5.5 V11 V9.5 Q10.6 8 11.9 8 Q13.2 8 13.2 9.5 V11 V10 Q13.2 8.6 14.5 8.6 Q15.8 8.6 15.8 10 V11.5 Q15.8 10.4 17 10.4 Q18.2 10.4 18.2 11.8 V15 Q18.2 19 15.5 21 Z" fill="var(--surface)" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>`,
+};
+// 食べた量：ひと口の山の数（0 は平らな線だけ）
+function mounds(level) {
+  if (level === 0) return `<svg viewBox="0 0 24 24"><line x1="2.5" y1="18.5" x2="21.5" y2="18.5" ${S}/></svg>`;
+  const xs = level === 1 ? [12] : level === 2 ? [8, 16] : [5, 12, 19];
+  return `<svg viewBox="0 0 24 24">${xs.map((x) => `<path d="M${x - 3.6} 18 Q${x} 9.5 ${x + 3.6} 18 Z" ${S} ${SUBFILL}/>`).join('')}<line x1="2.5" y1="18.5" x2="21.5" y2="18.5" ${S}/></svg>`;
+}
+// お水：しずくの大きさ
+function drops(level) {
+  const s = [0.55, 0.8, 1.05][level];
+  return `<svg viewBox="0 0 24 24"><g transform="translate(12 13) scale(${s}) translate(-12 -13)"><path d="M12 3 Q18 11 18 14.5 A6 6 0 0 1 6 14.5 Q6 11 12 3 Z" ${S} ${SUBFILL}/></g></svg>`;
+}
+
+/* ---------- 案内役・しぐさの絵（ペルシャの素材） ---------- */
+function squintXml(x) {
+  const arc = (cx, cy, col, rx) => { const w = rx * 2.4, hh = w * 0.35; return `<path d="M${cx - w / 2} ${cy + hh / 2} Q${cx} ${cy - hh * 1.5} ${cx + w / 2} ${cy + hh / 2}" fill="none" stroke="${col}" stroke-width="1.4" stroke-linecap="round"></path>`; };
+  return x.replace(/<g id="eyes">([\s\S]*?)<\/g>/, (_m, inner) => `<g id="eyes">${inner.replace(/<ellipse cx="([\d.]+)" cy="([\d.]+)" rx="([\d.]+)"[^>]*?fill="(#[0-9A-Fa-f]+)"[^>]*><\/ellipse>/g, (_a, cx, cy, rx, col) => arc(+cx, +cy, col, +rx))}</g>`);
+}
+function art(name, squint = false) {
+  const a = ART[name];
+  const f = squint ? squintXml : (x) => x;
+  return `<span class="art"><span class="lt">${f(a.l)}</span><span class="dk">${f(a.d)}</span></span>`;
+}
+
+/* ---------- 質問（言葉は今の試作と同じ。保存するのは段階の言葉） ---------- */
+const Q = [
+  { k: 'appetite', icon: 'bowl', title: '食べた量', sub: 'いつもとくらべて', opts: [['none', '食べなかった', mounds(0)], ['less', '少ない', mounds(1)], ['usual', 'いつもくらい', mounds(2)], ['more', '多い', mounds(3)]] },
+  { k: 'water', icon: 'drop', title: 'お水', sub: 'いつもとくらべて', opts: [['less', '少ない', drops(0)], ['usual', 'いつもくらい', drops(1)], ['more', '多い', drops(2)]] },
+  { k: 'pee', icon: 'pee', title: 'おしっこ', count: true },
+  { k: 'poop', icon: 'poop', title: 'うんち', count: true },
+  { k: 'energy', icon: 'energy', title: '元気さ', sub: 'いつもとくらべて', opts: [['less', '静か', 'pose_loaf'], ['usual', 'いつもくらい', 'pose_sit'], ['more', '活発', 'pose_stretch']] },
+];
+const QK = Object.fromEntries(Q.map((q) => [q.k, q]));
+const wordOf = (k, v) => { if (v === undefined) return undefined; const q = QK[k]; if (q.count) return v >= 6 ? '6回以上' : `${v}回`; return q.opts.find((o) => o[0] === v)[1]; };
+const picOf = (q, o) => (o[2].startsWith('pose_') ? art(o[2]) : o[2]);
+
+/* ---------- 記録（このページの中だけ。どのタブから入れても同じ「今日」に入る） ---------- */
+const today = {};
+let photoUrl = null;
+const listeners = [];
+function setRec(k, v) { if (v === undefined) delete today[k]; else today[k] = v; listeners.forEach((f) => f(k)); }
+
+/* ---------- 音と振動（設定でオフにできる） ---------- */
+let soundOn = true, ac = null;
+const soundBtn = $('#soundBtn');
+soundBtn.innerHTML = ICON.bell;
+soundBtn.onclick = () => { soundOn = !soundOn; soundBtn.setAttribute('aria-pressed', String(soundOn)); };
+function bell() {
+  if (!soundOn) return;
+  try {
+    ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+    const t = ac.currentTime;
+    [[1318, 0.05], [1975, 0.025]].forEach(([f, g]) => {
+      const o = ac.createOscillator(), v = ac.createGain();
+      o.type = 'sine'; o.frequency.value = f; v.gain.setValueAtTime(0, t); v.gain.linearRampToValueAtTime(g, t + 0.01); v.gain.exponentialRampToValueAtTime(0.0001, t + 1.4);
+      o.connect(v).connect(ac.destination); o.start(t); o.stop(t + 1.5);
+    });
+  } catch (e) {}
+}
+function buzz(p) { if (soundOn && navigator.vibrate) try { navigator.vibrate(p); } catch (e) {} }
+
+/* ---------- 答えの部品 ---------- */
+function questionEl(q, { onPick, draft } = {}) {
+  const el = h(`<div class="q"><div class="qt">${ICON[q.icon]}<span>${q.title}</span></div>${q.sub ? `<p class="qs">${q.sub}</p>` : ''}</div>`);
+  const cur = today[q.k];
+  if (q.count) {
+    const row = h(`<div class="counts" role="radiogroup" aria-label="${q.title}"></div>`);
+    [0, 1, 2, 3, 4, 5, 6].forEach((n) => {
+      const b = h(`<button class="cnt" role="radio" aria-checked="${cur === n || (n === 6 && cur >= 6)}" aria-label="${n === 6 ? '6回以上' : n + '回'}">${n === 6 ? '6+' : n}</button>`);
+      b.onclick = () => onPick(q.k, n);
+      row.append(b);
+    });
+    el.append(row);
+  } else {
+    const row = h(`<div class="tiles" role="radiogroup" aria-label="${q.title}"></div>`);
+    q.opts.forEach((o) => {
+      const b = h(`<button class="tile${draft ? ' draft' : ''}" role="radio" aria-checked="${cur === o[0]}" aria-label="${o[1]}"><span class="pic">${picOf(q, o)}</span><span class="w">${o[1]}</span></button>`);
+      b.onclick = () => onPick(q.k, o[0]);
+      row.append(b);
+    });
+    el.append(row);
+  }
+  return el;
+}
+
+/* ---------- シート ---------- */
+const sheet = $('#sheet'), sheetBack = $('#sheetBack');
+function openSheet(keys, after) {
+  const body = $('#sheetBody');
+  const render = () => {
+    body.innerHTML = '';
+    keys.forEach((k) => body.append(questionEl(QK[k], { onPick: (kk, v) => {
+      setRec(kk, v);
+      if (keys.length === 1) { closeSheet(); after && after(kk); } else { render(); if (keys.every((x) => today[x] !== undefined)) setTimeout(() => { closeSheet(); after && after(kk); }, 280); }
+    } })));
+    if (keys.length > 1) { const r = h('<div class="row"><button class="btn">とじる</button></div>'); r.firstChild.onclick = () => { closeSheet(); if (keys.some((x) => today[x] !== undefined)) after && after(keys[0]); }; body.append(r); }
+  };
+  render();
+  sheet.classList.add('on'); sheetBack.classList.add('on');
+  setTimeout(() => body.querySelector('button')?.focus(), 50);
+}
+function closeSheet() { sheet.classList.remove('on'); sheetBack.classList.remove('on'); }
+sheetBack.onclick = closeSheet;
+addEventListener('keydown', (e) => { if (e.key === 'Escape') closeSheet(); });
+
+/* ---------- 毎日ちがう姿（時間・季節・日付で決まる。記録の値では変えない） ---------- */
+const now = new Date();
+const hr = now.getHours();
+const daypart = hr >= 5 && hr < 11 ? 'daypart_morning' : hr >= 11 && hr < 17 ? 'daypart_noon' : 'daypart_night';
+const mo = now.getMonth() + 1;
+const season = mo >= 3 && mo <= 5 ? 'season_spring' : mo <= 8 && mo >= 6 ? 'season_summer' : mo >= 9 && mo <= 11 ? 'season_autumn' : 'season_winter';
+const daySeed = Math.floor(now.getTime() / 864e5);
+// 何もしていないときの居場所としぐさ（日付で変わる）
+const idle = [{ pose: 'pose_loaf', left: 38 }, { pose: 'pose_sit', left: 36 }, { pose: 'pose_stretch', left: 40 }][daySeed % 3];
+
+/* =========================================================
+   ① 猫の部屋
+   ========================================================= */
+const room = $('#room');
+const nested = (name, x, y, w, hh) => { const a = ART[name]; const vb = /viewBox="([^"]+)"/.exec(a.l)[1]; const body = (t) => t.replace(/^<svg[^>]*>/, '').replace(/<\/svg>$/, ''); return `<svg class="ltn" x="${x}" y="${y}" width="${w}" height="${hh}" viewBox="${vb}">${body(a.l)}</svg><svg class="dkn" x="${x}" y="${y}" width="${w}" height="${hh}" viewBox="${vb}">${body(a.d)}</svg>`; };
+room.innerHTML = `
+<svg class="bg" viewBox="0 0 360 258" preserveAspectRatio="xMidYMid slice" aria-hidden="true" style="color:var(--text)">
+  <rect x="26" y="26" width="104" height="80" rx="8" fill="var(--surface)" stroke="currentColor" stroke-width="1.8"/>
+  ${nested(daypart, 30, 34, 96, 62)}
+  <path d="M78 26 V106 M26 66 H130" ${S} stroke-opacity=".45"/>
+  <path d="M20 108 H136" ${S}/>
+  <path d="M262 92 H334" ${S}/>
+  ${nested(season, 270, 30, 60, 48)}
+  <path d="M0 224 H360" ${S}/>
+  <path d="M0 232 H360" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity=".25"/>
+</svg>
+<button class="frame" id="frame" aria-label="今日の1枚（写真）">${ICON.camera}</button>
+<button class="obj" id="o-bowl" style="left:5%;width:19%" aria-label="食べた量">
+  <svg viewBox="0 0 60 34"><path d="M6 12 H54 Q52 30 30 30 Q8 30 6 12 Z" ${S} fill="var(--surface)"/><path d="M14 12 Q22 4 30 9 Q38 3 46 12" ${S} ${SUBFILL}/><path d="M20 30 L19 33 H41 L40 30" ${S}/></svg>
+  <span class="stamp">${ICON.paw}</span></button>
+<button class="obj" id="o-water" style="left:27%;width:17%" aria-label="お水">
+  <svg viewBox="0 0 60 34"><path d="M4 16 H56 Q55 32 30 32 Q5 32 4 16 Z" ${S} fill="var(--surface)"/><path d="M8 19 Q30 23 52 19" fill="none" stroke="var(--accent)" stroke-width="2.2" stroke-linecap="round"/><path d="M30 2 Q35 8 35 10.5 A5 5 0 0 1 25 10.5 Q25 8 30 2 Z" ${S}/></svg>
+  <span class="stamp">${ICON.paw}</span></button>
+<button class="obj" id="o-toilet" style="left:73%;width:25%" aria-label="トイレ（おしっこ・うんち）">
+  <svg viewBox="0 0 100 44"><path d="M4 14 H96 L92 42 H8 Z" ${S} fill="var(--surface)"/><path d="M10 14 Q16 8 22 14 Q28 8 34 14 Q40 8 46 14 Q52 8 58 14 Q64 8 70 14 Q76 8 82 14 Q88 8 92 14" ${S} stroke-opacity=".6"/></svg>
+  <span class="stamp">${ICON.paw}</span></button>
+<button class="cat" id="cat" style="left:${idle.left}%" aria-label="猫（元気さ）。なでることもできます"><div class="inner" id="catInner"></div></button>
+<span class="hand" id="hand" style="left:${idle.left + 18}%;bottom:34%;color:var(--text)">${ICON.hand}</span>`;
+const cat = $('#cat'), catInner = $('#catInner');
+let catPose = idle.pose, squinting = false, catLeft = idle.left;
+const drawCat = () => { catInner.innerHTML = art(catPose, squinting); };
+drawCat();
+
+// 記録した物のうしろへ歩く（猫の中心を物の中心に）
+const SPOT = { appetite: -6, water: 15, pee: 66, poop: 66, energy: null };
+function walkTo(left, then) {
+  if (left === null || left === catLeft) { then && then(); return; }
+  cat.classList.toggle('flip', left < catLeft);
+  catPose = 'pose_sit'; drawCat();
+  if (reduced) { cat.style.left = left + '%'; catLeft = left; then && then(); return; }
+  cat.classList.add('walking');
+  cat.style.left = left + '%';
+  catLeft = left;
+  setTimeout(() => { cat.classList.remove('walking'); then && then(); }, 1850);
+}
+function afterRecord(k) {
+  bell();
+  ['appetite', 'water', 'pee', 'poop'].forEach((x) => {});
+  const id = k === 'appetite' ? 'o-bowl' : k === 'water' ? 'o-water' : k === 'pee' || k === 'poop' ? 'o-toilet' : null;
+  if (id) $('#' + id).classList.add('recorded');
+  walkTo(SPOT[k], () => { squinting = true; drawCat(); setTimeout(() => { squinting = false; drawCat(); }, 1600); });
+  updateRoomDone();
+}
+function updateRoomDone() {
+  const n = Object.keys(today).length;
+  $('#roomDone').textContent = n ? `記録しました（${Q.filter((q) => today[q.k] !== undefined).map((q) => q.title).join('・')}）` : '';
+}
+listeners.push((k) => {
+  const id = k === 'appetite' ? 'o-bowl' : k === 'water' ? 'o-water' : k === 'pee' || k === 'poop' ? 'o-toilet' : null;
+  if (id) $('#' + id).classList.toggle('recorded', id === 'o-toilet' ? today.pee !== undefined || today.poop !== undefined : today[k] !== undefined);
+  updateRoomDone();
+});
+$('#o-bowl').onclick = () => openSheet(['appetite'], afterRecord);
+$('#o-water').onclick = () => openSheet(['water'], afterRecord);
+$('#o-toilet').onclick = () => openSheet(['pee', 'poop'], afterRecord);
+
+// 猫：タップ＝元気さ、なでる（指でこする）＝目を細めてごろごろ
+let pdown = null, dist = 0, purrTimer = null;
+cat.addEventListener('pointerdown', (e) => { pdown = { x: e.clientX, y: e.clientY }; dist = 0; cat.setPointerCapture(e.pointerId); });
+cat.addEventListener('pointermove', (e) => {
+  if (!pdown) return;
+  dist += Math.hypot(e.clientX - pdown.x, e.clientY - pdown.y); pdown = { x: e.clientX, y: e.clientY };
+  if (dist > 24 && !cat.classList.contains('petting')) startPet();
+});
+const endPointer = () => {
+  if (!pdown) return;
+  const wasPet = cat.classList.contains('petting');
+  pdown = null;
+  if (wasPet) stopPet(); else openSheet(['energy'], afterRecord);
+};
+cat.addEventListener('pointerup', endPointer);
+cat.addEventListener('pointercancel', () => { pdown = null; stopPet(); });
+cat.addEventListener('click', (e) => { if (e.detail === 0) openSheet(['energy'], afterRecord); }); // キーボード
+function startPet() {
+  cat.classList.add('petting'); squinting = true; drawCat();
+  $('#hand').style.display = 'none';
+  buzz([18, 60, 18, 60, 18]);
+  purrTimer = setInterval(() => buzz([18, 60, 18, 60, 18]), 520);
+}
+function stopPet() {
+  clearInterval(purrTimer); cat.classList.remove('petting');
+  setTimeout(() => { squinting = false; drawCat(); }, 700);
+}
+
+// 今日の1枚（写真は端末の中だけで表示。保存も送信もしない）
+const frame = $('#frame'), photoInput = $('#photoInput');
+frame.onclick = () => photoInput.click();
+photoInput.onchange = () => {
+  const f = photoInput.files[0]; if (!f) return;
+  if (photoUrl) URL.revokeObjectURL(photoUrl);
+  photoUrl = URL.createObjectURL(f);
+  frame.style.backgroundImage = `url(${photoUrl})`; frame.classList.add('has'); bell(); renderPage();
+};
+
+/* =========================================================
+   ② 1問1枚のカード
+   ========================================================= */
+const deck = $('#deck'), pips = $('#pips');
+let cardIdx = 0;
+function renderDeck() {
+  deck.innerHTML = ''; pips.innerHTML = '';
+  Q.forEach((q, i) => {
+    pips.append(h(`<i class="${i < cardIdx ? 'on' : ''}"></i>`));
+    if (i < cardIdx - 1 || i > cardIdx + 2) return;
+    const c = h(`<div class="card" style="z-index:${10 - i}"><div class="big">${ICON[q.icon]}</div></div>`);
+    const qe = questionEl(q, { onPick: (k, v) => { setRec(k, v); bell(); flick(c, 'gone'); } });
+    qe.querySelector('.qt').remove();
+    const head = h(`<div class="qt">${q.title}</div>`);
+    c.insertBefore(head, c.firstChild.nextSibling);
+    c.append(qe);
+    const sk = h('<button class="skipbtn">とばす</button>'); sk.onclick = () => flick(c, 'skip'); c.append(sk);
+    if (i < cardIdx) c.classList.add('gone');
+    else if (i === cardIdx + 1) c.classList.add('behind1');
+    else if (i === cardIdx + 2) c.classList.add('behind2');
+    // 横にはじくと「とばす」
+    let sx = null;
+    c.addEventListener('pointerdown', (e) => { if (e.target.closest('button')) return; sx = e.clientX; });
+    c.addEventListener('pointerup', (e) => { if (sx !== null && Math.abs(e.clientX - sx) > 70) flick(c, 'skip'); sx = null; });
+    deck.append(c);
+  });
+  $('#cardDone').innerHTML = '';
+  if (cardIdx >= Q.length) {
+    const answered = Q.filter((q) => today[q.k] !== undefined);
+    const end = h(`<div class="card" style="justify-content:center;align-items:center;gap:14px;text-align:center"><div style="width:180px">${art('guide_peek', true)}</div><div style="font-size:19px">${answered.length ? '記録しました' : '今日はここまで'}</div><div class="small">${answered.map((q) => `${q.title}：${wordOf(q.k, today[q.k])}`).join('<br>')}</div></div>`);
+    const again = h('<button class="btn">はじめから</button>'); again.onclick = () => { cardIdx = 0; renderDeck(); }; end.append(again);
+    deck.append(end);
+  }
+}
+function flick(c, cls) {
+  c.classList.add(cls);
+  setTimeout(() => { cardIdx++; renderDeck(); }, reduced ? 0 : 380);
+}
+
+/* =========================================================
+   ③ 絵日記（記録した日だけが、日めくりで並ぶ。抜けた日は出さない）
+   ========================================================= */
+const WD = ['日', '月', '火', '水', '木', '金', '土'];
+const dayKey = (d) => `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+// 見本の過去の記録（架空）
+const past = [
+  { ago: 1, r: { appetite: 'usual', water: 'usual', pee: 3, poop: 1, energy: 'usual' } },
+  { ago: 2, r: { appetite: 'less', water: 'more', pee: 4, energy: 'less' } },
+  { ago: 4, r: { appetite: 'usual', water: 'usual', pee: 3, poop: 0 } },
+  { ago: 5, r: { appetite: 'more', pee: 2, poop: 1, energy: 'more' } },
+  { ago: 7, r: { appetite: 'usual', water: 'less', pee: 3, poop: 1, energy: 'usual' } },
+];
+let pageIdx = 0; // 0 = いちばん新しい
+function pages() {
+  const list = [];
+  if (Object.keys(today).length || photoUrl) list.push({ date: now, r: today, today: true });
+  past.forEach((p) => { const d = new Date(now); d.setDate(d.getDate() - p.ago); list.push({ date: d, r: p.r }); });
+  return list;
+}
+const POSES = ['pose_sit', 'pose_loaf', 'pose_window', 'pose_peek'];
+function renderPage() {
+  const list = pages();
+  pageIdx = Math.min(pageIdx, list.length - 1);
+  const p = list[pageIdx];
+  const d = p.date;
+  // 絵の姿は日付で決まる（記録の値では変えない）
+  const pose = POSES[Math.floor(d.getTime() / 864e5) % POSES.length];
+  const things = Q.map((q) => {
+    const v = p.r[q.k];
+    let pic = ICON[q.icon];
+    if (q.k === 'appetite' && v !== undefined) pic = mounds({ none: 0, less: 1, usual: 2, more: 3 }[v]);
+    if (q.k === 'water' && v !== undefined) pic = drops({ less: 0, usual: 1, more: 2 }[v]);
+    return `<div>${pic}<span>${q.title}</span><span class="v${v === undefined ? ' none' : ''}">${v === undefined ? '—' : wordOf(q.k, v)}</span></div>`;
+  }).join('');
+  $('#page').innerHTML = `<div><span class="date">${d.getMonth() + 1}月${d.getDate()}日</span><span class="wd">${WD[d.getDay()]}曜日</span></div>
+    <div class="scene tailsway">${art(pose)}${p.today && photoUrl ? `<span class="pol" style="background-image:url(${photoUrl})"></span>` : ''}</div>
+    <div class="things">${things}</div>`;
+  $('#pageCount').textContent = list.length > 1 ? `${pageIdx + 1} / ${list.length}` : '';
+  $('#prevDay').disabled = pageIdx >= list.length - 1;
+  $('#nextDay').disabled = pageIdx <= 0;
+  $('#prevDay').style.opacity = $('#prevDay').disabled ? .35 : 1;
+  $('#nextDay').style.opacity = $('#nextDay').disabled ? .35 : 1;
+}
+function turn(dir) {
+  const list = pages(); const n = pageIdx + dir;
+  if (n < 0 || n >= list.length) return;
+  const pg = $('#page');
+  pg.classList.add(dir > 0 ? 'turn' : 'turnback');
+  setTimeout(() => { pageIdx = n; renderPage(); pg.classList.remove('turn', 'turnback'); }, reduced ? 0 : 420);
+}
+$('#prevDay').onclick = () => turn(1);
+$('#nextDay').onclick = () => turn(-1);
+let px = null;
+$('#page').addEventListener('pointerdown', (e) => { px = e.clientX; });
+$('#page').addEventListener('pointerup', (e) => { if (px !== null && Math.abs(e.clientX - px) > 60) turn(e.clientX < px ? 1 : -1); px = null; });
+listeners.push(() => { pageIdx = 0; renderPage(); });
+
+/* =========================================================
+   ④ 猫が話しかけてくる（猫は質問だけ。意見・判定・ほめ言葉は言わない）
+   ========================================================= */
+const ASK = {
+  appetite: 'ごはん、いつもとくらべて、どれくらい食べた？',
+  water: 'お水は、いつもとくらべて、どうだった？',
+  pee: 'おしっこは、何回だった？',
+  poop: 'うんちは、何回だった？',
+  energy: 'きょうの様子は、いつもとくらべて、どうだった？', // 猫の性別を決めつけない（「ぼく」「わたし」は使わない）
+};
+let talkIdx = 0;
+const log = $('#log'), ans = $('#ans');
+$('#talkCat').innerHTML = `<div class="tailsway" style="width:140px">${art('pose_sit')}</div>`;
+function say(text, who) {
+  log.querySelectorAll('.bub').forEach((b) => b.classList.add('old'));
+  log.append(h(`<div class="bub ${who}">${text}</div>`));
+  while (log.children.length > 4) log.firstChild.remove();
+}
+function askNext() {
+  ans.innerHTML = '';
+  if (talkIdx >= Q.length) {
+    $('#talkCat').innerHTML = `<div class="tailsway" style="width:140px">${art('pose_sit', true)}</div>`;
+    const answered = Q.filter((q) => today[q.k] !== undefined);
+    $('#talkDone').textContent = answered.length ? '記録しました' : '';
+    const again = h('<div class="row"><button class="btn">もう一度ひらく</button></div>');
+    again.firstChild.onclick = () => { talkIdx = 0; log.innerHTML = ''; $('#talkDone').textContent = ''; $('#talkCat').innerHTML = `<div class="tailsway" style="width:140px">${art('pose_sit')}</div>`; askNext(); };
+    ans.append(again);
+    return;
+  }
+  const q = Q[talkIdx];
+  say(ASK[q.k], 'from-cat');
+  const qe = questionEl(q, { onPick: (k, v) => { setRec(k, v); bell(); say(wordOf(k, v), 'from-me'); talkIdx++; setTimeout(askNext, reduced ? 0 : 500); } });
+  qe.querySelector('.qt').remove(); qe.querySelector('.qs')?.remove();
+  ans.append(qe);
+  const sk = h('<div class="row"><button class="btn">あとで</button></div>');
+  sk.firstChild.onclick = () => { talkIdx++; askNext(); };
+  ans.append(sk);
+}
+
+/* =========================================================
+   ⑥ 声で記録（見本：例の言葉を表示。実際は端末の中だけで文字にする）
+   ========================================================= */
+const SAMPLE_SPEECH = 'ごはんは少し残した。お水はいつもくらい。おしっこ2回、うんち1回。';
+// 言葉の当てはめは決まった言い方だけ。症状や体調の意味は読み取らない
+function parseSpeech(t) {
+  const r = {};
+  if (/食べなかった|食べてない/.test(t)) r.appetite = 'none';
+  else if (/少し残し|少なめ|少なかった|ちょっと残/.test(t)) r.appetite = 'less';
+  else if (/ごはん.*いつも(くらい|どおり)/.test(t)) r.appetite = 'usual';
+  else if (/おかわり|多め|たくさん食べ/.test(t)) r.appetite = 'more';
+  const w = /お水は?([^。、]*)/.exec(t)?.[1] ?? '';
+  if (/いつも/.test(w)) r.water = 'usual'; else if (/少な/.test(w)) r.water = 'less'; else if (/多/.test(w)) r.water = 'more';
+  const num = (s) => { const m = /(\d+|一|二|三|四|五|六)\s*回/.exec(s); if (!m) return undefined; const k = '一二三四五六'.indexOf(m[1]); return k >= 0 ? k + 1 : Math.min(+m[1], 6); };
+  const pe = /おしっこ[^。、]*/.exec(t)?.[0]; if (pe) r.pee = num(pe);
+  const po = /うんち[^。、]*/.exec(t)?.[0]; if (po) r.poop = num(po);
+  Object.keys(r).forEach((k) => r[k] === undefined && delete r[k]);
+  return r;
+}
+const mic = $('#mic'), heard = $('#heard'), chips = $('#chips');
+mic.innerHTML = ICON.mic;
+let draft = null, typing = null;
+function showDraft() {
+  chips.innerHTML = '';
+  Q.forEach((q) => {
+    const v = draft[q.k];
+    const c = h(`<button class="chip${v === undefined ? ' unheard' : ''}" aria-label="${q.title}：${v === undefined ? '聞き取れなかった' : wordOf(q.k, v)}">${ICON[q.icon]}<span>${q.title}</span><b>${v === undefined ? '—' : wordOf(q.k, v)}</b></button>`);
+    c.onclick = () => openDraftSheet(q.k);
+    chips.append(c);
+  });
+  $('#voiceBtns').hidden = false;
+}
+function openDraftSheet(k) {
+  const body = $('#sheetBody'); body.innerHTML = '';
+  const saved = today[k]; today[k] = draft[k];
+  body.append(questionEl(QK[k], { draft: true, onPick: (kk, v) => { draft[kk] = v; closeSheet(); showDraft(); } }));
+  if (saved === undefined) delete today[k]; else today[k] = saved;
+  sheet.classList.add('on'); sheetBack.classList.add('on');
+}
+mic.onclick = () => {
+  if (mic.classList.contains('on')) return;
+  mic.classList.add('on'); heard.innerHTML = '<span class="caret"></span>'; chips.innerHTML = ''; $('#voiceBtns').hidden = true; $('#voiceDone').textContent = '';
+  let i = 0;
+  clearInterval(typing);
+  typing = setInterval(() => {
+    i++;
+    heard.innerHTML = SAMPLE_SPEECH.slice(0, i) + '<span class="caret"></span>';
+    if (i >= SAMPLE_SPEECH.length) { clearInterval(typing); mic.classList.remove('on'); heard.textContent = SAMPLE_SPEECH; draft = parseSpeech(SAMPLE_SPEECH); showDraft(); }
+  }, reduced ? 1 : 70);
+};
+$('#voiceRetry').onclick = () => { heard.innerHTML = ''; chips.innerHTML = ''; $('#voiceBtns').hidden = true; draft = null; };
+$('#voiceSave').onclick = () => { Object.entries(draft).forEach(([k, v]) => setRec(k, v)); bell(); $('#voiceDone').textContent = '記録しました'; $('#voiceBtns').hidden = true; chips.querySelectorAll('.chip').forEach((c) => (c.style.borderStyle = 'solid')); };
+
+/* ---------- タブ ---------- */
+const TABS = [
+  ['room', '①', '猫の部屋', '部屋の物をさわって記録。猫をなでると、目を細めます。'],
+  ['card', '②', '1問1枚', 'カードの絵を選ぶと、次のカードへ。横にはじくと、とばせます。'],
+  ['diary', '③', '絵日記', '記録した日が、1枚ずつの絵日記になります。'],
+  ['talk', '④', '話しかける', '猫が、ひとつずつたずねます。'],
+  ['voice', '⑥', '声で記録', '話した言葉が、下書きになります。'],
+];
+const tabs = $('#tabs');
+function show(id) {
+  TABS.forEach(([k]) => { $('#p-' + k).classList.toggle('on', k === id); tabs.querySelector(`[data-k="${k}"]`).setAttribute('aria-selected', String(k === id)); });
+  $('#lead').textContent = TABS.find((t) => t[0] === id)[3];
+  if (id === 'card') renderDeck();
+  if (id === 'diary') renderPage();
+  if (id === 'talk' && !log.children.length) askNext();
+  try { localStorage.setItem('exp-tab', id); } catch (e) {}
+}
+TABS.forEach(([k, n, label]) => { const b = h(`<button role="tab" data-k="${k}" aria-controls="p-${k}"><span class="n">${n}</span>${label}</button>`); b.onclick = () => show(k); tabs.append(b); });
+let first = 'room'; try { first = localStorage.getItem('exp-tab') || 'room'; } catch (e) {}
+show(TABS.some((t) => t[0] === first) ? first : 'room');
+</script>
