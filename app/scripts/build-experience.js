@@ -6,7 +6,7 @@ const brand = path.join(root, '..', 'docs', 'brand', 'assets', 'svg');
 const names = {
   guide_peek: 'guide', pose_sit: 'poses', pose_loaf: 'poses', pose_stretch: 'poses', pose_window: 'poses',
   window_morning: 'room', window_noon: 'room', window_evening: 'room', window_night: 'room', weather_cloudy: 'room', weather_rain: 'room', weather_snow: 'room',
-  floor: 'room', bed: 'room', toilet_back: 'room', toilet_front: 'room', bowl_food: 'room', bowl_water: 'room', cat_walk: 'room', cat_bed: 'room',
+  floor: 'room', bed: 'room', toilet_back: 'room', toilet_front: 'room', bowl_food: 'room', bowl_water: 'room', cat_walk: 'room', cat_walk2: 'room', cat_walk3: 'room', shelf: 'room', wall_picture: 'room', paper_dots: 'diary', cat_bed: 'room',
   card_food: 'cards', card_water: 'cards', card_toilet: 'cards', card_energy: 'cards',
   diary_meal: 'diary', diary_drink: 'diary', diary_rest: 'diary', diary_window: 'diary',
   item_food: 'diary', item_water: 'diary', item_toilet: 'diary', item_energy: 'diary',

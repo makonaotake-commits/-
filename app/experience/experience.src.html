@@ -61,9 +61,8 @@ section.pane.on{display:block}
 @keyframes sway{0%,100%{rotate:0deg}40%{rotate:-10deg}75%{rotate:4deg}}
 .hand{position:absolute;z-index:5;width:30px;pointer-events:none;opacity:0;animation:hint 3.2s ease-in-out 1.2s 2}
 @keyframes hint{0%{opacity:0;translate:0 0}20%{opacity:.85}60%{opacity:.85;translate:28px 0}100%{opacity:0;translate:28px 0}}
-.frame{position:absolute;left:61.7%;top:16%;width:15%;aspect-ratio:4/5;border:3px solid var(--strong);border-radius:6px;background:var(--surface) center/cover no-repeat;cursor:pointer;z-index:3;display:grid;place-items:center;padding:0;color:var(--text)}
-.frame svg{width:42%;opacity:.6}
-.frame.has svg{display:none}
+.frame{position:absolute;right:6px;top:6px;width:44px;height:44px;border-radius:22px;border:2px solid var(--strong);background:var(--surface) center/cover no-repeat;cursor:pointer;z-index:5;display:grid;place-items:center;padding:0;color:var(--text)}
+.frame svg{width:24px}
 .heart{position:absolute;z-index:5;pointer-events:none;width:20px;opacity:0}
 /* 部屋の中の小さな目印（記録した物に付く足あと）。どの答えでも同じ */
 
@@ -390,13 +389,13 @@ const idleSpot = ['bed', 'window'][rand(2, 2)];
 let spot = idleSpot, squinting = false;
 room.innerHTML = `
 <svg class="scene" viewBox="0 0 360 240" aria-hidden="true">
-  ${layer(windowArt)}${weather ? layer(weather) : ''}
-  ${placed('season_' + seasonKey, 300, 40, 44, 35)}
+  ${layer(windowArt)}${weather ? layer(weather) : ''}${layer('shelf')}${layer('wall_picture')}
+  ${placed('season_' + seasonKey, 138, 108, 30, 24)}
   ${layer('floor')}${layer('bed')}${layer('toilet_back')}
   <g id="catPos"><g id="catFlip"></g></g>
   ${layer('bowl_food')}${layer('bowl_water')}${layer('toilet_front')}
 </svg>
-<button class="frame" id="frame" aria-label="今日の1枚（写真）">${ICON.camera}</button>
+<button class="frame" id="frame" aria-label="今日の1枚（写真を選ぶ）">${ICON.camera}</button>
 <button class="hit" style="left:${40 / 3.6}%;top:${24 / 2.4}%;width:${98 / 3.6}%;height:${108 / 2.4}%" id="h-window" aria-label="窓"></button>
 <button class="hit" style="left:${25 / 3.6}%;top:${178 / 2.4}%;width:${93 / 3.6}%;height:${30 / 2.4}%" id="h-bed" aria-label="寝床"></button>
 <button class="hit obj" style="left:${131 / 3.6}%;top:${176 / 2.4}%;width:${44 / 3.6}%;height:${30 / 2.4}%" id="o-bowl" aria-label="食べた量"><span class="stamp">${ICON.paw}</span></button>
@@ -422,10 +421,12 @@ function walkTo(key, then) {
   spot = key;
   if (calm()) { pose = t.pose; curX = t.x; curY = t.y; catFlip.style.transform = ''; place(curX, curY, false); drawCat(); then && then(); return; }
   catFlip.style.transform = t.x < curX ? 'scale(-1,1)' : '';
-  pose = 'cat_walk'; drawCat();
+  const frames = ['cat_walk', 'cat_walk2', 'cat_walk3', 'cat_walk2']; let fi = 0;
+  pose = frames[0]; drawCat();
+  const walkTimer = setInterval(() => { fi = (fi + 1) % 4; pose = frames[fi]; drawCat(); }, 250);
   curX = t.x; curY = t.y;
   place(curX, curY, true);
-  setTimeout(() => { catFlip.style.transform = ''; pose = t.pose; drawCat(); then && then(); }, 1850);
+  setTimeout(() => { clearInterval(walkTimer); catFlip.style.transform = ''; pose = t.pose; drawCat(); then && then(); }, 1850);
 }
 function afterRecord(k) {
   bell();
@@ -477,7 +478,7 @@ photoInput.onchange = () => {
   const f = photoInput.files[0]; if (!f) return;
   if (photoUrl) URL.revokeObjectURL(photoUrl);
   photoUrl = URL.createObjectURL(f);
-  frame.style.backgroundImage = `url(${photoUrl})`; frame.classList.add('has'); bell(); renderPage();
+   bell(); renderPage();
 };
 
 /* =========================================================
@@ -544,6 +545,7 @@ function pages() {
   return list;
 }
 // 場面は日付とランダムで選ぶ（記録の中身・有無では変えない。ロシアン E-1）。記録した項目は隅の小さなアイコンで示す。自動の文は付けない
+const diaryScene = (name) => { const b2 = (n, k) => svgBody(ART[n][k]); return `<span class="art"><span class="lt"><svg viewBox="0 -4 200 144" aria-hidden="true">${b2('paper_dots', 'l')}${b2(name, 'l')}</svg></span><span class="dk"><svg viewBox="0 -4 200 144" aria-hidden="true">${b2('paper_dots', 'd')}${b2(name, 'd')}</svg></span></span>`; };
 const SCENES = ['diary_meal', 'diary_drink', 'diary_rest', 'diary_window'];
 const ITEM = { appetite: 'item_food', water: 'item_water', pee: 'item_toilet', poop: 'item_toilet', energy: 'item_energy' };
 function renderPage() {
@@ -556,7 +558,7 @@ function renderPage() {
   const kinds = [...new Set(Q.filter((q) => p.r[q.k] !== undefined).map((q) => ITEM[q.k]))];
   const vals = Q.filter((q) => p.r[q.k] !== undefined).map((q) => `<div><span>${q.title}</span><span class="v">${wordOf(q.k, p.r[q.k])}</span></div>`).join('');
   $('#page').innerHTML = `<div><span class="date">${d.getMonth() + 1}月${d.getDate()}日</span><span class="wd">${WD[d.getDay()]}曜日</span></div>
-    <div class="scene">${art(scene)}<div class="items">${kinds.map((k) => art(k)).join('')}</div>${p.today && photoUrl ? `<span class="pol" style="background-image:url(${photoUrl})"></span>` : ''}</div>
+    <div class="scene">${diaryScene(scene)}<div class="items">${kinds.map((k) => art(k)).join('')}</div>${p.today && photoUrl ? `<span class="pol" style="background-image:url(${photoUrl})"></span>` : ''}</div>
     <div class="things">${vals}</div>`;
   $('#pageCount').textContent = list.length > 1 ? `${pageIdx + 1} / ${list.length}` : '';
   $('#prevDay').disabled = pageIdx >= list.length - 1;
