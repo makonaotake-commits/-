@@ -45,3 +45,4 @@
 - [案内役の顔 確認シート](guide_face.html)（[公開ページ](https://claude.ai/artifact/JxxKjb2reBhiB42VkTdaxK)）
 - [新しい体験の方向 確認シート](new_experience.html)（[公開ページ](https://claude.ai/artifact/XqTy5thagFjsL3RNxVixrC)）
 - [体験の見本から選ぶ 確認シート](exp_pick.html)（[公開ページ](https://claude.ai/artifact/C5sZiTxYaXSax4Q3k93B4G)）
+- [第1弾の形と期間 確認シート](plan2.html)（[公開ページ](https://claude.ai/artifact/N1uni3V11utzw7k3WoV8mM)）
